@@ -11,7 +11,7 @@ const Navbar = () => {
   const activeLinkStyles = `border-b-2 border-b-accent-color px-3 lg:px-6 py-2 text-sm lg:text-lg font-medium transition-all duration-500 `;
 
   return (
-    <nav className="flex flex-col mx-auto max-w-[420px] md:max-w-7xl">
+    <nav className="flex flex-col mx-auto max-w-[420px] md:max-w-7xl border">
       <section className="flex items-center justify-between py-2">
         <Link href="/" className="flex gap-1 items-center">
           {/* <Image src={Logo} alt="logo" className="h-12 w-16 rounded-2xl" /> */}
