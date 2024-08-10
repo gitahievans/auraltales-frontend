@@ -9,27 +9,28 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        primary: "#152D09",
+        primary: "#0F231F" ,
         secondary: "#1F8505",
         tertiary: "#21440F",
         base: "#FFFFFF",
         textPrimary: "#FFFFFF",
         textSecondary: "#A9A9AA",
         color: "#1CFAC4",
+        darkerGreen: "#152D09"
       },
       fontFamily: {
-        'main': ['Josefin Sans', 'sans-serif'],
-        'secondary': ['Poppins', 'sans-serif'],
+        main: ["Josefin Sans", "sans-serif"],
+        secondary: ["Poppins", "sans-serif"],
       },
       screens: {
-        'xxxs': '320px',
-        'xxs': '360px',
-        'xs': '400px',
-        'sm': '640px',   // Small screens and up
-        'md': '768px',   // Medium screens and up
-        'lg': '1024px',  // Large screens and up
-        'xl': '1280px',  // Extra large screens and up
-        '2xl': '1536px', // 2XL screens and up
+        xxxs: "320px",
+        xxs: "360px",
+        xs: "400px",
+        sm: "640px", // Small screens and up
+        md: "768px", // Medium screens and up
+        lg: "1024px", // Large screens and up
+        xl: "1280px", // Extra large screens and up
+        "2xl": "1536px", // 2XL screens and up
       },
     },
   },

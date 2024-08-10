@@ -4,7 +4,7 @@ const SideNav = () => {
   return (
     <aside
       id="audiobook-sidebar"
-      className="w-64 h-screen bg-dark-green border"
+      className="min-w-64 h-screen bg-dark-green border"
     >
       <nav className="h-full px-3 py-4 overflow-y-auto">
         <ul className="space-y-2">
