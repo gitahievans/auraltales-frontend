@@ -6,10 +6,10 @@ import heroImage from "@/public/Images/soundleaf-files/posters/Gemini_Generated_
 
 const HeroSection = () => {
   return (
-    <section className="w-full py-6 px-4 text-white flex flex-col md:flex-row items-center justify-between">
+    <section className="w-full py-6 px-4 text-white flex flex-col md:flex-row items-start justify-between">
       {/* Left Side - Text Content */}
       <div className="w-1/2">
-        <h1 className="text-4xl md:text-5xl font-bold mb-6">
+        <h1 className="text-6xl md:text-5xl font-bold mb-6">
           Welcome to <span className="text-[#F4F4F4]">SoundLeaf</span>, your Audiobooks destination
         </h1>
         <p className="text-lg mb-8">

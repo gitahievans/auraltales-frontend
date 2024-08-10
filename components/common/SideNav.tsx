@@ -1,12 +1,26 @@
-import React from "react";
+"use client";
+
+import React, { useState } from "react";
+import { useSnapshot } from "valtio";
+import { sideNavState } from "@/state/state";
 
 const SideNav = () => {
+  const [sidebarOpen, setSideBarOpen] = useState(false);
+  const sideBarSnap = useSnapshot(sideNavState);
+  const { open } = sideBarSnap;
+
+  console.log(open);
+  
+
   return (
     <aside
-      id="audiobook-sidebar"
-      className="min-w-64 h-screen bg-dark-green border"
+      id="default-sidebar"
+      className={`w-72 h-screen transition-transform bg-primary ${
+        open ? "" : "-translate-x-full lg:-translate-x-0"
+      } lg:block lg:w-72 fixed  z-50 h-screen`}
+      aria-label="Sidebar"
     >
-      <nav className="h-full px-3 py-4 overflow-y-auto">
+      <nav className="h-full py-4 overflow-y-auto">
         <ul className="space-y-2">
           <li>
             <a
