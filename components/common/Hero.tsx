@@ -6,13 +6,13 @@ import heroImage from "@/public/Images/soundleaf-files/posters/Gemini_Generated_
 
 const HeroSection = () => {
   return (
-    <section className="w-full py-6 px-4 text-white flex flex-col md:flex-row items-start justify-between">
+    <section className="w-full py-6 text-white flex items-start justify-between gap-4 md:gap-0">
       {/* Left Side - Text Content */}
-      <div className="w-1/2">
-        <h1 className="text-6xl md:text-5xl font-bold mb-6">
+      <div className="flex flex-col w-2/3 md:w-1/2 gap-4 md:gap-8">
+        <h1 className="lg:text-4xl xl:text-6xl font-bold">
           Welcome to <span className="text-[#F4F4F4]">SoundLeaf</span>, your Audiobooks destination
         </h1>
-        <p className="text-lg mb-8">
+        <p className="text-xs md:text-lg">
           Explore our vast collection, listen on the go, and immerse yourself in the world of audio literature.
         </p>
         <div className="relative">
@@ -39,11 +39,11 @@ const HeroSection = () => {
       </div>
 
       {/* Right Side - Image */}
-      <div className="w-1/2 flex items-center justify-center ">
+      <div className="w-1/3 md:w-1/2 flex items-center justify-end">
         <Image
           src={heroImage}
           alt="Bookshelf and listening setup"
-          className="w-full max-w-xs md:max-w-md rounded-lg"
+          className="w-full max-w-xs xl:max-w-md rounded-lg"
         />
       </div>
     </section>

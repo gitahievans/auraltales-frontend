@@ -10,17 +10,16 @@ const SideNav = () => {
   const { open } = sideBarSnap;
 
   console.log(open);
-  
 
   return (
     <aside
       id="default-sidebar"
-      className={`w-72 h-screen transition-transform bg-primary ${
-        open ? "" : "-translate-x-full lg:-translate-x-0"
-      } lg:block lg:w-72 fixed  z-50 h-screen`}
+      className={`w-64 h-screen transition-all duration-500 bg-primary ${
+        open ? "" : "hidden"
+      } lg:block fixed z-50 h-screen`}
       aria-label="Sidebar"
     >
-      <nav className="h-full py-4 overflow-y-auto">
+      <nav className="h-full pl-2 lg:pl-0 py-4 overflow-y-auto">
         <ul className="space-y-2">
           <li>
             <a
