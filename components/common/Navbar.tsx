@@ -20,13 +20,13 @@ const Navbar = () => {
   const isMobile = useMediaQuery("(max-width: 1120px)");
 
   return (
-    <nav className="fixed top-0 left-1/2 transform -translate-x-1/2 z-50 flex flex-col w-full text-white max-w-[420px] md:max-w-3xl xl:max-w-[1440px] bg-primary">
+    <nav className="fixed top-0 left-1/2 transform -translate-x-1/2 z-50 flex flex-col w-full text-white max-w-[420px] md:max-w-[1440px] bg-primary px-2">
       <section className="flex items-center justify-between py-2">
         <Link href="/" className="flex gap-1 items-center">
           {/* <Image src={Logo} alt="logo" className="h-12 w-16 rounded-2xl" /> */}
           {isMobile && <IconMenu2 size={40} onClick={handleMenuClick} />}
           <h1 className="text-xl md:text-4xl font-semibold text-accent-color">
-            Afrobyte
+            SoundLeaf
           </h1>
         </Link>
         <div className="hidden md:flex items-center space-x-4">

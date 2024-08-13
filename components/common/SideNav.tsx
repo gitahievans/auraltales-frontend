@@ -19,7 +19,7 @@ const SideNav = () => {
       } lg:block fixed z-50 h-screen`}
       aria-label="Sidebar"
     >
-      <nav className="h-full pl-2 lg:pl-0 py-4 overflow-y-auto">
+      <nav className="h-full pl-2 lg:pl-0 overflow-y-auto">
         <ul className="space-y-2">
           <li>
             <a

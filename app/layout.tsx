@@ -6,6 +6,7 @@ import Navbar from "@/components/common/Navbar";
 import Footer from "@/components/common/Footer";
 import SideNav from "@/components/common/SideNav";
 import Layout from "@/components/common/Layout";
+import '@mantine/carousel/styles.css';
 
 const inter = Inter({ subsets: ["latin"] });
 
