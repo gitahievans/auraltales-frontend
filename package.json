@@ -9,7 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@mantine/carousel": "^7.12.1",
+    "@mantine/carousel": "^7.12.2",
     "@mantine/code-highlight": "^7.12.0",
     "@mantine/core": "^7.12.0",
     "@mantine/dates": "^7.12.0",

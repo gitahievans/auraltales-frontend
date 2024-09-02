@@ -2,9 +2,6 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { MantineProvider } from "@mantine/core";
-import Navbar from "@/components/common/Navbar";
-import Footer from "@/components/common/Footer";
-import SideNav from "@/components/common/SideNav";
 import Layout from "@/components/common/Layout";
 import '@mantine/carousel/styles.css';
 
