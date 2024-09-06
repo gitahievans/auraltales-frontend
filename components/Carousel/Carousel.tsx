@@ -81,7 +81,7 @@ const Carousel: React.FC<CarouselProps> = ({
 
       {/* Previous Slide Button */}
       <button
-        className="absolute top-1/2 left-2 transform -translate-y-1/2 p-2 bg-primary rounded-full shadow-md"
+        className="absolute top-1/2 left-2 transform -translate-y-1/2 p-2 bg-darkerGreen rounded-full shadow-md"
         onClick={prevSlide}
       >
         <IconArrowLeft color="#4ade80" />
@@ -89,7 +89,7 @@ const Carousel: React.FC<CarouselProps> = ({
 
       {/* Next Slide Button */}
       <button
-        className="absolute top-1/2 right-2 transform -translate-y-1/2 p-2 bg-primary rounded-full shadow-md"
+        className="absolute top-1/2 right-2 transform -translate-y-1/2 p-2 bg-darkerGreen rounded-full shadow-md"
         onClick={nextSlide}
       >
         <IconArrowRight color="#4ade80" />

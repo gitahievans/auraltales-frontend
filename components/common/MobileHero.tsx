@@ -1,7 +1,7 @@
 import React from "react";
 import heroImage from "@/public/Images/soundleaf-files/posters/Gemini_Generated_Image_6g64ay6g64ay6g64.jpeg";
 
-const HeroSection = () => {
+const MobileHero = () => {
   return (
     <section
       className="relative w-full bg-center text-white flex flex-col justify-center items-center py-10 px-4"
@@ -45,4 +45,4 @@ const HeroSection = () => {
   );
 };
 
-export default HeroSection;
+export default MobileHero;

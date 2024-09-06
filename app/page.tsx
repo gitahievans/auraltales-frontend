@@ -2,7 +2,8 @@
 
 import BookGrid from "@/components/BookGrid";
 import HeroSection from "@/components/common/Hero";
-import HeroCarousel from "@/components/common/HeroCarousel";
+import MobileHero from "@/components/common/MobileHero";
+import HeroCarousel from "@/components/common/MobileHero";
 import { useMediaQuery } from "@mantine/hooks";
 
 export default function Home() {
@@ -19,7 +20,7 @@ export default function Home() {
   return (
     <div className="flex flex-col gap-4 min-h-screen md:max-w-3xl lg:max-w-7xl">
       {!mobile ? <HeroSection /> : null}
-      {mobile ? <HeroCarousel /> : null}
+      {mobile ? <MobileHero /> : null}
       <div className="mt-4">
         {categories.map((cat, i) => (
           <BookGrid key={i} title={cat} />

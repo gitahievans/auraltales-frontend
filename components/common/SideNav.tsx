@@ -3,13 +3,28 @@
 import React, { useState } from "react";
 import { useSnapshot } from "valtio";
 import { sideNavState } from "@/state/state";
+import Image from "next/image";
+import avatar from "@/public/Images/soundleaf-files/posters/Gemini_Generated_Image_v8c5gbv8c5gbv8c5.jpeg";
+import { IconBooks, IconChevronDown, IconChevronUp } from "@tabler/icons-react";
 
 const SideNav = () => {
-  const [sidebarOpen, setSideBarOpen] = useState(false);
   const sideBarSnap = useSnapshot(sideNavState);
+  const [isBrowseOpen, setIsBrowseOpen] = useState(false);
+  const [isListsOpen, setIsListsOpen] = useState(false);
   const { open } = sideBarSnap;
 
-  console.log(open);
+  const browseCategories = [
+    { name: "Fiction", path: "/audiobooks/fiction" },
+    { name: "Non-Fiction", path: "/audiobooks/non-fiction" },
+    { name: "Sci-Fi", path: "/audiobooks/sci-fi" },
+    { name: "Romance", path: "/audiobooks/romance" },
+  ];
+
+  const listCollections = [
+    { name: "New Releases", path: "/collections/new-releases" },
+    { name: "Best Sellers", path: "/collections/best-sellers" },
+    { name: "Editor's Picks", path: "/collections/editor-picks" },
+  ];
 
   return (
     <aside
@@ -19,8 +34,90 @@ const SideNav = () => {
       } lg:block fixed z-50 h-screen`}
       aria-label="Sidebar"
     >
+      <div className="flex items-center gap-4">
+        <span className="text-white hidden md:block">Good Morning, Evans!</span>
+        <div className="bg-slate-400 w-10 h-10 flex items-center justify-center rounded-full">
+          <Image src={avatar} alt="user" className="rounded-full" />
+        </div>
+      </div>
       <nav className="h-full pl-2 lg:pl-0 overflow-y-auto">
         <ul className="space-y-2">
+          {/* Browse Audiobooks Section */}
+          <li className="pt-4 pb-2">
+            <span className="text-gray-400">Browse Audiobooks</span>
+          </li>
+          <li>
+            <button
+              className="flex items-center justify-between w-full p-2 text-white rounded-lg hover:bg-green"
+              onClick={() => setIsBrowseOpen(!isBrowseOpen)}
+            >
+              <span className="flex items-center">
+                <IconBooks />
+                Browse Audiobooks
+              </span>
+              {isBrowseOpen ? (
+                <IconChevronUp size={20} />
+              ) : (
+                <IconChevronDown size={20} />
+              )}
+            </button>
+            {isBrowseOpen && (
+              <ul className="pl-8 mt-2 space-y-1">
+                {browseCategories.map((category) => (
+                  <li key={category.name}>
+                    <a
+                      href={category.path}
+                      className="text-white hover:underline"
+                    >
+                      {category.name}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </li>
+
+          {/* Lists & Collections Section */}
+          <li>
+            <button
+              className="flex items-center justify-between w-full p-2 text-white rounded-lg hover:bg-green"
+              onClick={() => setIsListsOpen(!isListsOpen)}
+            >
+              <span className="flex items-center">
+                <svg
+                  className="w-6 h-6 mr-2"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path d="M7 3a1 1 0 000 2h6a1 1 0 100-2H7zM4 7a1 1 0 011-1h10a1 1 0 110 2H5a1 1 0 01-1-1zM2 11a2 2 0 012-2h12a2 2 0 012 2v4a2 2 0 01-2 2H4a2 2 0 01-2-2v-4z"></path>
+                </svg>
+                Lists & Collections
+              </span>
+              {isListsOpen ? (
+                <IconChevronUp size={20} />
+              ) : (
+                <IconChevronDown size={20} />
+              )}
+            </button>
+            {isListsOpen && (
+              <ul className="pl-8 mt-2 space-y-1">
+                {listCollections.map((collection) => (
+                  <li key={collection.name}>
+                    <a
+                      href={collection.path}
+                      className="text-white hover:underline"
+                    >
+                      {collection.name}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </li>
+          <li className="pt-4 pb-2">
+            <span className="text-gray-400">You</span>
+          </li>
           <li>
             <a
               href="#"
@@ -88,63 +185,6 @@ const SideNav = () => {
               </svg>
               Listen History
             </a>
-          </li>
-          <li className="pt-4 pb-2">
-            <span className="text-gray-400">Browse Audiobooks</span>
-          </li>
-          <li>
-            <button className="flex items-center justify-between w-full p-2 text-white rounded-lg hover:bg-green">
-              <span className="flex items-center">
-                <svg
-                  className="w-6 h-6 mr-2"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path d="M7 3a1 1 0 000 2h6a1 1 0 100-2H7zM4 7a1 1 0 011-1h10a1 1 0 110 2H5a1 1 0 01-1-1zM2 11a2 2 0 012-2h12a2 2 0 012 2v4a2 2 0 01-2 2H4a2 2 0 01-2-2v-4z"></path>
-                </svg>
-                Browse Audiobooks
-              </span>
-              <svg
-                className="w-4 h-4"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                  clipRule="evenodd"
-                ></path>
-              </svg>
-            </button>
-          </li>
-          <li>
-            <button className="flex items-center justify-between w-full p-2 text-white rounded-lg hover:bg-green">
-              <span className="flex items-center">
-                <svg
-                  className="w-6 h-6 mr-2"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path d="M7 3a1 1 0 000 2h6a1 1 0 100-2H7zM4 7a1 1 0 011-1h10a1 1 0 110 2H5a1 1 0 01-1-1zM2 11a2 2 0 012-2h12a2 2 0 012 2v4a2 2 0 01-2 2H4a2 2 0 01-2-2v-4z"></path>
-                </svg>
-                Lists & Collections
-              </span>
-              <svg
-                className="w-4 h-4"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                  clipRule="evenodd"
-                ></path>
-              </svg>
-            </button>
           </li>
           <li className="pt-4 pb-2">
             <span className="text-gray-400">More</span>

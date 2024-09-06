@@ -29,21 +29,34 @@ const Navbar = () => {
             SoundLeaf
           </h1>
         </Link>
+        <div className="relative">
+          <input
+            type="text"
+            placeholder="Search for your favorite audiobook"
+            className="w-full bg-[#344639] text-white placeholder-gray-400 py-2 px-4 pr-10 rounded-lg"
+          />
+          <svg
+            className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+            />
+          </svg>
+        </div>
         <div className="hidden md:flex items-center space-x-4">
-          <span className="text-white hidden md:block">
-            Good Morning, Evans!
-          </span>
 
-          <div className="flex items-center gap-3">
+          <div className="">
             <button className="p-2 rounded-xl bg-gray-700 text-white">
               <IconBell size={20} />
             </button>
-            <button className="p-2 rounded-xl bg-gray-700 text-white">
-              <IconUser size={20} />
-            </button>
-            <button className="p-2 rounded-xl bg-gray-700 text-white">
-              <IconHeart size={20} />
-            </button>
+           
           </div>
 
           <button className="bg-green-500 text-white py-2 px-4 rounded-lg font-bold">
