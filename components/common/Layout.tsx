@@ -5,9 +5,9 @@ import Footer from "./Footer";
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
   return (
-    <div className="flex flex-col bg-primary font-main px-2">
+    <div className="flex flex-col bg-primary font-main px-2 max-w-[420px] md:max-w-[1440px] mx-auto">
       <Navbar />
-      <div className="max-w-[420px] md:max-w-[1440px] mx-auto mt-14 py-6">
+      <div className="mx-auto mt-14 py-6 w-full border">
         <SideNav />
         <main className="lg:ml-72 mx-auto">{children}</main>
         <Footer />
