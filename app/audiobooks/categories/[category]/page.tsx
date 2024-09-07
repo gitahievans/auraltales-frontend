@@ -23,9 +23,7 @@ const page = ({ params }: CategoryPropsType) => {
         {books.map((book, index) => (
           <BookCard
             key={index}
-            title={book.title}
-            author={book.author}
-            poster={book.poster}
+            book={book}
           />
         ))}
       </div>
