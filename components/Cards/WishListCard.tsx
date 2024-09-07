@@ -1,17 +1,63 @@
-import Image from 'next/image';
-import React from 'react'
+import Image from "next/image";
+import React from "react";
 import poster from "@/public/Images/soundleaf-files/posters/Gemini_Generated_Image_6g64ay6g64ay6g64.jpeg";
+import {
+  IconListDetails,
+  IconPlayerPlay,
+  IconPlayerPlayFilled,
+  IconShoppingBag,
+} from "@tabler/icons-react";
+
 const WishListCard = () => {
   return (
+    <div className="flex p-6 rounded-lg items-start space-x-8 bg-[#061c19]">
+      {/* Book Cover */}
+      <div className="flex items-center justify-center w-[25%]">
+        <Image
+          src={poster}
+          alt="Book Cover"
+          className="rounded-md object-cover"
+        />
+      </div>
 
-<a href="#" className="flex flex-col items-center bg-white border border-gray-200 rounded-lg shadow md:flex-row max-w-xl hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700">
-    <Image className="object-cover w-full rounded-t-lg h-96 md:h-auto md:w-48 md:rounded-none md:rounded-s-lg" src={poster} alt="poster"/>
-    <div className="flex flex-col justify-between p-4 leading-normal">
-        <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Noteworthy technology acquisitions 2021</h5>
-        <p className="mb-3 font-normal text-gray-700 dark:text-gray-400">Here are the biggest enterprise technology acquisitions of 2021 so far, in reverse chronological order.</p>
+      {/* Book Details */}
+      <div className="flex flex-col gap-2 w-1/3">
+        <h2 className="text-2xl font-semibold text-white mb-2">
+          Title Of The Book
+        </h2>
+        <div className="flex flex-col gap-2">
+          {" "}
+          <p className="text-sm text-gray-400 mb-1">By: Evans Gitahi</p>
+          <p className="text-sm text-gray-400 mb-1">
+            Narrated By: Evans Gitahi
+          </p>
+          <p className="text-sm text-gray-400 mb-1">Length: 12 Hrs, 35 Mins</p>
+          <p className="text-sm text-gray-400 mb-1">
+            Release Date: 12 May, 2024
+          </p>
+          <p className="text-sm text-gray-400 mb-4">Language: English</p>
+        </div>
+
+        <button className="flex items-center text-white bg-transparent border border-white rounded-full w-fit px-4 py-2 hover:bg-white hover:text-black transition duration-300">
+          <span className="flex items-center space-x-2">
+            <IconPlayerPlayFilled />
+            <span>Listen Sample</span>
+          </span>
+        </button>
+      </div>
+
+      <div className="w-[25%] space-y-4">
+        <button className="flex items-center justify-center w-full px-6 py-3 bg-green-600 text-white font-semibold rounded-full hover:bg-green-800 transition-all duration-300 focus:outline-none">
+          <IconShoppingBag size={20} className="mr-2" />
+          Buy for $12
+        </button>
+        <button className="flex items-center justify-center w-full px-6 py-3 text-white font-semibold rounded-full border border-white hover:bg-white hover:text-black transition-all duration-300 focus:outline-none">
+          <IconListDetails size={20} className="mr-2" />
+          Add to Wish List
+        </button>
+      </div>
     </div>
-</a>
-  )
-}
+  );
+};
 
 export default WishListCard;

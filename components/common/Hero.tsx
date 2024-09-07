@@ -5,11 +5,10 @@ import heroImage from "@/public/Images/soundleaf-files/posters/Gemini_Generated_
 
 
 const HeroSection = () => {
-  // TODO CREATE HERO SECTION FOR MOBILE - IMAGE TO BE backeground image
   return (
-    <section className="w-full text-white flex  gap-4 md:gap-0">
+    <section className="w-full text-white flex  gap-4 md:gap-2">
       {/* Left Side - Text Content */}
-      <div className="flex flex-col w-2/3 md:w-1/2 gap-4 md:gap-8 justify-end">
+      <div className="flex flex-col w-2/3 md:w-1/2 gap-4 md:gap-8 md:px-4">
         <h1 className="md:text-4xl xl:text-6xl font-bold">
           Welcome to <span className="text-[#F4F4F4]">SoundLeaf</span>, your Audiobooks destination
         </h1>
@@ -22,7 +21,7 @@ const HeroSection = () => {
       </div>
 
       {/* Right Side - Image */}
-      <div className="w-1/3 md:w-1/2 flex items-center justify-end">
+      <div className="w-1/3 md:w-1/2 flex items-center pr-4 justify-end">
         <Image
           src={heroImage}
           alt="Bookshelf and listening setup"

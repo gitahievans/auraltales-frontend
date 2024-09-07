@@ -6,6 +6,7 @@ import { sideNavState } from "@/state/state";
 import Image from "next/image";
 import avatar from "@/public/Images/soundleaf-files/posters/Gemini_Generated_Image_v8c5gbv8c5gbv8c5.jpeg";
 import { IconBooks, IconChevronDown, IconChevronUp } from "@tabler/icons-react";
+import { motion } from "framer-motion";
 
 const SideNav = () => {
   const sideBarSnap = useSnapshot(sideNavState);
@@ -29,7 +30,7 @@ const SideNav = () => {
   return (
     <aside
       id="default-sidebar"
-      className={`w-64 h-screen transition-all duration-500 bg-primary ${
+      className={`w-56 h-screen transition-all duration-500 bg-primary ${
         open ? "" : "hidden"
       } lg:block fixed z-50 h-screen`}
       aria-label="Sidebar"
@@ -62,9 +63,18 @@ const SideNav = () => {
               )}
             </button>
             {isBrowseOpen && (
-              <ul className="pl-8 mt-2 space-y-1">
+              <motion.ul
+                initial={{ height: 0, opacity: 0 }}
+                animate={{
+                  height: isBrowseOpen ? "auto" : 0,
+                  opacity: isBrowseOpen ? 1 : 0,
+                }}
+                exit={{ height: 0, opacity: 0 }} // Exit animation for collapsing
+                transition={{ duration: 0.3, ease: "linear" }}
+                className="overflow-hidden pl-8 mt-2 space-y-1"
+              >
                 {browseCategories.map((category) => (
-                  <li key={category.name}>
+                  <li key={category.name} className="hover:underline">
                     <a
                       href={category.path}
                       className="text-white hover:underline"
@@ -73,7 +83,7 @@ const SideNav = () => {
                     </a>
                   </li>
                 ))}
-              </ul>
+              </motion.ul>
             )}
           </li>
 
@@ -101,9 +111,18 @@ const SideNav = () => {
               )}
             </button>
             {isListsOpen && (
-              <ul className="pl-8 mt-2 space-y-1">
+              <motion.ul
+                initial={{ height: 0, opacity: 0 }}
+                animate={{
+                  height: isListsOpen ? "auto" : 0,
+                  opacity: isListsOpen ? 1 : 0,
+                }}
+                exit={{ height: 0, opacity: 0 }} // Exit animation for collapsing
+                transition={{ duration: 0.3, ease: "linear" }}
+                className="overflow-hidden pl-8 mt-2 space-y-1"
+              >
                 {listCollections.map((collection) => (
-                  <li key={collection.name}>
+                  <li key={collection.name} className="hover:underline">
                     <a
                       href={collection.path}
                       className="text-white hover:underline"
@@ -112,7 +131,7 @@ const SideNav = () => {
                     </a>
                   </li>
                 ))}
-              </ul>
+              </motion.ul>
             )}
           </li>
           <li className="pt-4 pb-2">
