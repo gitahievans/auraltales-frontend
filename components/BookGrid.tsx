@@ -14,31 +14,6 @@ const BookGrid: React.FC = ({title}) => {
           <IconArrowRight color="#4ade80" />
         </div>
       </div>
-      {/* <Carousel
-        withControls
-        withIndicators 
-        slideSize="20%"
-        controlSize={40}
-        controlsOffset="sm"
-        slideGap="md"
-        align="start"
-        loop<IconArrowNarrowRight />
-        styles={{
-          control: {
-            "&[data-inactive]": { opacity: 0.5 }, // Inactive control style
-          },
-        }}
-      >
-        {books.map((book, index) => (
-          <Carousel.Slide key={index}>
-            <BookCard
-              title={book.title}
-              author={book.author}
-              poster={book.poster}
-            />
-          </Carousel.Slide>
-        ))}
-      </Carousel> */}
       <Carousel slideWidth={300} loop={true}>
         {books.map((book, index) => (
           <BookCard

@@ -71,7 +71,7 @@ const SideNav = () => {
                 }}
                 exit={{ height: 0, opacity: 0 }} // Exit animation for collapsing
                 transition={{ duration: 0.3, ease: "linear" }}
-                className="overflow-hidden pl-8 mt-2 space-y-1"
+                className="overflow-hidden pl-8 mt-2 space-y-2"
               >
                 {browseCategories.map((category) => (
                   <li key={category.name} className="hover:underline">
@@ -119,7 +119,7 @@ const SideNav = () => {
                 }}
                 exit={{ height: 0, opacity: 0 }} // Exit animation for collapsing
                 transition={{ duration: 0.3, ease: "linear" }}
-                className="overflow-hidden pl-8 mt-2 space-y-1"
+                className="overflow-hidden pl-8 mt-2 space-y-2"
               >
                 {listCollections.map((collection) => (
                   <li key={collection.name} className="hover:underline">
