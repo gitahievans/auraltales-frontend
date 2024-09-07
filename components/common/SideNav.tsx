@@ -7,6 +7,7 @@ import Image from "next/image";
 import avatar from "@/public/Images/soundleaf-files/posters/Gemini_Generated_Image_v8c5gbv8c5gbv8c5.jpeg";
 import { IconBooks, IconChevronDown, IconChevronUp } from "@tabler/icons-react";
 import { motion } from "framer-motion";
+import Link from "next/link";
 
 const SideNav = () => {
   const sideBarSnap = useSnapshot(sideNavState);
@@ -22,9 +23,9 @@ const SideNav = () => {
   ];
 
   const listCollections = [
-    { name: "New Releases", path: "/collections/new-releases" },
-    { name: "Best Sellers", path: "/collections/best-sellers" },
-    { name: "Editor's Picks", path: "/collections/editor-picks" },
+    { name: "New Releases", path: "new-releases" },
+    { name: "Best Sellers", path: "best-sellers" },
+    { name: "Editor's Picks", path: "editor-picks" },
   ];
 
   return (
@@ -75,12 +76,12 @@ const SideNav = () => {
               >
                 {browseCategories.map((category) => (
                   <li key={category.name} className="hover:underline">
-                    <a
-                      href={category.path}
+                    <Link
+                      href={`/audiobooks/categories/${category.name.toLowerCase()}`}
                       className="text-white hover:underline"
                     >
                       {category.name}
-                    </a>
+                    </Link>
                   </li>
                 ))}
               </motion.ul>
@@ -123,12 +124,12 @@ const SideNav = () => {
               >
                 {listCollections.map((collection) => (
                   <li key={collection.name} className="hover:underline">
-                    <a
-                      href={collection.path}
-                      className="text-white hover:underline"
+                    <Link
+                      href={`/audiobooks/collections/${collection.path}`}
+                      className="text-white"
                     >
                       {collection.name}
-                    </a>
+                    </Link>
                   </li>
                 ))}
               </motion.ul>
@@ -138,7 +139,7 @@ const SideNav = () => {
             <span className="text-gray-400">You</span>
           </li>
           <li>
-            <a
+            <Link
               href="#"
               className="flex items-center p-2 text-white bg-green rounded-lg"
             >
@@ -151,10 +152,10 @@ const SideNav = () => {
                 <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"></path>
               </svg>
               Home
-            </a>
+            </Link>
           </li>
           <li>
-            <a
+            <Link
               href="#"
               className="flex items-center p-2 text-white rounded-lg hover:bg-green"
             >
@@ -167,10 +168,10 @@ const SideNav = () => {
                 <path d="M7 3a1 1 0 000 2h6a1 1 0 100-2H7zM4 7a1 1 0 011-1h10a1 1 0 110 2H5a1 1 0 01-1-1zM2 11a2 2 0 012-2h12a2 2 0 012 2v4a2 2 0 01-2 2H4a2 2 0 01-2-2v-4z"></path>
               </svg>
               My Library
-            </a>
+            </Link>
           </li>
           <li>
-            <a
+            <Link
               href="#"
               className="flex items-center p-2 text-white rounded-lg hover:bg-green"
             >
@@ -183,10 +184,10 @@ const SideNav = () => {
                 <path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM14 11a1 1 0 011 1v1h1a1 1 0 110 2h-1v1a1 1 0 11-2 0v-1h-1a1 1 0 110-2h1v-1a1 1 0 011-1z"></path>
               </svg>
               Wish List
-            </a>
+            </Link>
           </li>
           <li>
-            <a
+            <Link
               href="#"
               className="flex items-center p-2 text-white rounded-lg hover:bg-green"
             >
@@ -203,29 +204,29 @@ const SideNav = () => {
                 ></path>
               </svg>
               Listen History
-            </a>
+            </Link>
           </li>
           <li className="pt-4 pb-2">
             <span className="text-gray-400">More</span>
           </li>
           <li>
-            <a
+            <Link
               href="#"
               className="flex items-center p-2 text-white rounded-lg hover:bg-green"
             >
               How to Listen
-            </a>
+            </Link>
           </li>
           <li>
-            <a
+            <Link
               href="#"
               className="flex items-center p-2 text-white rounded-lg hover:bg-green"
             >
               Need Help?
-            </a>
+            </Link>
           </li>
           <li>
-            <a
+            <Link
               href="#"
               className="flex items-center p-2 text-white bg-green rounded-lg"
             >
@@ -242,10 +243,10 @@ const SideNav = () => {
                 ></path>
               </svg>
               Light
-            </a>
+            </Link>
           </li>
           <li>
-            <a
+            <Link
               href="#"
               className="flex items-center p-2 text-white bg-green rounded-lg"
             >
@@ -262,7 +263,7 @@ const SideNav = () => {
                 ></path>
               </svg>
               Logout
-            </a>
+            </Link>
           </li>
         </ul>
       </nav>
