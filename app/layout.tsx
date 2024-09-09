@@ -4,6 +4,7 @@ import "./globals.css";
 import { MantineProvider } from "@mantine/core";
 import Layout from "@/components/common/Layout";
 import '@mantine/carousel/styles.css';
+import '@mantine/core/styles.css';
 
 const inter = Inter({ subsets: ["latin"] });
 

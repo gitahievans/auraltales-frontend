@@ -140,7 +140,7 @@ const SideNav = () => {
           </li>
           <li>
             <Link
-              href="#"
+              href="/"
               className="flex items-center p-2 text-white bg-green rounded-lg"
             >
               <svg
@@ -156,7 +156,7 @@ const SideNav = () => {
           </li>
           <li>
             <Link
-              href="#"
+              href="/library"
               className="flex items-center p-2 text-white rounded-lg hover:bg-green"
             >
               <svg
@@ -172,7 +172,7 @@ const SideNav = () => {
           </li>
           <li>
             <Link
-              href="#"
+              href="/wishlist"
               className="flex items-center p-2 text-white rounded-lg hover:bg-green"
             >
               <svg
@@ -188,7 +188,7 @@ const SideNav = () => {
           </li>
           <li>
             <Link
-              href="#"
+              href="/history"
               className="flex items-center p-2 text-white rounded-lg hover:bg-green"
             >
               <svg
