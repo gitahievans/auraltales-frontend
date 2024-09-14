@@ -1,15 +1,11 @@
 "use client";
 
-import BookCard from "@/components/Cards/BookCard";
-import BuyAudiobookCard from "@/components/Cards/BuyAudiobookCard";
-import FilterSection from "@/components/Cards/LibraryFilter";
-import WishListCard from "@/components/Cards/WishListCard";
-import { books } from "@/Constants/Books";
-import { customStyles } from "@/styles/FilterStyles";
+import BoughtBookCard from "@/components/Cards/BoughtBookCard";
+import ChapterCard from "@/components/Cards/ChapterCard";
+import UnboughtBookCard from "@/components/Cards/UnboughtBookCard";
 import { Divider, Tabs, rem } from "@mantine/core";
 import { IconCheck, IconPlayerPlay, IconPlaylistX } from "@tabler/icons-react";
 import React from "react";
-import Select from "react-select";
 
 const page = () => {
   const options = [
@@ -24,7 +20,7 @@ const page = () => {
     <div className="text-white flex flex-col gap-4">
       <h1 className="text-3xl font-bold mb-4 text-white">My Library</h1>
       {/* //TODO - disable tabs if that section doesn't have audiobooks */}
-      <Tabs defaultValue="all" variant="pills" radius="xl">
+      <Tabs defaultValue="all" variant="pills" radius="md">
         <Tabs.List>
           <Tabs.Tab
             value="all"
@@ -34,7 +30,7 @@ const page = () => {
           </Tabs.Tab>
           <Tabs.Tab
             value="finished"
-            color="blue"
+            color="green"
             leftSection={<IconCheck style={iconStyle} />}
           >
             Finished
@@ -52,23 +48,34 @@ const page = () => {
 
         <Tabs.Panel value="all">
           <div className="flex flex-col gap-4">
-            <WishListCard />
-            <WishListCard />
-            <BuyAudiobookCard />
+            <ChapterCard />
+            <ChapterCard />
+
+            <ChapterCard />
+            <ChapterCard />
+            <ChapterCard />
+            <ChapterCard />
+            <ChapterCard />
+            <ChapterCard />
+            <ChapterCard />
+
+            <UnboughtBookCard />
+            <UnboughtBookCard />
+            <BoughtBookCard />
           </div>
         </Tabs.Panel>
 
         <Tabs.Panel value="finished">
           <div className="flex flex-col gap-4">
-            <BuyAudiobookCard />
-            <WishListCard />
+            <BoughtBookCard />
+            <UnboughtBookCard />
           </div>
         </Tabs.Panel>
 
         <Tabs.Panel value="unfinished">
           <div className="flex flex-col gap-4">
-            <WishListCard />
-            <WishListCard />
+            <UnboughtBookCard />
+            <UnboughtBookCard />
           </div>
         </Tabs.Panel>
       </Tabs>

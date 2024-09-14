@@ -8,7 +8,7 @@ import {
   IconShoppingBag,
 } from "@tabler/icons-react";
 
-const WishListCard = () => {
+const UnboughtBookCard = () => {
   return (
     <div className="flex p-6 rounded-lg items-start space-x-8 bg-[#061c19]">
       {/* Book Cover */}
@@ -38,7 +38,7 @@ const WishListCard = () => {
           <p className="text-sm text-gray-400 mb-4">Language: English</p>
         </div>
 
-        <button className="flex items-center text-white bg-transparent border border-white rounded-full w-fit px-4 py-2 hover:bg-white hover:text-black transition duration-300">
+        <button className="flex items-center text-white bg-transparent border border-gray-400 rounded-xl w-fit px-4 py-2 hover:bg-white hover:text-black transition duration-300">
           <span className="flex items-center space-x-2">
             <IconPlayerPlayFilled />
             <span>Listen Sample</span>
@@ -47,11 +47,11 @@ const WishListCard = () => {
       </div>
 
       <div className="w-[25%] space-y-4">
-        <button className="flex items-center justify-center w-full px-6 py-3 bg-green-600 text-white font-semibold rounded-full hover:bg-green-800 transition-all duration-300 focus:outline-none">
+        <button className="flex items-center justify-center w-full px-6 py-3 bg-green-600 text-white font-semibold rounded-xl hover:bg-green-800 transition-all duration-300 focus:outline-none">
           <IconShoppingBag size={20} className="mr-2" />
           Buy for $12
         </button>
-        <button className="flex items-center justify-center w-full px-6 py-3 text-white font-semibold rounded-full border border-white hover:bg-white hover:text-black transition-all duration-300 focus:outline-none">
+        <button className="flex items-center justify-center w-full px-6 py-3 text-white font-semibold rounded-xl border border-gray-400 hover:bg-white hover:text-black transition-all duration-300 ease-in-out focus:outline-none">
           <IconListDetails size={20} className="mr-2" />
           Add to Wish List
         </button>
@@ -60,4 +60,4 @@ const WishListCard = () => {
   );
 };
 
-export default WishListCard;
+export default UnboughtBookCard;

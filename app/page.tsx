@@ -5,8 +5,16 @@ import HeroSection from "@/components/common/Hero";
 import MobileHero from "@/components/common/MobileHero";
 import HeroCarousel from "@/components/common/MobileHero";
 import { useMediaQuery } from "@mantine/hooks";
+import { useState } from "react";
+import { proxy } from "valtio";
+
+export const boughtState = proxy({
+  bought: true
+})
 
 export default function Home() {
+  
+
   const mobile = useMediaQuery("(max-width: 640px)");
 
   const categories = [
