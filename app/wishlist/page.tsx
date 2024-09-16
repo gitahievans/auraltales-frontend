@@ -1,7 +1,7 @@
 'use client';
 
 import BookCard from "@/components/Cards/BookCard";
-import WishListCard from "@/components/Cards/WishListCard";
+import UnboughtBookCard from "@/components/Cards/UnboughtBookCard";
 import { books } from "@/Constants/Books";
 import { customStyles } from "@/styles/FilterStyles";
 import React from "react";
@@ -19,11 +19,11 @@ const page = () => {
       <h1 className="text-3xl font-bold mb-4 text-white">My Wish List</h1>
       <div className="flex items-center gap-6">
         <p>Filter</p>
-        <Select options={options} styles={customStyles} className="w-56"/>{" "}
+        <Select options={options} styles={customStyles} className="w-56" />{" "}
       </div>
       <div className="flex flex-col gap-2">
         {[1, 2, 3, 4, 5].map((card, i) => (
-          <WishListCard />
+          <UnboughtBookCard />
         ))}
       </div>
     </div>

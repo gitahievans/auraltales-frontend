@@ -59,12 +59,12 @@ const Navbar = () => {
            
           </div>
 
-          <button className="bg-green-500 text-white py-2 px-4 rounded-lg font-bold">
+          <Link href="/auth/signup" className="bg-green-500 text-white py-2 px-4 rounded-lg font-bold">
             Signup
-          </button>
-          <button className="bg-gray-700 text-white py-2 px-4 rounded-lg font-bold">
+          </Link>
+          <Link href="/auth/login" className="bg-gray-700 text-white py-2 px-4 rounded-lg font-bold">
             Login
-          </button>
+          </Link>
         </div>
       </section>
     </nav>
