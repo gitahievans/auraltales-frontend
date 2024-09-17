@@ -26,6 +26,8 @@ const HeroSection = () => {
           src={heroImage}
           alt="Bookshelf and listening setup"
           className="w-full max-w-xs xl:max-w-md rounded-lg"
+          width={300}
+          height={300}
         />
       </div>
     </section>

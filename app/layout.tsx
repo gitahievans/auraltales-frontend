@@ -5,6 +5,8 @@ import { MantineProvider } from "@mantine/core";
 import Layout from "@/components/common/Layout";
 import '@mantine/carousel/styles.css';
 import '@mantine/core/styles.css';
+import '@mantine/notifications/styles.css';
+import { Notifications } from '@mantine/notifications';
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -23,6 +25,7 @@ export default function RootLayout({
       <body className={`${inter.className} bg-primary`}>
         {" "}
         <MantineProvider>
+          <Notifications />
           <Layout>{children}</Layout>
         </MantineProvider>
       </body>

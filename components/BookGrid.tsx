@@ -1,10 +1,15 @@
 import React from "react";
-import { books } from "@/Constants/Books";
+// import { books } from "@/Constants/Books";
 import BookCard from "./Cards/BookCard";
 import { IconArrowNarrowRight, IconArrowRight } from "@tabler/icons-react";
 import Carousel from "./Carousel/Carousel";
 
-const BookGrid: React.FC = ({title}) => {
+type Props = {
+  title: string;
+  books: any;
+}
+
+const BookGrid: React.FC<Props> = ({ title, books }) => {
   return (
     <div className="flex flex-col text-white p-4 gap-6">
       <div className="flex items-center justify-between">
@@ -15,7 +20,7 @@ const BookGrid: React.FC = ({title}) => {
         </div>
       </div>
       <Carousel slideWidth={300} loop={true}>
-        {books.map((book, index) => (
+        {books.map((book: any, index: number) => (
           <BookCard
             key={index}
             book={book}
