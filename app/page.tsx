@@ -64,19 +64,7 @@ export default function Home() {
 
   const mobile = useMediaQuery("(max-width: 640px)");
 
-  // const categories = [
-  //   "Recommended for You",
-  //   "New Releases",
-  //   "Fiction",
-  //   "Business & Career",
-  //   "Horror",
-  //   "Romance",
-  // ];
-
-
-
-
-  const fetchAudiobooks = async (accessToken: string) => {
+   const fetchAudiobooks = async (accessToken: string) => {
     try {
       const response = await fetch("http://127.0.0.1:8000/api/audiobooks/", {
         method: "GET",
@@ -128,13 +116,13 @@ export default function Home() {
 
   return (
     <div className="flex flex-col gap-4 min-h-screen md:max-w-3xl lg:max-w-7xl">
-      {!mobile ? <HeroSection /> : null}
-      {mobile ? <MobileHero /> : null}
+      {/* {!mobile ? <HeroSection /> : null}
+      {mobile ? <MobileHero /> : null} */}
       <div className="mt-4">
         {categories.length > 0 ? (
           categories.map((cat, i) => (
             <BookGrid key={i} title={cat} books={audiobooks} />
-          ))) : <p>No Audiobooks Found</p>}
+          ))) : <p className="text-white text-center">No Audiobooks Found</p>}
       </div>
     </div>
   );

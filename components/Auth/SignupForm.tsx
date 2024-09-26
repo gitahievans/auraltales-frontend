@@ -4,9 +4,10 @@ import { Divider, TextInput } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import Image from "next/image";
 import Link from "next/link";
-import { Router, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import PhoneInputComponent from "./PhoneInput";
+import { userState } from "@/state/state";
 
 const SignupForm = () => {
     const [firstName, setFirstName] = useState("");
@@ -50,6 +51,9 @@ const SignupForm = () => {
                 localStorage.setItem("access_token", data.access);
                 localStorage.setItem("refresh_token", data.refresh);
 
+                userState.isLoggedIn = true;
+                userState.user = data.user;
+
                 router.push("/");
             }
         } catch (error) {
@@ -69,11 +73,8 @@ const SignupForm = () => {
     };
 
     return (
-        <section className="bg-primary flex items-center md:min-h-[80dvh]">
-            <div className="md:w-[60%]">
-                <h1 className="text-7xl text-white text-center">Join Us!</h1>
-            </div>
-            <div className="md:w-[40%] flex flex-col items-center justify-center  py-8 mx-auto  border border-gray-600 rounded-xl">
+        <section className="bg-primary flex items-center">
+            <div className="flex flex-col w-full max-w-xl items-center justify-center py-3 mx-auto border border-gray-600 rounded-xl">
                 <Link
                     href="#"
                     className="flex items-center mb-2 text-2xl font-semibold text-gray-900 dark:text-white"
@@ -89,11 +90,11 @@ const SignupForm = () => {
                 </Link>
 
                 <div className="w-full rounded-xl shadow md:mt-0 sm:max-w-md xl:p-0">
-                    <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
+                    <div className="p-6 space-y-4 md:space-y-3 sm:p-8">
                         <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
                             Create a new account
                         </h1>
-                        <div className="flex justify-center mb-6 w-full">
+                        <div className="flex justify-center mb-3 w-full">
                             <button className="flex items-center border border-gray-500 gap-4 font-medium rounded-xl text-white text-sm md:text-base px-5 py-2.5 shadow-md bg-transparent hover:bg-green-950 transition-colors w-full">
                                 <svg
                                     xmlns="http://www.w3.org/2000/svg"
@@ -128,7 +129,7 @@ const SignupForm = () => {
 
                         <form
                             onSubmit={handleSubmit}
-                            className="space-y-4 md:space-y-6"
+                            className="space-y-4 md:space-y-2"
                             action="#"
                         >
                             {/* Username Input */}

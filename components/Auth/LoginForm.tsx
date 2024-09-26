@@ -7,6 +7,7 @@ import { Divider, TextInput } from "@mantine/core";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { notifications } from "@mantine/notifications";
+import { userState } from "@/state/state";
 
 const LoginForm = () => {
   const [email, setEmail] = useState("");
@@ -35,25 +36,29 @@ const LoginForm = () => {
         const data = await response.json();
         localStorage.setItem("access_token", data.access);
         localStorage.setItem("refresh_token", data.refresh);
+
+        userState.user = data.user;
+        userState.isLoggedIn = true;
+
         setSuccess("Login successful!");
         setError("");
         router.push("/");
       } else {
         notifications.show({
-            title: 'Error Loggin in',
-            message: 'Login failed, please try again',
-            color: 'red',
-            position: 'top-right',
-          })
+          title: 'Error Loggin in',
+          message: 'Login failed, please try again',
+          color: 'red',
+          position: 'top-right',
+        })
         const errorData = await response.json();
         setError(errorData.detail || "Login failed");
         setSuccess("");
       }
     } catch (error: any) {
-        notifications.show({
-            title: 'Error Loggin in',
-            message: {error},
-        })
+      notifications.show({
+        title: 'Error Loggin in',
+        message: { error },
+      })
       setError("An error occurred");
       setSuccess("");
     }
