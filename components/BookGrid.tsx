@@ -11,7 +11,7 @@ type Props = {
 
 const BookGrid: React.FC<Props> = ({ title, books }) => {
   return (
-    <div className="flex flex-col text-white p-4 gap-6">
+    <div className="flex flex-col text-white p-4 gap-3">
       <div className="flex items-center justify-between">
         <h1 className="text-lg md:text-2xl">{title}</h1>
         <div className="flex items-center gap-2 cursor-pointer">
@@ -27,9 +27,10 @@ const BookGrid: React.FC<Props> = ({ title, books }) => {
           />
         ))}
       </Carousel>
-      {/* <button className="bg-green-500 text-white py-2 px-6 rounded-lg font-bold w-fit self-center">
-        More
-      </button> */}
+      <button className="flex bg-green-500 text-white py-2 px-6 rounded-lg font-bold w-fit self-center justify-between hover:bg-green-800 transition-all duration-300">
+        <p>More</p>
+        <IconArrowRight color="white" />
+      </button>
     </div>
   );
 };

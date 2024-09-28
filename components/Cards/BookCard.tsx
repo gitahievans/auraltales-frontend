@@ -11,13 +11,13 @@ interface BookCardProps {
     length: string;
     rental_price: number;
     buying_price: number;
-    date_published: string; // or Date if you plan to handle it as a Date object
+    date_published: string;
     slug: string;
-    poster: string; // URL or file path for the image
-    audio_sample?: string | null; // URL or file path, optional
-    author: string; // Assuming you have an Author type/interface
-    // categories: Category[]; // Assuming you have a Category type/interface
-    // collections: Collection[]; // Assuming you have a Collection type/interface
+    poster: string;
+    audio_sample?: string | null;
+    authors: string[];
+    // categories: Category[]; 
+    // collections: Collection[];
     // narrators: Narrator[];
   };
 }
@@ -26,7 +26,7 @@ const BookCard: React.FC<BookCardProps> = ({ book }) => {
   return (
     <Link
       href={`audiobooks/${book?.slug}`}
-      className="bg-dark-green text-white rounded-lg hover:shadow-2xl hover:scale-105 overflow-hidden max-w-full sm:max-w-md cursor-pointer flex flex-col transition-all duration-300"
+      className="bg-dark-green text-white rounded-lg shadow-lg hover:shadow-2xl hover:scale-105 overflow-hidden w-full max-w-sm cursor-pointer flex flex-col transition-all duration-300"
     >
       <Image
         src={book?.poster || defaultPoster}
@@ -40,7 +40,12 @@ const BookCard: React.FC<BookCardProps> = ({ book }) => {
         <h3 className="text-base sm:text-lg font-semibold mb-1 line-clamp-2">
           {book?.title}
         </h3>
-        <p className="text-sm sm:text-sm text-gray-300">{book?.author}</p>
+        <p className="mb-3 font-normal text-gray-700 dark:text-gray-400">
+          By:{" "}
+          {book?.authors.map((author: any) => (
+            <span key={author.id}>{author.name}</span>
+          ))}
+        </p>
       </div>
     </Link>
   );

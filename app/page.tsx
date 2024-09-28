@@ -4,12 +4,13 @@ import BookGrid from "@/components/BookGrid";
 import HeroSection from "@/components/common/Hero";
 import MobileHero from "@/components/common/MobileHero";
 import HeroCarousel from "@/components/common/MobileHero";
+import { fetchedAudiobooks } from "@/state/state";
 import { useMediaQuery } from "@mantine/hooks";
 import { useEffect, useState } from "react";
 import { proxy } from "valtio";
 
 export const boughtState = proxy({
-  bought: true
+  bought: false
 })
 
 interface Author {
@@ -46,14 +47,14 @@ interface Audiobook {
   length: string;
   rental_price: number;
   buying_price: number;
-  date_published: string; // or Date if you plan to handle it as a Date object
+  date_published: string;
   slug: string;
-  poster: string; // URL or file path for the image
-  audio_sample?: string | null; // URL or file path, optional
-  authors: Author[]; // Assuming you have an Author type/interface
-  categories: Category[]; // Assuming you have a Category type/interface
-  collections: Collection[]; // Assuming you have a Collection type/interface
-  narrators: Narrator[]; // Assuming you have a Narrator type/interface
+  poster: string;
+  audio_sample?: string | null;
+  authors: Author[];
+  categories: Category[];
+  collections: Collection[];
+  narrators: Narrator[];
 }
 
 export default function Home() {
@@ -64,13 +65,13 @@ export default function Home() {
 
   const mobile = useMediaQuery("(max-width: 640px)");
 
-   const fetchAudiobooks = async (accessToken: string) => {
+  const fetchAudiobooks = async () => {
     try {
       const response = await fetch("http://127.0.0.1:8000/api/audiobooks/", {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${accessToken}`,
+          // Authorization: `Bearer ${accessToken}`,
         },
       });
 
@@ -84,6 +85,7 @@ export default function Home() {
 
       if (Array.isArray(data.audiobooks)) {
         setAudiobooks(data.audiobooks);
+        fetchedAudiobooks.audiobooks = data.audiobooks
 
         const categories = data.audiobooks.flatMap((book: Audiobook) =>
           book.categories.map((category: Category) => category.name)
@@ -102,22 +104,22 @@ export default function Home() {
   };
 
   useEffect(() => {
-    const accessToken = localStorage.getItem("access_token");
+    // const accessToken = localStorage.getItem("access_token");
 
-    if (!accessToken) {
-      setError("No access token found");
-      setLoading(false);
-      return;
-    }
+    // if (!accessToken) {
+    //   setError("No access token found");
+    //   setLoading(false);
+    //   return;
+    // }
 
-    fetchAudiobooks(accessToken);
+    fetchAudiobooks();
   }, []);
 
 
   return (
     <div className="flex flex-col gap-4 min-h-screen md:max-w-3xl lg:max-w-7xl">
-      {/* {!mobile ? <HeroSection /> : null}
-      {mobile ? <MobileHero /> : null} */}
+      {!mobile ? <HeroSection /> : null}
+      {mobile ? <MobileHero /> : null}
       <div className="mt-4">
         {categories.length > 0 ? (
           categories.map((cat, i) => (

@@ -7,46 +7,98 @@ import {
   IconPlayerPlayFilled,
   IconShoppingBag,
 } from "@tabler/icons-react";
+import { Audiobook } from "@/types/types";
+import { useMediaQuery } from "@mantine/hooks";
 
-const UnboughtBookCard = () => {
+const UnboughtBookCard = ({ book }: { book: Audiobook }) => {
+  console.log(book);
+
+  const isMobile = useMediaQuery("(max-width: 767px)");
+  const isMedium = useMediaQuery("(max-width: 1023px)");
+  const isLarge = useMediaQuery("(min-width: 1024px)");
+
   return (
-    <div className="flex p-6 rounded-lg items-start space-x-8 bg-[#061c19]">
+    <div className="flex flex-col md:flex-row p-6 rounded-lg items-center md:items-start gap-6 bg-[#061c19]">
       {/* Book Cover */}
-      <div className="flex items-center justify-center w-[25%]">
+      <div className="flex flex-col gap-4 items-start justify-center lg:w-[35%]">
         <Image
-          src={poster}
+          src={book?.poster || poster}
           alt="Book Cover"
-          className="rounded-md object-cover"
+          width={isMobile ? 250 : 500}
+          height={isMobile ? 250 : 500}
+          className="rounded-lg object-cover"
         />
+        {
+          !isMobile && isMedium && (
+            <button className="flex items-center text-white bg-transparent border border-gray-400 rounded-xl w-fit px-4 py-2 hover:bg-white hover:text-black transition duration-300">
+              <span className="flex items-center space-x-2">
+                <IconPlayerPlayFilled />
+                <span>Listen Sample</span>
+              </span>
+            </button>
+          )
+        }
       </div>
 
       {/* Book Details */}
-      <div className="flex flex-col gap-2 w-1/3">
-        <h2 className="text-2xl font-semibold text-white mb-2">
-          Title Of The Book
+      <div className="flex flex-col gap-2 w-full lg:w-[35%] items-center md:items-start">
+        <h2 className="text-2xl font-semibold text-white mb-2 uppercase">
+          {book?.title}
         </h2>
         <div className="flex flex-col gap-2">
           {" "}
-          <p className="text-sm text-gray-400 mb-1">By: Evans Gitahi</p>
-          <p className="text-sm text-gray-400 mb-1">
-            Narrated By: Evans Gitahi
-          </p>
-          <p className="text-sm text-gray-400 mb-1">Length: 12 Hrs, 35 Mins</p>
-          <p className="text-sm text-gray-400 mb-1">
-            Release Date: 12 May, 2024
-          </p>
-          <p className="text-sm text-gray-400 mb-4">Language: English</p>
+          <div className="flex flex-col items-center md:items-start gap-1 mt-3">
+            <p className="text-gray-200 mb-1">
+              <span className="mr-2">  BY: </span>{" "}
+              {book?.authors && book.authors.length > 0 ? (
+                book.authors.map((author: any) => (
+                  <span key={author.id}>
+                    {author.name}
+                    {book.authors.length > 1 && author !== book.authors[book.authors.length - 1]
+                      ? ", "
+                      : ""}
+                  </span>
+                ))
+              ) : (
+                <span>Unknown Author</span>
+              )}
+            </p>
+            <p className="text-gray-300 mb-1">
+              <span className="mr-2">NARRATED BY:</span>
+              {
+                book?.narrators?.length > 0 ? (
+                  book?.narrators.map((narrator) => (
+                    <span key={narrator.id}>{narrator.name}</span>
+                  ))) : (
+                  <span>Unknown Narrator</span>
+                )
+              }
+            </p>
+          </div>
+          <div className="flex flex-col items-center md:items-start gap-1 mt-3">
+            <p className="text-gray-300 mb-1">Length: 12 Hrs, 35 Mins</p>
+            <p className="text-gray-300 mb-1">
+              Release Date: 12 May, 2024
+            </p>
+            <p className="text-gray-300 mb-4">Language: English</p>
+          </div>
+
         </div>
 
-        <button className="flex items-center text-white bg-transparent border border-gray-400 rounded-xl w-fit px-4 py-2 hover:bg-white hover:text-black transition duration-300">
-          <span className="flex items-center space-x-2">
-            <IconPlayerPlayFilled />
-            <span>Listen Sample</span>
-          </span>
-        </button>
+        {
+          (isMobile || isLarge) && (
+            <button className="flex items-center text-white bg-transparent border border-gray-400 rounded-xl w-fit px-4 py-2 hover:bg-white hover:text-black transition duration-300">
+              <span className="flex items-center space-x-2">
+                <IconPlayerPlayFilled />
+                <span>Listen Sample</span>
+              </span>
+            </button>
+          )
+        }
+
       </div>
 
-      <div className="w-[25%] space-y-4">
+      <div className="w-full lg:w-[35%] space-y-4">
         <button className="flex items-center justify-center w-full px-6 py-3 bg-green-600 text-white font-semibold rounded-xl hover:bg-green-800 transition-all duration-300 focus:outline-none">
           <IconShoppingBag size={20} className="mr-2" />
           Buy for $12
