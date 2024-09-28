@@ -40,11 +40,20 @@ const BookCard: React.FC<BookCardProps> = ({ book }) => {
         <h3 className="text-base sm:text-lg font-semibold mb-1 line-clamp-2">
           {book?.title}
         </h3>
-        <p className="mb-3 font-normal text-gray-700 dark:text-gray-400">
-          By:{" "}
-          {book?.authors.map((author: any) => (
-            <span key={author.id}>{author.name}</span>
-          ))}
+        <p className="text-gray-200 mb-1">
+          <span className="mr-2">  BY: </span>{" "}
+          {book?.authors && book?.authors?.length > 0 ? (
+            book.authors.map((author: any) => (
+              <span key={author.id}>
+                {author.name}
+                {book.authors.length > 1 && author !== book.authors[book.authors.length - 1]
+                  ? ", "
+                  : ""}
+              </span>
+            ))
+          ) : (
+            <span>Unknown Author</span>
+          )}
         </p>
       </div>
     </Link>

@@ -50,7 +50,7 @@ const UnboughtBookCard = ({ book }: { book: Audiobook }) => {
           <div className="flex flex-col items-center md:items-start gap-1 mt-3">
             <p className="text-gray-200 mb-1">
               <span className="mr-2">  BY: </span>{" "}
-              {book?.authors && book.authors.length > 0 ? (
+              {book?.authors && book?.authors?.length > 0 ? (
                 book.authors.map((author: any) => (
                   <span key={author.id}>
                     {author.name}

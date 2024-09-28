@@ -34,13 +34,12 @@ const Navbar = () => {
   return (
     <nav className="fixed top-0 left-1/2 transform -translate-x-1/2 z-50 flex flex-col w-full text-white bg-primary px-2">
       <section className="flex items-center justify-between py-2">
-        <Link href="/" className="flex gap-1 items-center">
-          {/* <Image src={Logo} alt="logo" className="h-12 w-16 rounded-2xl" /> */}
+        <div className="flex gap-1 items-center">
           {isMobile && <IconMenu2 size={40} onClick={handleMenuClick} />}
-          <h1 className="text-xl md:text-4xl font-semibold text-accent-color">
+          <Link href="/" className="text-xl md:text-4xl font-semibold text-accent-color">
             SoundLeaf
-          </h1>
-        </Link>
+          </Link>
+        </div>
         <div className="relative">
           <input
             type="text"

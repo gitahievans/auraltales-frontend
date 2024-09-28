@@ -58,9 +58,6 @@ const page = () => {
             <ChapterCard />
             <ChapterCard />
             <ChapterCard />
-
-            <UnboughtBookCard />
-            <UnboughtBookCard />
             <BoughtBookCard />
           </div>
         </Tabs.Panel>
@@ -68,14 +65,16 @@ const page = () => {
         <Tabs.Panel value="finished">
           <div className="flex flex-col gap-4">
             <BoughtBookCard />
-            <UnboughtBookCard />
+            <BoughtBookCard />
+            <BoughtBookCard />
           </div>
         </Tabs.Panel>
 
         <Tabs.Panel value="unfinished">
           <div className="flex flex-col gap-4">
-            <UnboughtBookCard />
-            <UnboughtBookCard />
+            <BoughtBookCard />
+            <BoughtBookCard />
+            <BoughtBookCard />
           </div>
         </Tabs.Panel>
       </Tabs>

@@ -10,7 +10,7 @@ import { fetchedAudiobooks } from "@/state/state";
 import { Audiobook } from "@/types/types";
 import { Divider, Grid, rem, Tabs } from "@mantine/core";
 import { useMediaQuery } from "@mantine/hooks";
-import { IconCheck, IconPlayerPlay, IconPlaylistX } from "@tabler/icons-react";
+import { IconCheck, IconHeadphones, IconPlayerPlay, IconPlaylistX, IconUser, IconUserFilled } from "@tabler/icons-react";
 import React, { useEffect, useState } from "react";
 import { useSnapshot } from "valtio";
 
@@ -85,16 +85,16 @@ const Page = ({ params }: PagePropsType) => {
               <Tabs.Tab
                 value="author"
                 color="green"
-                leftSection={<IconCheck style={iconStyle} />}
+                leftSection={<IconUser style={iconStyle} />}
               >
-                About Author
+                Author
               </Tabs.Tab>
               <Tabs.Tab
                 value="narrator"
                 color="cyan"
-                leftSection={<IconPlaylistX style={iconStyle} />}
+                leftSection={<IconHeadphones style={iconStyle} />}
               >
-                About Narrator
+                Narrator
               </Tabs.Tab>
             </Tabs.List>
 
