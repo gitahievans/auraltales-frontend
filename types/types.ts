@@ -25,6 +25,7 @@ export interface Author {
   }
   
 export interface Audiobook {
+    id: number;
     title: string;
     description: string;
     summary: string;

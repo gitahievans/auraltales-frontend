@@ -1,5 +1,7 @@
+'use client';
+
 import Image from "next/image";
-import React from "react";
+import React, { use, useEffect, useRef, useState } from "react";
 import poster from "@/public/Images/soundleaf-files/posters/Gemini_Generated_Image_6g64ay6g64ay6g64.jpeg";
 import {
   IconListDetails,
@@ -9,6 +11,7 @@ import {
 } from "@tabler/icons-react";
 import { Audiobook } from "@/types/types";
 import { useMediaQuery } from "@mantine/hooks";
+import { Howl } from "howler";
 
 const UnboughtBookCard = ({ book }: { book: Audiobook }) => {
   console.log(book);
@@ -16,6 +19,49 @@ const UnboughtBookCard = ({ book }: { book: Audiobook }) => {
   const isMobile = useMediaQuery("(max-width: 767px)");
   const isMedium = useMediaQuery("(max-width: 1023px)");
   const isLarge = useMediaQuery("(min-width: 1024px)");
+  const soundRef = useRef<Howl | null>(null);
+
+  const [isPlaying, setIsPlaying] = useState(false);
+
+  const loadAudio = (bookId: number) => {
+    if (!soundRef.current) {
+      soundRef.current = new Howl({
+        src: [`http://127.0.0.1:8000/streaming/stream/sample/${bookId}/`],
+        format: ["mp3"],
+        html5: true,
+        xhr: {
+          method: "GET",
+        },
+        onplay: () => {
+          setIsPlaying(true);
+        },
+        onend: () => {
+          setIsPlaying(false);
+        },
+        onloaderror: (id, error) => {
+          console.error("Error loading audio:", error);
+        },
+        onplayerror: (id, error) => {
+          console.error("Error playing audio:", error);
+        },
+      });
+    }
+    soundRef.current.play();
+  }
+
+  const handleListenAudiobook = (bookId: number) => {
+    if (bookId) loadAudio(bookId);
+  };
+
+  useEffect(() => {
+    if (soundRef.current) {
+      if (isPlaying) {
+        soundRef.current.play();
+      } else {
+        soundRef.current.pause();
+      }
+    }
+  }, [isPlaying]);
 
   return (
     <div className="flex flex-col md:flex-row p-6 rounded-lg items-center md:items-start gap-6 bg-[#061c19]">
@@ -30,7 +76,7 @@ const UnboughtBookCard = ({ book }: { book: Audiobook }) => {
         />
         {
           !isMobile && isMedium && (
-            <button className="flex items-center text-white bg-transparent border border-gray-400 rounded-xl w-fit px-4 py-2 hover:bg-white hover:text-black transition duration-300">
+            <button onClick={() => handleListenAudiobook(book?.id)} className="flex items-center text-white bg-transparent border border-gray-400 rounded-xl w-fit px-4 py-2 hover:bg-white hover:text-black transition duration-300">
               <span className="flex items-center space-x-2">
                 <IconPlayerPlayFilled />
                 <span>Listen Sample</span>

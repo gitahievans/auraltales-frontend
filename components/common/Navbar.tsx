@@ -3,10 +3,17 @@
 import { NavLinks } from "@/Constants/Navlinks";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { IconBell, IconHeart, IconMenu2, IconUser } from "@tabler/icons-react";
+import {
+  IconBell,
+  IconHeart,
+  IconMenu2,
+  IconSearch,
+  IconUser,
+} from "@tabler/icons-react";
 import { sideNavState, userState } from "@/state/state";
 import { useMediaQuery } from "@mantine/hooks";
 import { useSnapshot } from "valtio";
+import SideNav from "./SideNav";
 
 const Navbar = () => {
   const router = useRouter();
@@ -32,58 +39,58 @@ const Navbar = () => {
   const isMobile = useMediaQuery("(max-width: 1120px)");
 
   return (
-    <nav className="fixed top-0 left-1/2 transform -translate-x-1/2 z-50 flex flex-col w-full text-white bg-primary px-2">
-      <section className="flex items-center justify-between py-2">
-        <div className="flex gap-1 items-center">
-          {isMobile && <IconMenu2 size={40} onClick={handleMenuClick} />}
-          <Link href="/" className="text-xl md:text-4xl font-semibold text-accent-color">
-            SoundLeaf
-          </Link>
-        </div>
+    <section className="flex items-center justify-between py-2 text-white bg-primary">
+      <div className="flex gap-1 items-center">
+        <Link
+          href="/"
+          className="text-xl md:text-4xl font-semibold text-accent-color"
+        >
+          SoundLeaf
+        </Link>
+      </div>
+      {!isMobile && (
         <div className="relative">
           <input
             type="text"
             placeholder="Search for your favorite audiobook"
             className="w-full bg-[#344639] text-white placeholder-gray-400 py-2 px-4 pr-10 rounded-lg"
           />
-          <svg
-            className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-            xmlns="http://www.w3.org/2000/svg"
+          <IconSearch
+            size={20}
+            className="absolute right-3 top-1/2 transform -translate-y-1/2"
+          />
+        </div>
+      )}
+      <div className="flex items-center space-x-4">
+        <div className="hidden md:block">
+          <button className="p-2 rounded-xl bg-gray-700 text-white">
+            <IconBell size={20} />
+          </button>
+        </div>
+
+        <Link
+          href="/auth/signup"
+          className="bg-green-500 text-white py-2 px-4 rounded-lg font-bold"
+        >
+          Signup
+        </Link>
+        {!isLoggedIn ? (
+          <Link
+            href="/auth/login"
+            className="bg-gray-700 text-white py-2 px-4 rounded-lg font-bold"
           >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-            />
-          </svg>
-        </div>
-        <div className="hidden md:flex items-center space-x-4">
-
-          <div className="">
-            <button className="p-2 rounded-xl bg-gray-700 text-white">
-              <IconBell size={20} />
-            </button>
-
-          </div>
-
-          <Link href="/auth/signup" className="bg-green-500 text-white py-2 px-4 rounded-lg font-bold">
-            Signup
+            Login
           </Link>
-          {!isLoggedIn ? (
-            <Link href="/auth/login" className="bg-gray-700 text-white py-2 px-4 rounded-lg font-bold">
-              Login
-            </Link>) : (
-            <button onClick={handleLogout} className="bg-gray-700 text-white py-2 px-4 rounded-lg font-bold">
-              Logout
-            </button>
-          )}
-        </div>
-      </section>
-    </nav>
+        ) : (
+          <button
+            onClick={handleLogout}
+            className="bg-gray-700 text-white py-2 px-4 rounded-lg font-bold"
+          >
+            Logout
+          </button>
+        )}
+      </div>
+    </section>
   );
 };
 

@@ -1,5 +1,6 @@
 import React from "react";
 import heroImage from "@/public/Images/soundleaf-files/posters/Gemini_Generated_Image_6g64ay6g64ay6g64.jpeg";
+import { IconSearch } from "@tabler/icons-react";
 
 const MobileHero = () => {
   return (
@@ -9,7 +10,7 @@ const MobileHero = () => {
         backgroundImage: `url(${heroImage.src})`,
       }}
     >
-      {/* Overlay for better text readability */}
+      {/* Overlay for better textz readability */}
       <div className="absolute inset-0 bg-black bg-opacity-65"></div>
 
       <div className="relative z-10 max-w-md text-center">
@@ -25,20 +26,7 @@ const MobileHero = () => {
             placeholder="Search for your favorite audiobook"
             className="w-full bg-[#344639] text-white placeholder-gray-400 py-3 px-4 pr-10 rounded-lg"
           />
-          <svg
-            className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-            />
-          </svg>
+          <IconSearch size={20} className="absolute right-3 top-1/2 transform -translate-y-1/2" />
         </div>
       </div>
     </section>

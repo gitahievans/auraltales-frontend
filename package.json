@@ -25,6 +25,7 @@
     "embla-carousel-react": "^7.1.0",
     "framer-motion": "^11.5.4",
     "google-libphonenumber": "^3.2.38",
+    "howler": "^2.2.4",
     "next": "14.2.5",
     "react": "^18",
     "react-dom": "^18",

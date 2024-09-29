@@ -5,7 +5,12 @@ import { useSnapshot } from "valtio";
 import { sideNavState } from "@/state/state";
 import Image from "next/image";
 import avatar from "@/public/Images/soundleaf-files/posters/Gemini_Generated_Image_v8c5gbv8c5gbv8c5.jpeg";
-import { IconBooks, IconChevronDown, IconChevronUp } from "@tabler/icons-react";
+import {
+  IconBooks,
+  IconChevronDown,
+  IconChevronUp,
+  IconMist,
+} from "@tabler/icons-react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 
@@ -29,20 +34,14 @@ const SideNav = () => {
   ];
 
   return (
-    <aside
-      id="default-sidebar"
-      className={`w-56 h-screen transition-all duration-500 bg-primary ${
-        open ? "" : "hidden"
-      } lg:block fixed z-50 h-screen`}
-      aria-label="Sidebar"
-    >
+    <div className="bg-primary h-full p-2">
       <div className="flex items-center gap-4">
         <span className="text-white hidden md:block">Good Morning, Evans!</span>
         <div className="bg-slate-400 w-10 h-10 flex items-center justify-center rounded-full">
           <Image src={avatar} alt="user" className="rounded-full" />
         </div>
       </div>
-      <nav className="h-full pl-2 lg:pl-0 overflow-y-auto">
+      <nav className="text-sm lg:text-base h-full">
         <ul className="space-y-2">
           {/* Browse Audiobooks Section */}
           <li className="pt-4 pb-2">
@@ -54,7 +53,7 @@ const SideNav = () => {
               onClick={() => setIsBrowseOpen(!isBrowseOpen)}
             >
               <span className="flex items-center">
-                <IconBooks />
+                <IconBooks className="mr-2" />
                 Browse Audiobooks
               </span>
               {isBrowseOpen ? (
@@ -95,14 +94,7 @@ const SideNav = () => {
               onClick={() => setIsListsOpen(!isListsOpen)}
             >
               <span className="flex items-center">
-                <svg
-                  className="w-6 h-6 mr-2"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path d="M7 3a1 1 0 000 2h6a1 1 0 100-2H7zM4 7a1 1 0 011-1h10a1 1 0 110 2H5a1 1 0 01-1-1zM2 11a2 2 0 012-2h12a2 2 0 012 2v4a2 2 0 01-2 2H4a2 2 0 01-2-2v-4z"></path>
-                </svg>
+                <IconMist className="mr-2" />
                 Lists & Collections
               </span>
               {isListsOpen ? (
@@ -118,7 +110,7 @@ const SideNav = () => {
                   height: isListsOpen ? "auto" : 0,
                   opacity: isListsOpen ? 1 : 0,
                 }}
-                exit={{ height: 0, opacity: 0 }} // Exit animation for collapsing
+                exit={{ height: 0, opacity: 0 }}
                 transition={{ duration: 0.3, ease: "linear" }}
                 className="overflow-hidden pl-8 mt-2 space-y-2"
               >
@@ -267,7 +259,7 @@ const SideNav = () => {
           </li>
         </ul>
       </nav>
-    </aside>
+    </div>
   );
 };
 

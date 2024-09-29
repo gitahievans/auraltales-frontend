@@ -9,7 +9,7 @@ const HeroSection = () => {
     <section className="w-full text-white flex  gap-4 md:gap-2">
       {/* Left Side - Text Content */}
       <div className="flex flex-col w-2/3 md:w-1/2 gap-4 md:gap-8 md:px-4">
-        <h1 className="md:text-4xl xl:text-6xl font-bold">
+        <h1 className="md:text-4xl xl:text-5xl font-bold">
           Welcome to <span className="text-[#F4F4F4]">SoundLeaf</span>, your Audiobooks destination
         </h1>
         <p className="text-xs md:text-lg">
@@ -25,8 +25,8 @@ const HeroSection = () => {
         <Image
           src={heroImage}
           alt="Bookshelf and listening setup"
-          className="w-full max-w-xs xl:max-w-md rounded-lg"
-          width={300}
+          className="w-full max-w-xs xl:max-w-sm rounded-lg"
+          width={500}
           height={300}
         />
       </div>

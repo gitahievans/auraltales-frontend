@@ -44,27 +44,37 @@ const Page = ({ params }: PagePropsType) => {
 
   const audiobooksSnap = useSnapshot(fetchedAudiobooks);
   const { audiobooks } = audiobooksSnap;
-
-  useEffect(() => {
-    if (!audiobooks || audiobooks.length === 0) {
-      fetch(`http://127.0.0.1:8000/api/audiobooks/${slug}`)
-        .then((response) => response.json())
-        .then((data) => setAudioBook(data));
-    } else {
-      const book = audiobooks.find((book) => book.slug === slug);
-      setAudioBook(book || null);
-    }
-  }, [audiobooks, slug]);
-
-  console.log("audiobook", audioBook);
-  
-
   const iconStyle = { width: rem(12), height: rem(12) };
 
   const boughtSnap = useSnapshot(boughtState);
   const { bought } = boughtSnap;
 
   const isMobile = useMediaQuery("(max-width: 768px)");
+
+  const fetchAudioBook = async () => {
+    try {
+      const response = await fetch(`http://127.0.0.1:8000/api/audiobooks/${params.slug}`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch Audiobook details");
+      }
+      const data = await response.json();
+      setAudioBook(data.audiobook);
+
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+    fetchAudioBook();
+  }, [params.slug]);
+
+
 
 
   return (
