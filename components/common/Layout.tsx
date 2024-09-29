@@ -17,7 +17,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
   const isLarge = useMediaQuery("(min-width: 1024px)");
 
   return (
-    <div className="flex flex-col bg-primary font-main px-2 max-w-[420px] md:max-w-[1440px] mx-auto">
+    <div className="flex flex-col bg-primary font-main px-2  mx-auto">
       {/* <div className="mx-auto flex flex-col items-center mt-14 py-6 w-full">
         <SideNav />
         <Navbar />
@@ -39,7 +39,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
         }}
       >
         <AppShell.Header withBorder={false}>
-          <div className="flex items-center w-full h-full bg-primary px-2">
+          <div className="flex items-center h-full bg-primary px-2">
             <Burger
               opened={mobileOpened}
               onClick={toggleMobile}

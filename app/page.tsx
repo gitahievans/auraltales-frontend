@@ -117,7 +117,7 @@ export default function Home() {
 
 
   return (
-    <div className="flex flex-col gap-4 min-h-screen md:max-w-3xl lg:max-w-7xl">
+    <div className="flex flex-col gap-4">
       {!mobile ? <HeroSection /> : null}
       {mobile ? <MobileHero /> : null}
       <div className="mt-4">
@@ -129,3 +129,5 @@ export default function Home() {
     </div>
   );
 }
+
+//  min-h-screen md:max-w-3xl lg:max-w-7xl
