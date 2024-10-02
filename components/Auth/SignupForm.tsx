@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import PhoneInputComponent from "./PhoneInput";
 import { userState } from "@/state/state";
+import { signIn, useSession } from "next-auth/react";
 
 const SignupForm = () => {
     const [firstName, setFirstName] = useState("");
@@ -16,6 +17,10 @@ const SignupForm = () => {
     const [password, setPassword] = useState("");
     const [phoneNumber, setPhoneNumber] = useState("");
     const [isPhoneValid, setIsPhoneValid] = useState(true);
+    const {data: session} = useSession();
+
+    console.log("session", session);
+    
 
     const router = useRouter();
 
@@ -95,7 +100,7 @@ const SignupForm = () => {
                             Create a new account
                         </h1>
                         <div className="flex justify-center mb-3 w-full">
-                            <button className="flex items-center border border-gray-500 gap-4 font-medium rounded-xl text-white text-sm md:text-base px-5 py-2.5 shadow-md bg-transparent hover:bg-green-950 transition-colors w-full">
+                            <button onClick={() => signIn("google")} className="flex items-center justify-center border border-gray-500 gap-4 font-medium rounded-xl text-white text-sm md:text-base px-5 py-2.5 shadow-md bg-transparent hover:bg-green-950 transition-colors w-full">
                                 <svg
                                     xmlns="http://www.w3.org/2000/svg"
                                     x="0px"
@@ -121,7 +126,7 @@ const SignupForm = () => {
                                         d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571c0.001-0.001,0.002-0.001,0.003-0.002l6.19,5.238C36.971,39.205,44,34,44,24C44,22.659,43.862,21.35,43.611,20.083z"
                                     ></path>
                                 </svg>
-                                <p>Signup with Google</p>
+                                <p>Continue with Google</p>
                             </button>
                         </div>
 

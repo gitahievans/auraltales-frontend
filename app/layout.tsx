@@ -3,11 +3,11 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { MantineProvider } from "@mantine/core";
 import Layout from "@/components/common/Layout";
-import '@mantine/carousel/styles.css';
-import '@mantine/core/styles.css';
-import '@mantine/notifications/styles.css';
-import { Notifications } from '@mantine/notifications';
-
+import "@mantine/carousel/styles.css";
+import "@mantine/core/styles.css";
+import "@mantine/notifications/styles.css";
+import { Notifications } from "@mantine/notifications";
+import SessionWrapper from "@/components/SessionWrapper";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
@@ -25,8 +25,10 @@ export default function RootLayout({
       <body className={`${inter.className} bg-primary`}>
         {" "}
         <MantineProvider>
-          <Notifications />
-          <Layout>{children}</Layout>
+          <SessionWrapper>
+            <Notifications />
+            <Layout>{children}</Layout>
+          </SessionWrapper>
         </MantineProvider>
       </body>
     </html>
