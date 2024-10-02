@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import Image from "next/image";
 import React, { useState } from "react";
@@ -8,6 +8,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { notifications } from "@mantine/notifications";
 import { userState } from "@/state/state";
+import { signIn } from "next-auth/react";
 
 const LoginForm = () => {
   const [email, setEmail] = useState("");
@@ -19,57 +20,74 @@ const LoginForm = () => {
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    try {
-      const response = await fetch("http://127.0.0.1:8000/accounts/login/", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+    const signInResponse = await signIn("credentials", {
+      email,
+      password,
+      redirect: false,
+    });
 
-        body: JSON.stringify({ email, password }),
-      });
+    if (signInResponse && !signInResponse.error) {
+      router.push("/");
+    } else {
+      console.log("Error:", signInResponse);
 
-      console.log("response", response);
-
-      if (response.ok) {
-        console.log("logged in successfully");
-        const data = await response.json();
-        localStorage.setItem("access_token", data.access);
-        localStorage.setItem("refresh_token", data.refresh);
-
-        userState.user = data.user;
-        userState.isLoggedIn = true;
-
-        setSuccess("Login successful!");
-        setError("");
-        router.push("/");
-      } else {
-        notifications.show({
-          title: 'Error Loggin in',
-          message: 'Login failed, please try again',
-          color: 'red',
-          position: 'top-right',
-        })
-        const errorData = await response.json();
-        setError(errorData.detail || "Login failed");
-        setSuccess("");
-      }
-    } catch (error: any) {
       notifications.show({
-        title: 'Error Loggin in',
-        message: { error },
-      })
-      setError("An error occurred");
-      setSuccess("");
+        title: "Error Loggin in",
+        message: "Login failed, please try again",
+        color: "red",
+        position: "top-right",
+      });
+      setError("Login failed. Check your credentials and try again.");
     }
+
+    // try {
+    //   const response = await fetch("http://127.0.0.1:8000/accounts/login/", {
+    //     method: "POST",
+    //     headers: {
+    //       "Content-Type": "application/json",
+    //     },
+
+    //     body: JSON.stringify({ email, password }),
+    //   });
+
+    //   console.log("response", response);
+
+    //   if (response.ok) {
+    //     console.log("logged in successfully");
+    //     const data = await response.json();
+    //     localStorage.setItem("access_token", data.access);
+    //     localStorage.setItem("refresh_token", data.refresh);
+
+    //     userState.user = data.user;
+    //     userState.isLoggedIn = true;
+
+    //     setSuccess("Login successful!");
+    //     setError("");
+    //     router.push("/");
+    //   } else {
+    //     notifications.show({
+    //       title: 'Error Loggin in',
+    //       message: 'Login failed, please try again',
+    //       color: 'red',
+    //       position: 'top-right',
+    //     })
+    //     const errorData = await response.json();
+    //     setError(errorData.detail || "Login failed");
+    //     setSuccess("");
+    //   }
+    // } catch (error: any) {
+    //   notifications.show({
+    //     title: 'Error Loggin in',
+    //     message: { error },
+    //   })
+    //   setError("An error occurred");
+    //   setSuccess("");
+    // }
   };
 
   return (
     <section className="bg-primary flex items-center md:min-h-[80dvh]">
-      <div className="md:w-[60%] ">
-        <h1 className="text-7xl text-white">Welcome Back!</h1>
-      </div>
-      <div className="md:w-[40%] flex flex-col items-center justify-center px-6 py-8 mx-auto border border-gray-600 rounded-xl">
+      <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto border border-gray-600 rounded-xl">
         <Link
           href="#"
           className="flex items-center mb-2 text-2xl font-semibold text-gray-900 dark:text-white"
@@ -84,7 +102,10 @@ const LoginForm = () => {
           SoundLeaf
         </Link>
         <div className="w-full rounded-xl shadow md:mt-0 sm:max-w-md xl:p-0 ">
-          <form onSubmit={handleSubmit} className="p-6 space-y-4 md:space-y-6 sm:p-8 ">
+          <form
+            onSubmit={handleSubmit}
+            className="p-6 space-y-4 md:space-y-6 sm:p-8 "
+          >
             <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
               Sign in to your account
             </h1>
@@ -115,7 +136,7 @@ const LoginForm = () => {
                     d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571c0.001-0.001,0.002-0.001,0.003-0.002l6.19,5.238C36.971,39.205,44,34,44,24C44,22.659,43.862,21.35,43.611,20.083z"
                   ></path>
                 </svg>
-                <p>Signin with Google</p>
+                <p>Continue with Google</p>
               </button>
             </div>
 

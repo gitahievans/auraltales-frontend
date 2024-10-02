@@ -6,6 +6,7 @@ import MobileHero from "@/components/common/MobileHero";
 import HeroCarousel from "@/components/common/MobileHero";
 import { fetchedAudiobooks } from "@/state/state";
 import { useMediaQuery } from "@mantine/hooks";
+import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { proxy } from "valtio";
 
@@ -64,6 +65,11 @@ export default function Home() {
   const [categories, setCategories] = useState<string[]>([]);
 
   const mobile = useMediaQuery("(max-width: 640px)");
+
+  const {data: session} = useSession();
+
+  console.log("session", session?.jwt);
+  
 
   const fetchAudiobooks = async () => {
     try {
