@@ -14,12 +14,18 @@ import { sideNavState, userState } from "@/state/state";
 import { useMediaQuery } from "@mantine/hooks";
 import { useSnapshot } from "valtio";
 import SideNav from "./SideNav";
+import { useSession } from "next-auth/react";
+import Image from "next/image";
 
 const Navbar = () => {
   const router = useRouter();
 
   const userStateSnap = useSnapshot(userState);
   const { isLoggedIn } = userStateSnap;
+
+  const { data: session } = useSession();
+
+  console.log("session", session);
 
   const handleLogout = () => {
     localStorage.removeItem("access_token");
@@ -28,14 +34,6 @@ const Navbar = () => {
     router.push("auth/login");
   };
 
-  const inactiveLinkStyles =
-    "px-3 lg:px-6 py-2 text-sm lg:text-lg font-medium hover:bg-gray-200 border-b-2 border-b-transparent rounded-3xl  transition-all duration-500";
-  const activeLinkStyles = `border-b-2 border-b-accent-color px-3 lg:px-6 py-2 text-sm lg:text-lg font-medium transition-all duration-500 `;
-
-  const handleMenuClick = () => {
-    console.log("menu clicked");
-    sideNavState.open = !sideNavState.open;
-  };
   const isMobile = useMediaQuery("(max-width: 1120px)");
 
   return (
@@ -62,32 +60,35 @@ const Navbar = () => {
         </div>
       )}
       <div className="flex items-center space-x-4">
-        <div className="hidden md:block">
+        {/* <div className="hidden md:block">
           <button className="p-2 rounded-xl bg-gray-700 text-white">
             <IconBell size={20} />
           </button>
-        </div>
+        </div> */}
 
-        <Link
-          href="/auth/signup"
-          className="bg-green-500 text-white py-2 px-4 rounded-lg font-bold"
-        >
-          Signup
-        </Link>
-        {!isLoggedIn ? (
-          <Link
-            href="/auth/login"
-            className="bg-gray-700 text-white py-2 px-4 rounded-lg font-bold"
-          >
-            Login
-          </Link>
+        {!session && !session?.user ? (
+          <>
+            <Link
+              href="/auth/signup"
+              className="bg-green-500 text-white py-2 px-4 rounded-lg font-bold"
+            >
+              Signup
+            </Link>
+            <Link
+              href="/auth/login"
+              className="bg-gray-700 text-white py-2 px-4 rounded-lg font-bold"
+            >
+              Login
+            </Link>
+          </>
         ) : (
-          <button
-            onClick={handleLogout}
-            className="bg-gray-700 text-white py-2 px-4 rounded-lg font-bold"
-          >
-            Logout
-          </button>
+          <Image
+            src={session?.user?.image}
+            alt="profile"
+            width={40}
+            height={40}
+            className="rounded-full"
+          />
         )}
       </div>
     </section>

@@ -68,7 +68,7 @@ export default function Home() {
 
   const {data: session} = useSession();
 
-  console.log("session", session?.jwt);
+  console.log("session", session);
   
 
   const fetchAudiobooks = async () => {
@@ -96,7 +96,7 @@ export default function Home() {
         const categories = data.audiobooks.flatMap((book: Audiobook) =>
           book.categories.map((category: Category) => category.name)
         )
-        const uniqueCategories = Array.from(new Set(categories))
+        const uniqueCategories: string[] = Array.from(new Set(categories))
         setCategories(uniqueCategories)
 
       } else {

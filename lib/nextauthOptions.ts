@@ -41,6 +41,7 @@ export const nextAuthOptions: NextAuthOptions = {
             id: credentials.email,
             jwt: user.access,
             refreshToken: user.refresh,
+            ...user.user,
           };
         } else {
           return null;
@@ -50,9 +51,49 @@ export const nextAuthOptions: NextAuthOptions = {
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID as string,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
+      profile(profile) {
+        return {
+          id: profile.sub,
+          name: profile.name,
+          email: profile.email,
+          image: profile.picture,
+        };
+      },
     }),
   ],
   pages: {
     signIn: "/auth/login",
+  },
+  callbacks: {
+    async jwt({ token, user }) {
+      if (user) {
+        return {
+          ...token,
+          id: user.id,
+          jwt: user.jwt,
+          refreshToken: user.refresh,
+          firstName: user.first_name,
+          lastName: user.last_name,
+          email: user.email,
+          phoneNumber: user.profile?.phone_number,
+          image: user.image || "",
+        };
+      }
+      return token;
+    },
+    async session({ session, token }) {
+      session.user = {
+        id: token.id as string,
+        firstName: token.firstName as string,
+        lastName: token.lastName as string,
+        email: token.email as string,
+        phoneNumber: token.phoneNumber as string,
+        image: token.image as string,
+      };
+      session.jwt = token.jwt as string;
+      session.refreshToken = token.refreshToken as string;
+
+      return session;
+    },
   },
 };
