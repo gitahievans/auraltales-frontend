@@ -66,16 +66,18 @@ export const nextAuthOptions: NextAuthOptions = {
     signIn: "/auth/login",
   },
   callbacks: {
-    // check user exists in db or not
     async signIn({ user, account, profile }) {
       if (account?.provider === "google") {
         try {
           const res = await fetch(
-            "http://127.0.0.1:8000/accounts/check_user/",
+            "http://127.0.0.1:8000/accounts/google_signup/",
             {
               method: "POST",
               body: JSON.stringify({
                 email: user.email,
+                first_name: user.name?.split(" ")[0],
+                last_name: user.name?.split(" ")[1],
+                avatar: user.image,
               }),
               headers: {
                 "Content-Type": "application/json",
@@ -83,15 +85,15 @@ export const nextAuthOptions: NextAuthOptions = {
             }
           );
 
-          const backendUser = await res.json();
+          const result = await res.json();
 
-          if (res.ok && backendUser?.exists) {
+          if (result?.exists || result.user_created) {
             return true;
           } else {
             return false;
           }
         } catch (error: any) {
-          console.error("Error checking user in backend", error);
+          console.error("Error creating user", error);
 
           notifications.show({
             title: "Error",
