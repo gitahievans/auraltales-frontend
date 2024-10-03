@@ -2,6 +2,7 @@ import { NextAuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { pages } from "next/dist/build/templates/app-page";
+import { notifications } from "@mantine/notifications";
 
 export const nextAuthOptions: NextAuthOptions = {
   providers: [
@@ -65,6 +66,46 @@ export const nextAuthOptions: NextAuthOptions = {
     signIn: "/auth/login",
   },
   callbacks: {
+    // check user exists in db or not
+    async signIn({ user, account, profile }) {
+      if (account?.provider === "google") {
+        try {
+          const res = await fetch(
+            "http://127.0.0.1:8000/accounts/check_user/",
+            {
+              method: "POST",
+              body: JSON.stringify({
+                email: user.email,
+              }),
+              headers: {
+                "Content-Type": "application/json",
+              },
+            }
+          );
+
+          const backendUser = await res.json();
+
+          if (res.ok && backendUser?.exists) {
+            return true;
+          } else {
+            return false;
+          }
+        } catch (error: any) {
+          console.error("Error checking user in backend", error);
+
+          notifications.show({
+            title: "Error",
+            message: `${error}`,
+            color: "red",
+            position: "top-right",
+          });
+          return false;
+        }
+      }
+
+      return true;
+    },
+
     async jwt({ token, user }) {
       if (user) {
         return {
@@ -94,6 +135,10 @@ export const nextAuthOptions: NextAuthOptions = {
       session.refreshToken = token.refreshToken as string;
 
       return session;
+    },
+
+    async redirect({ url, baseUrl }) {
+      return baseUrl;
     },
   },
 };

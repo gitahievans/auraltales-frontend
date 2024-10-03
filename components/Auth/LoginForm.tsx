@@ -110,7 +110,7 @@ const LoginForm = () => {
               Sign in to your account
             </h1>
             <div className="flex justify-center mb-6 w-full">
-              <button className="flex items-center border border-gray-500 gap-4 font-medium rounded-xl text-white text-sm md:text-base px-5 py-2.5 shadow-md bg-transparent hover:bg-green-950 transition-colors w-full">
+              <button onClick={() => signIn("google")} className="flex items-center border border-gray-500 gap-4 font-medium rounded-xl text-white text-sm md:text-base px-5 py-2.5 shadow-md bg-transparent hover:bg-green-950 transition-colors w-full">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   x="0px"

@@ -54,7 +54,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
               size="sm"
               color="white"
             />
-            <div className="w-full px-2">
+            <div className="w-full mx-auto px-2">
               <Navbar />
             </div>
           </div>

@@ -9,13 +9,15 @@ import {
   IconMenu2,
   IconSearch,
   IconUser,
+  IconUserFilled,
 } from "@tabler/icons-react";
 import { sideNavState, userState } from "@/state/state";
 import { useMediaQuery } from "@mantine/hooks";
 import { useSnapshot } from "valtio";
 import SideNav from "./SideNav";
-import { useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import Image from "next/image";
+import { Menu } from "@mantine/core";
 
 const Navbar = () => {
   const router = useRouter();
@@ -65,8 +67,7 @@ const Navbar = () => {
             <IconBell size={20} />
           </button>
         </div> */}
-
-        {!session && !session?.user ? (
+        {!session || !session.user ? (
           <>
             <Link
               href="/auth/signup"
@@ -82,13 +83,39 @@ const Navbar = () => {
             </Link>
           </>
         ) : (
-          <Image
-            src={session?.user?.image}
-            alt="profile"
-            width={40}
-            height={40}
-            className="rounded-full"
-          />
+          <Menu
+            trigger="hover"
+            openDelay={100}
+            closeDelay={400}
+            position="bottom-end"
+          >
+            <Menu.Target>
+              <div className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-700 border border-tertiary">
+                {session.user.image ? (
+                  <Image
+                    src={session.user.image}
+                    alt="profile"
+                    width={40}
+                    height={40}
+                    className="rounded-full"
+                  />
+                ) : (
+                  <IconUserFilled />
+                )}
+              </div>
+            </Menu.Target>
+            <Menu.Dropdown>
+              <Menu.Item>
+                <Link href="/profile">Profile</Link>
+              </Menu.Item>
+              <Menu.Item>
+                <Link href="/profile">Settings</Link>
+              </Menu.Item>
+              <Menu.Item>
+                <button onClick={() => signOut()}>Logout</button>
+              </Menu.Item>
+            </Menu.Dropdown>
+          </Menu>
         )}
       </div>
     </section>
