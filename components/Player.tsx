@@ -1,4 +1,6 @@
-import React from "react";
+"use client";
+
+import React, { useState } from "react";
 import { ActionIcon, Center, RingProgress } from "@mantine/core";
 import {
   IconPlayerSkipBack,
@@ -13,6 +15,7 @@ import {
 import poster from "@/public/Images/soundleaf-files/posters/_f170a6e7-30ee-4c76-8cbc-f4206c1f2db3.jpeg";
 import Image from "next/image";
 import ChaptersMenu from "./ChaptersMenu";
+import NarrationSpeedMenu from "./NarrationSpeedMenu";
 
 const chapters = [
   { duration: "-1:16:45" },
@@ -25,6 +28,14 @@ const chapters = [
 ];
 
 const AudioPlayer = () => {
+  const [playbackSpeed, setPlaybackSpeed] = useState(1);
+
+  const handleSpeedChange = (newSpeed) => {
+    setPlaybackSpeed(newSpeed);
+    // Here you would also update the actual audio playback speed
+    // using your audio player's API
+  };
+
   return (
     <div className="bg-dark-green rounded-3xl p-6 max-w-md mx-auto border">
       <div className="text-center mb-4">
@@ -86,10 +97,10 @@ const AudioPlayer = () => {
           <IconBookmark size={24} />
           <span>Bookmark</span>
         </div>
-        <div className="flex flex-col items-center">
-          <IconGauge size={24} />
-          <span>Speed</span>
-        </div>
+        <NarrationSpeedMenu
+          currentSpeed={playbackSpeed}
+          onSpeedChange={handleSpeedChange}
+        />
       </div>
     </div>
   );
