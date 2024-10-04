@@ -5,6 +5,7 @@ import BookGrid from "@/components/BookCarousel";
 import HeroSection from "@/components/common/Hero";
 import MobileHero from "@/components/common/MobileHero";
 import HeroCarousel from "@/components/common/MobileHero";
+import AudioPlayer from "@/components/Player";
 import SkeletonCarousel from "@/components/SkeletonCarousel";
 import { books } from "@/Constants/Books";
 import { fetchedAudiobooks } from "@/state/state";
@@ -126,6 +127,7 @@ export default function Home() {
             ))
           : Array.from({ length: 6 }).map((cat, i) => <SkeletonCarousel key={i} />)}
       </div>
+      <AudioPlayer />
     </div>
   );
 }
