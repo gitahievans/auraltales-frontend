@@ -1,7 +1,6 @@
 import { NextAuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
-import { pages } from "next/dist/build/templates/app-page";
 import { notifications } from "@mantine/notifications";
 
 export const nextAuthOptions: NextAuthOptions = {
@@ -55,7 +54,7 @@ export const nextAuthOptions: NextAuthOptions = {
       profile(profile) {
         return {
           id: profile.sub,
-          name: profile.name,
+          name: profile.given_name,
           email: profile.email,
           image: profile.picture,
         };
@@ -120,6 +119,7 @@ export const nextAuthOptions: NextAuthOptions = {
           email: user.email,
           phoneNumber: user.profile?.phone_number,
           image: user.image || "",
+          name: user.name || "",
         };
       }
       return token;
@@ -132,6 +132,7 @@ export const nextAuthOptions: NextAuthOptions = {
         email: token.email as string,
         phoneNumber: token.phoneNumber as string,
         image: token.image as string,
+        name: token.name as string,
       };
       session.jwt = token.jwt as string;
       session.refreshToken = token.refreshToken as string;

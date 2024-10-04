@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import {
   IconBell,
   IconHeart,
+  IconLogout,
   IconMenu2,
   IconSearch,
   IconUser,
@@ -16,7 +17,7 @@ import { useSnapshot } from "valtio";
 import SideNav from "./SideNav";
 import { signOut, useSession } from "next-auth/react";
 import Image from "next/image";
-import { Menu } from "@mantine/core";
+import { Menu, rem } from "@mantine/core";
 import React from "react";
 
 const Navbar = () => {
@@ -36,7 +37,8 @@ const Navbar = () => {
     router.push("auth/login");
   };
 
-  const isMobile = useMediaQuery("(max-width: 1120px)");
+  const isMobile = useMediaQuery("(max-width: 767px)");
+  const isMedium = useMediaQuery("(max-width: 1024px)");
 
   return (
     <section className="flex items-center justify-between py-2 text-white bg-primary">
@@ -48,7 +50,7 @@ const Navbar = () => {
           SoundLeaf
         </Link>
       </div>
-      {!isMobile && (
+      {!isMobile || !isMedium && (
         <div className="relative">
           <input
             type="text"
@@ -87,31 +89,60 @@ const Navbar = () => {
             trigger="hover"
             openDelay={100}
             closeDelay={400}
-            position="bottom-end"
+            position="bottom"
+            shadow="xl"
+            width={170}
+            withArrow
+            transitionProps={{ transition: 'fade-up', duration: 150 }}
+            styles={{
+              dropdown: {
+                backgroundColor: "#041714",
+              },
+              item: {
+                color: "#22C55E",
+                "&:hover": {
+                  backgroundColor: "white",
+                  color: "black",
+                }
+              },
+            }}
           >
             <Menu.Target>
-              <div className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-700 border border-tertiary">
-                {session.user.image ? (
-                  <Image
-                    src={session.user.image}
-                    alt="profile"
-                    width={40}
-                    height={40}
-                    className="rounded-full"
-                  />
-                ) : (
-                  <IconUserFilled />
-                )}
+              <div className="flex items-center gap-2 cursor-pointer">
+                <div className="w-8 h-8 md:w-10 md:h-10 flex items-center justify-center rounded-full bg-gray-700 border border-tertiary">
+                  {session.user.image ? (
+                    <Image
+                      src={session.user.image}
+                      alt="profile"
+                      width={isMobile ? 30 : 40}
+                      height={isMobile ? 30 : 40}
+                      className="rounded-full"
+                    />
+                  ) : (
+                    <IconUserFilled size={isMobile ? 30 : 40} />
+                  )}
+                </div>
+                <div className="flex flex-col">
+                  <h3 className="text-base md:text-lg font-semibold">
+                    {session.user?.name}
+                  </h3>
+                  <p className="text-xs md:text-sm">{session.user?.email}</p>
+                </div>
               </div>
             </Menu.Target>
             <Menu.Dropdown>
-              <Menu.Item>
+              <Menu.Item
+                leftSection={
+                  <IconUserFilled style={{ width: rem(14), height: rem(14) }} />
+                }
+              >
                 <Link href="/profile">Profile</Link>
               </Menu.Item>
-              <Menu.Item>
-                <Link href="/profile">Settings</Link>
-              </Menu.Item>
-              <Menu.Item>
+              <Menu.Item
+                leftSection={
+                  <IconLogout style={{ width: rem(14), height: rem(14) }} />
+                }
+              >
                 <button onClick={() => signOut()}>Logout</button>
               </Menu.Item>
             </Menu.Dropdown>

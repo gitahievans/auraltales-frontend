@@ -9,6 +9,7 @@ declare module "next-auth" {
       email: string;
       phoneNumber: string; 
       image?: string;
+      name?: string;
     };
     jwt: string; 
     refreshToken: string; 
