@@ -1,18 +1,23 @@
 "use client";
 
-import BookGrid from "@/components/BookGrid";
+import BookCarousel from "@/components/BookCarousel";
+import BookGrid from "@/components/BookCarousel";
 import HeroSection from "@/components/common/Hero";
 import MobileHero from "@/components/common/MobileHero";
 import HeroCarousel from "@/components/common/MobileHero";
+import SkeletonCarousel from "@/components/SkeletonCarousel";
+import { books } from "@/Constants/Books";
 import { fetchedAudiobooks } from "@/state/state";
+import { Carousel } from "@mantine/carousel";
 import { useMediaQuery } from "@mantine/hooks";
+import { IconArrowRight } from "@tabler/icons-react";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { proxy } from "valtio";
 
 export const boughtState = proxy({
-  bought: false
-})
+  bought: false,
+});
 
 interface Author {
   id: number;
@@ -40,7 +45,6 @@ interface Narrator {
   bio: string;
 }
 
-
 interface Audiobook {
   title: string;
   description: string;
@@ -66,10 +70,9 @@ export default function Home() {
 
   const mobile = useMediaQuery("(max-width: 640px)");
 
-  const {data: session} = useSession();
+  const { data: session } = useSession();
 
   console.log("session", session);
-  
 
   const fetchAudiobooks = async () => {
     try {
@@ -91,14 +94,13 @@ export default function Home() {
 
       if (Array.isArray(data.audiobooks)) {
         setAudiobooks(data.audiobooks);
-        fetchedAudiobooks.audiobooks = data.audiobooks
+        fetchedAudiobooks.audiobooks = data.audiobooks;
 
         const categories = data.audiobooks.flatMap((book: Audiobook) =>
           book.categories.map((category: Category) => category.name)
-        )
-        const uniqueCategories: string[] = Array.from(new Set(categories))
-        setCategories(uniqueCategories)
-
+        );
+        const uniqueCategories: string[] = Array.from(new Set(categories));
+        setCategories(uniqueCategories);
       } else {
         setError("Data format is incorrect");
       }
@@ -110,30 +112,20 @@ export default function Home() {
   };
 
   useEffect(() => {
-    // const accessToken = localStorage.getItem("access_token");
-
-    // if (!accessToken) {
-    //   setError("No access token found");
-    //   setLoading(false);
-    //   return;
-    // }
-
     fetchAudiobooks();
   }, []);
-
 
   return (
     <div className="flex flex-col gap-4">
       {!mobile ? <HeroSection /> : null}
       {mobile ? <MobileHero /> : null}
       <div className="mt-4">
-        {categories.length > 0 ? (
-          categories.map((cat, i) => (
-            <BookGrid key={i} title={cat} books={audiobooks} />
-          ))) : <p className="text-white text-center">No Audiobooks Found</p>}
+        {categories.length > 0
+          ? categories.map((cat, i) => (
+              <BookCarousel key={i} title={cat} books={audiobooks} />
+            ))
+          : Array.from({ length: 6 }).map((cat, i) => <SkeletonCarousel key={i} />)}
       </div>
     </div>
   );
 }
-
-//  min-h-screen md:max-w-3xl lg:max-w-7xl

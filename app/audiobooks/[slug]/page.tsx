@@ -1,7 +1,7 @@
 "use client";
 
 import { boughtState } from "@/app/page";
-import BookGrid from "@/components/BookGrid";
+import BookGrid from "@/components/BookCarousel";
 import BookCard from "@/components/Cards/BookCard";
 import BoughtBookCard from "@/components/Cards/BoughtBookCard";
 import ChapterCard from "@/components/Cards/ChapterCard";

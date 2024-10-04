@@ -26,7 +26,7 @@ const BookCard: React.FC<BookCardProps> = ({ book }) => {
   return (
     <Link
       href={`audiobooks/${book?.slug}`}
-      className="bg-dark-green text-white rounded-lg shadow-lg hover:shadow-2xl hover:scale-105 overflow-hidden w-full max-w-sm cursor-pointer flex flex-col transition-all duration-300"
+      className="bg-dark-green text-white rounded-lg shadow-lg hover:shadow-2xl hover:scale-105 overflow-hidden w-full max-w-52 cursor-pointer flex flex-col transition-all duration-300"
     >
       <Image
         src={book?.poster || defaultPoster}
@@ -37,10 +37,10 @@ const BookCard: React.FC<BookCardProps> = ({ book }) => {
         layout="responsive"
       />
       <div className="p-2 sm:p-4 flex flex-col">
-        <h3 className="text-base sm:text-lg font-semibold mb-1 line-clamp-2">
+        <h3 className="text-base font-semibold mb-1 line-clamp-2">
           {book?.title}
         </h3>
-        <p className="text-gray-200 mb-1">
+        <p className="text-gray-200 mb-1 text-sm">
           <span className="mr-2">  BY: </span>{" "}
           {book?.authors && book?.authors?.length > 0 ? (
             book.authors.map((author: any) => (

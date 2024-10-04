@@ -35,7 +35,6 @@ const HeroSection = () => {
         backgroundImage: `url(${heroImage.src})`,
       }}
     >
-      {/* Overlay for better textz readability */}
       <div className="absolute inset-0 bg-black bg-opacity-70"></div>
 
       <div className="relative z-10 max-w-6xl text-center">
