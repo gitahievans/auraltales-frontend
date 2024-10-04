@@ -28,6 +28,7 @@ const BookCard: React.FC<BookCardProps> = ({ book }) => {
       href={`audiobooks/${book?.slug}`}
       className="bg-dark-green text-white rounded-lg shadow-lg hover:shadow-2xl hover:scale-105 overflow-hidden w-full max-w-52 cursor-pointer flex flex-col transition-all duration-300"
     >
+      {/* TODO: Add placeholder image to show before poster shows */}
       <Image
         src={book?.poster || defaultPoster}
         alt="title"

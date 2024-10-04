@@ -21,13 +21,7 @@ const SkeletonCarousel = () => {
 
   return (
     <div className="flex flex-col text-white p-4 gap-3">
-      <div className="flex items-center justify-between mb-4">
-        <div className="h-2.5 bg-gray-200 rounded-full dark:bg-gray-700 w-48 mb-4"></div>
-        <div className="flex items-center gap-2 cursor-pointer">
-          <div className="h-2 bg-gray-200 rounded-full dark:bg-gray-700"></div>
-          <div className="h-2 bg-gray-200 rounded-full dark:bg-gray-700"></div>
-        </div>
-      </div>
+      <div className="h-6 bg-gray-200 rounded-full dark:bg-gray-700 w-48 mb-4"></div>
       <Carousel
         withControls
         loop
@@ -45,7 +39,7 @@ const SkeletonCarousel = () => {
           <Carousel.Slide key={index}>
             <div
               role="status"
-              className="max-w-52 border border-gray-200 rounded shadow animate-pulse dark:border-gray-700"
+              className="max-w-52 rounded shadow animate-pulse dark:border-gray-700"
             >
               <div className="flex items-center justify-center h-48 mb-4 bg-gray-300 rounded dark:bg-gray-700">
                 <svg
@@ -60,9 +54,9 @@ const SkeletonCarousel = () => {
                 </svg>
               </div>
               <div className="h-2.5 bg-gray-200 rounded-full dark:bg-gray-700 w-48 mb-4"></div>
-              <div className="h-2 bg-gray-200 rounded-full dark:bg-gray-700 mb-2.5"></div>
-              <div className="h-2 bg-gray-200 rounded-full dark:bg-gray-700 mb-2.5"></div>
-              <div className="h-2 bg-gray-200 rounded-full dark:bg-gray-700"></div>
+              <div className="h-4 bg-gray-200 rounded-full dark:bg-gray-700 mb-2.5"></div>
+              <div className="h-4 bg-gray-200 rounded-full dark:bg-gray-700 mb-2.5"></div>
+              {/* <div className="h-2 bg-gray-200 rounded-full dark:bg-gray-700"></div> */}
               <span className="sr-only">Loading...</span>
             </div>
           </Carousel.Slide>
