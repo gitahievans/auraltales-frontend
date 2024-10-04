@@ -39,6 +39,7 @@ const Navbar = () => {
 
   const isMobile = useMediaQuery("(max-width: 767px)");
   const isMedium = useMediaQuery("(max-width: 1024px)");
+  const isDesktop = useMediaQuery("(min-width: 1025px)");
 
   return (
     <section className="flex items-center justify-between py-2 text-white bg-primary">
@@ -50,7 +51,7 @@ const Navbar = () => {
           SoundLeaf
         </Link>
       </div>
-      {!isMobile || !isMedium && (
+      {isDesktop && (
         <div className="relative">
           <input
             type="text"

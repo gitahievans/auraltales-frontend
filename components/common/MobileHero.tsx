@@ -1,5 +1,5 @@
 import React from "react";
-import heroImage from "@/public/Images/soundleaf-files/posters/Gemini_Generated_Image_6g64ay6g64ay6g64.jpeg";
+import heroImage from "@/public/Images/soundleaf-files/posters/Designer2.jpeg";
 import { IconSearch } from "@tabler/icons-react";
 
 const MobileHero = () => {
