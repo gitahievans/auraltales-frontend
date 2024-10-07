@@ -19,9 +19,10 @@ const ChapterCard: React.FC<{ chapter: Chapter; audioBook: Audiobook }> = ({
   const handleListenNowClick = () => {
     const audiobookData = encodeURIComponent(JSON.stringify(audioBook));
 
-    // router.push(`/audiobooks/${audioBook.slug}/audioplayer/${chapter.id}?audiobook=${audiobookData}`);
-    router.push(
-      `/audiobooks/audioplayer/${chapter.id}?audiobook=${audiobookData}`
+    window.open(
+      `/audiobooks/audioplayer/${chapter.id}?audiobook=${audiobookData}`,
+      "_blank",
+      "noopener,noreferrer,width=500,height=800"
     );
   };
 
