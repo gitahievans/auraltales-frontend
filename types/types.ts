@@ -23,6 +23,13 @@ export interface Author {
     phone_number: string;
     bio: string;
   }
+
+  export interface Chapter {
+    id: number;
+    title: string;
+    audio_file: string;
+    order: number;
+  }
   
 export interface Audiobook {
     id: number;
@@ -40,4 +47,5 @@ export interface Audiobook {
     categories: Category[];
     collections: Collection[];
     narrators: Narrator[];
+    chapters: Chapter[];
   }

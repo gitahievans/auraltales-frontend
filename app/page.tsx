@@ -17,7 +17,7 @@ import { useEffect, useState } from "react";
 import { proxy } from "valtio";
 
 export const boughtState = proxy({
-  bought: false,
+  bought: true,
 });
 
 interface Author {
@@ -127,7 +127,6 @@ export default function Home() {
             ))
           : Array.from({ length: 6 }).map((cat, i) => <SkeletonCarousel key={i} />)}
       </div>
-      <AudioPlayer />
     </div>
   );
 }

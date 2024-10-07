@@ -1,16 +1,28 @@
 "use client";
 
 import Image from "next/image";
-import React, { useState } from "react";
+import React, { use, useState } from "react";
 import poster from "@/public/Images/soundleaf-files/posters/Gemini_Generated_Image_6g64ay6g64ay6g64.jpeg";
 import { IconPlayerPlayFilled } from "@tabler/icons-react";
-import PlayerWindow from "../PlayerWindow";
+import { Audiobook, Chapter } from "@/types/types";
+import { useRouter } from "next/navigation";
 
-const ChapterCard = () => {
+const ChapterCard: React.FC<{ chapter: Chapter; audioBook: Audiobook }> = ({
+  chapter,
+  audioBook,
+}) => {
   const [isPlayerOpen, setIsPlayerOpen] = useState(false);
+  const router = useRouter();
+
+  console.log("chapter", chapter);
 
   const handleListenNowClick = () => {
-    setIsPlayerOpen(true);
+    const audiobookData = encodeURIComponent(JSON.stringify(audioBook));
+
+    // router.push(`/audiobooks/${audioBook.slug}/audioplayer/${chapter.id}?audiobook=${audiobookData}`);
+    router.push(
+      `/audiobooks/audioplayer/${chapter.id}?audiobook=${audiobookData}`
+    );
   };
 
   const handleClosePlayer = () => {
@@ -48,9 +60,7 @@ const ChapterCard = () => {
         <p className="text-md font-medium">50 Mins</p>
         <button
           className="flex items-center justify-center bg-tertiary hover:bg-secondary rounded-lg px-6 py-2 transition-all duration-300"
-          onClick={() =>
-            window.open("audiobooks/audioplayer", "_blank", "noopener,noreferrer")
-          }
+          onClick={handleListenNowClick}
         >
           <IconPlayerPlayFilled size={16} className="mr-2" />
           Listen Now

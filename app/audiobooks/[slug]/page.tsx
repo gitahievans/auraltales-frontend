@@ -20,6 +20,7 @@ type PagePropsType = {
   };
 };
 
+
 const ExpandableText = ({ children }) => {
   const [expanded, setExpanded] = useState(false);
 
@@ -154,8 +155,8 @@ const Page = ({ params }: PagePropsType) => {
             <div className="flex flex-col gap-4 mt-8">
               <h1 className="text-xl font-bold text-secondary">Chapters</h1>
               <div className="flex flex-col gap-4">
-                {audiobooks?.map((_, index) => (
-                  <ChapterCard book={audiobook} key={index} />
+                {audioBook?.chapters.map((chapter, index) => (
+                  <ChapterCard chapter={chapter} audioBook={audioBook} key={index} />
                 ))}
               </div>
             </div>

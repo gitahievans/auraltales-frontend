@@ -2,6 +2,7 @@ import React from "react";
 import Image, { StaticImageData } from "next/image";
 import Link from "next/link";
 import defaultPoster from "@/public/Images/soundleaf-files/posters/Gemini_Generated_Image_v8c5gbv8c5gbv8c5.jpeg";
+import { Audiobook, Category, Chapter, Collection, Narrator } from "@/types/types";
 
 interface BookCardProps {
   book: {
@@ -16,9 +17,10 @@ interface BookCardProps {
     poster: string;
     audio_sample?: string | null;
     authors: string[];
-    // categories: Category[]; 
-    // collections: Collection[];
-    // narrators: Narrator[];
+    chapters: Chapter[];
+    categories: Category[]; 
+    collections: Collection[];
+    narrators: Narrator[];
   };
 }
 
