@@ -179,7 +179,7 @@ const AudioPlayer: React.FC<{ chapter: Chapter; audiobook: Audiobook }> = ({
               }}
               variant="light"
               radius="xl"
-              size={150}
+              size={155}
             >
               <Image
                 src={poster}
