@@ -133,7 +133,7 @@ const UnboughtBookCard = ({ book }: { book: Audiobook }) => {
 
         {
           (isMobile || isLarge) && (
-            <button className="flex items-center text-white bg-transparent border border-gray-400 rounded-xl w-fit px-4 py-2 hover:bg-white hover:text-black transition duration-300">
+            <button onClick={() => handleListenAudiobook(book?.id)} className="flex items-center text-white bg-transparent border border-gray-400 rounded-xl w-fit px-4 py-2 hover:bg-white hover:text-black transition duration-300">
               <span className="flex items-center space-x-2">
                 <IconPlayerPlayFilled />
                 <span>Listen Sample</span>

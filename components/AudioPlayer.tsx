@@ -37,7 +37,7 @@ const AudioPlayer = () => {
   };
 
   return (
-    <div className="bg-dark-green rounded-3xl p-6 max-w-md mx-auto border">
+    <div className=" flex flex-col items-center bg-dark-green rounded-3xl p-6 max-w-md mx-auto border">
       <div className="text-center mb-4">
         <h2 className="text-blue-300 text-xl font-semibold">
           Book: The Silent Patient
@@ -73,7 +73,7 @@ const AudioPlayer = () => {
         }
       />
 
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex justify-between items-center mb-6 w-full">
         <button className="text-gray-400">
           <IconRewindBackward10 size={24} />
         </button>
@@ -81,7 +81,7 @@ const AudioPlayer = () => {
           <IconPlayerSkipBack size={24} />
         </button>
         <button className="bg-green-500 rounded-full p-3">
-          <IconPlayerPlay size={32} color="white" />
+          <IconPlayerPlay size={28} color="white" />
         </button>
         <button className="text-gray-400">
           <IconPlayerSkipForward size={24} />
@@ -91,7 +91,7 @@ const AudioPlayer = () => {
         </button>
       </div>
 
-      <div className="flex justify-between text-gray-300 text-sm">
+      <div className="flex justify-between text-gray-300 w-full text-sm">
         <ChaptersMenu chapters={chapters} />
         <div className="flex flex-col items-center">
           <IconBookmark size={24} />

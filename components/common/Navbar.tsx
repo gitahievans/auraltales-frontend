@@ -125,7 +125,7 @@ const Navbar = () => {
                 </div>
                 <div className="flex flex-col">
                   <h3 className="text-base md:text-lg font-semibold">
-                    {session.user?.name}
+                    {`${session.user?.name}` || `${session.user?.firstName} ${session.user?.lastName}`}
                   </h3>
                   <p className="text-xs md:text-sm">{session.user?.email}</p>
                 </div>

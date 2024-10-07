@@ -5,7 +5,7 @@ import BookGrid from "@/components/BookCarousel";
 import HeroSection from "@/components/common/Hero";
 import MobileHero from "@/components/common/MobileHero";
 import HeroCarousel from "@/components/common/MobileHero";
-import AudioPlayer from "@/components/Player";
+import AudioPlayer from "@/components/AudioPlayer";
 import SkeletonCarousel from "@/components/SkeletonCarousel";
 import { books } from "@/Constants/Books";
 import { fetchedAudiobooks } from "@/state/state";

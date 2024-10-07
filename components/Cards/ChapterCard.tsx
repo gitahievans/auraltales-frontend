@@ -1,9 +1,22 @@
+"use client";
+
 import Image from "next/image";
-import React from "react";
+import React, { useState } from "react";
 import poster from "@/public/Images/soundleaf-files/posters/Gemini_Generated_Image_6g64ay6g64ay6g64.jpeg";
 import { IconPlayerPlayFilled } from "@tabler/icons-react";
+import PlayerWindow from "../PlayerWindow";
 
 const ChapterCard = () => {
+  const [isPlayerOpen, setIsPlayerOpen] = useState(false);
+
+  const handleListenNowClick = () => {
+    setIsPlayerOpen(true);
+  };
+
+  const handleClosePlayer = () => {
+    setIsPlayerOpen(false);
+  };
+
   return (
     <div className="flex flex-col md:flex-row p-4 rounded-lg items-center md:items-start gap-6 bg-[#06201d] hover:bg-transparent max-w-6xl transition-all duration-500">
       {/* Book Cover */}
@@ -19,7 +32,9 @@ const ChapterCard = () => {
 
       {/* Chapter Details */}
       <div className="w-full md:w-[50%] text-center md:text-left">
-        <h2 className="mb-3 text-lg font-semibold">Chapter Number: Chapter Title</h2>
+        <h2 className="mb-3 text-lg font-semibold">
+          Chapter Number: Chapter Title
+        </h2>
         <p className="text-sm font-light">
           Lorem ipsum dolor sit amet consectetur, adipisicing elit. Corrupti,
           sequi officiis accusantium atque laudantium voluptatum ipsum doloribus
@@ -31,13 +46,17 @@ const ChapterCard = () => {
       {/* Action Buttons */}
       <div className="flex flex-col gap-2 items-center md:items-start">
         <p className="text-md font-medium">50 Mins</p>
-        <button className="flex items-center justify-center bg-tertiary hover:bg-secondary rounded-lg px-6 py-2 transition-all duration-300">
+        <button
+          className="flex items-center justify-center bg-tertiary hover:bg-secondary rounded-lg px-6 py-2 transition-all duration-300"
+          onClick={() =>
+            window.open("audiobooks/audioplayer", "_blank", "noopener,noreferrer")
+          }
+        >
           <IconPlayerPlayFilled size={16} className="mr-2" />
           Listen Now
         </button>
       </div>
     </div>
-
   );
 };
 export default ChapterCard;
