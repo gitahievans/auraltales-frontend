@@ -1,7 +1,4 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-"use client";
-
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useCallback } from "react";
 import { ActionIcon, Center, RingProgress } from "@mantine/core";
 import {
   IconPlayerSkipBack,
@@ -32,24 +29,60 @@ const chapters = [
   { duration: "1:00:32" },
 ];
 
+// TODO: To fix the issue where the progress bar fails to move on initial page load till a refresh is done, after the initial page load, force a refresh
+
 const AudioPlayer: React.FC<{ chapter: Chapter; audiobook: Audiobook }> = ({
   chapter,
   audiobook,
 }) => {
   const [playbackSpeed, setPlaybackSpeed] = useState(1);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [progress, setProgress] = useState(0);
   const [duration, setDuration] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);
+  const [progress, setProgress] = useState(0);
 
   const soundRef = useRef<Howl | null>(null);
+  const requestRef = useRef<number>();
+  const previousTimeRef = useRef<number>();
 
   const { data: session } = useSession();
 
-  const loadAudio = async (chapterId: number) => {
+  const updateProgress = useCallback((time: number) => {
+    setCurrentTime(time);
+    if (duration > 0) {
+      const progressPercentage = (time / duration) * 100;
+      setProgress(progressPercentage);
+    }
+  }, [duration]);
+
+  const animate = useCallback((time: number) => {
+    if (previousTimeRef.current !== undefined) {
+      if (soundRef.current && isPlaying) {
+        const currentTime = soundRef.current.seek() as number;
+        updateProgress(currentTime);
+      }
+    }
+    previousTimeRef.current = time;
+    requestRef.current = requestAnimationFrame(animate);
+  }, [isPlaying, updateProgress]);
+
+  useEffect(() => {
+    requestRef.current = requestAnimationFrame(animate);
+    return () => {
+      if (requestRef.current) {
+        cancelAnimationFrame(requestRef.current);
+      }
+    };
+  }, [animate]);
+
+  const loadAudio = useCallback(async (chapterId: number) => {
     const accessToken = session?.jwt;
 
     if (!accessToken) return;
+
+    if (soundRef.current) {
+      soundRef.current.unload();
+    }
 
     soundRef.current = new Howl({
       src: [`http://127.0.0.1:8000/streaming/stream/chapter/${chapterId}/`],
@@ -61,24 +94,26 @@ const AudioPlayer: React.FC<{ chapter: Chapter; audiobook: Audiobook }> = ({
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       },
-      onplay: () => {
-        setIsPlaying(true);
-        const audioDuration = soundRef.current?.duration();
-        setDuration(audioDuration || 0);
+      onload: () => {
+        const audioDuration = soundRef.current?.duration() || 0;
+        setDuration(audioDuration);
+        updateProgress(0);
       },
+      onplay: () => setIsPlaying(true),
+      onpause: () => setIsPlaying(false),
       onend: () => {
         setIsPlaying(false);
+        updateProgress(duration);
       },
-      onloaderror: (id: any, error: any) => {
-        console.error("Error loading audio:", error);
+      onseek: () => {
+        if (soundRef.current) {
+          updateProgress(soundRef.current.seek() as number);
+        }
       },
-      onplayerror: (id: any, error: any) => {
-        console.error("Error playing audio:", error);
-      },
+      onloaderror: (id: any, error: any) => console.error("Error loading audio:", error),
+      onplayerror: (id: any, error: any) => console.error("Error playing audio:", error),
     });
-
-    soundRef.current?.play();
-  };
+  }, [session?.jwt, updateProgress, duration]);
 
   useEffect(() => {
     if (chapter?.id) {
@@ -87,69 +122,46 @@ const AudioPlayer: React.FC<{ chapter: Chapter; audiobook: Audiobook }> = ({
 
     return () => {
       if (soundRef.current) {
-        soundRef.current.stop();
+        soundRef.current.unload();
       }
     };
-  }, [chapter?.id]);
-
-  useEffect(() => {
-    const updateProgress = () => {
-      if (soundRef.current) {
-        const seekTime = soundRef.current.seek() || 0;
-        const audioDuration = soundRef.current.duration() || 0;
-        const progressPercentage = (seekTime / audioDuration) * 100;
-        setProgress(progressPercentage);
-        setCurrentTime(seekTime);
-      }
-    };
-
-    if (isPlaying) {
-      const interval = setInterval(updateProgress, 1000);
-      return () => clearInterval(interval);
-    }
-  }, [isPlaying]);
+  }, [chapter?.id, loadAudio]);
 
   const handlePlayPause = () => {
-    if (isPlaying) {
-      soundRef.current?.pause();
-      setIsPlaying(false);
-    } else {
-      soundRef.current?.play();
-      setIsPlaying(true);
+    if (soundRef.current) {
+      if (isPlaying) {
+        soundRef.current.pause();
+      } else {
+        soundRef.current.play();
+      }
     }
   };
 
   const handleSkipForward = () => {
     if (soundRef.current) {
       const newSeek = Math.min(soundRef.current.seek() as number + 10, duration);
-      soundRef.current?.seek(newSeek);
-      updateProgress();
+      soundRef.current.seek(newSeek);
     }
   };
 
   const handleSkipBackward = () => {
     if (soundRef.current) {
       const newSeek = Math.max(soundRef.current.seek() as number - 10, 0);
-      soundRef.current?.seek(newSeek);
-      updateProgress();
+      soundRef.current.seek(newSeek);
     }
   };
 
-  const updateProgress = () => {
-    if (soundRef.current) {
-      const seekTime = soundRef.current.seek() || 0;
-      const audioDuration = soundRef.current.duration() || 0;
-      const progressPercentage = (seekTime / audioDuration) * 100;
-      setProgress(progressPercentage);
-      setCurrentTime(seekTime);
-    }
-  };
-
-  const handleSpeedChange = (newSpeed) => {
+  const handleSpeedChange = (newSpeed: number) => {
     setPlaybackSpeed(newSpeed);
     if (soundRef.current) {
       soundRef.current.rate(newSpeed);
     }
+  };
+
+  const formatTime = (time: number) => {
+    const minutes = Math.floor(time / 60);
+    const seconds = Math.floor(time % 60);
+    return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
   };
 
   return (
@@ -190,6 +202,10 @@ const AudioPlayer: React.FC<{ chapter: Chapter; audiobook: Audiobook }> = ({
           </Center>
         }
       />
+
+      <div className="w-full text-center mt-2 text-gray-300">
+        {formatTime(currentTime)} / {formatTime(duration)}
+      </div>
 
       <div className="flex justify-between items-center mb-6 w-full">
         <button className="text-gray-400" onClick={handleSkipBackward}>

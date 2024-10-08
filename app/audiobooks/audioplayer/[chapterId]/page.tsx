@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 
 import AudioPlayer from "@/components/AudioPlayer";
@@ -10,17 +9,16 @@ const Page = ({ params }: { params: { chapterId: string } }) => {
   const { chapterId } = params;
   const searchParams = useSearchParams();
   const audiobook = searchParams.get("audiobook");
-  const [chapters, setChapters] = React.useState([]);
+  const [chapters, setChapters] = React.useState<Chapter[]>([]);
 
   const parsedAudiobook = audiobook
     ? JSON.parse(decodeURIComponent(audiobook)) || null
     : null;
 
   console.log("parsedAudiobook", parsedAudiobook);
-
   console.log("id", chapterId);
 
-  // fetch chapters using the chapterId
+  // Fetch chapters using the chapterId
   const fetchChapters = async () => {
     try {
       const response = await fetch(
@@ -39,7 +37,7 @@ const Page = ({ params }: { params: { chapterId: string } }) => {
       const data = await response.json();
       console.log("data", data);
 
-      return setChapters(data.chapters);
+      setChapters(data.chapters);
     } catch (error) {
       console.error(error);
     }
