@@ -16,12 +16,17 @@ import { useSession } from "next-auth/react";
 import { notifications } from "@mantine/notifications";
 
 const UnboughtBookCard = ({ book }: { book: Audiobook }) => {
-  // console.log(book);
+  console.log(book);
   const { data: session } = useSession();
 
   const isMobile = useMediaQuery("(max-width: 767px)");
   const isMedium = useMediaQuery("(max-width: 1023px)");
   const isLarge = useMediaQuery("(min-width: 1024px)");
+
+  useEffect(() => {
+    localStorage.setItem("audiobookToBuy", JSON.stringify(book));
+    localStorage.setItem("session", JSON.stringify(session));
+  }, [book, session]);
 
   const buyAudiobook = async () => {
     const accessToken = session?.jwt;
@@ -29,7 +34,7 @@ const UnboughtBookCard = ({ book }: { book: Audiobook }) => {
 
     const url = `http://127.0.0.1:8000/purchases/initiate-payment/buy/${book?.id}/`;
     const callbackUrl = "https://7599-217-199-146-210.ngrok-free.app/success";
-    
+
     try {
       const response = await fetch(url, {
         method: "POST",
@@ -71,6 +76,12 @@ const UnboughtBookCard = ({ book }: { book: Audiobook }) => {
         message: "Something went wrong. Please try again.",
         color: "red",
         position: "top-right",
+        styles: (theme) => ({
+          root: {
+            backgroundColor: theme.colors.red[6],
+            borderColor: theme.colors.red[6],
+          },
+        }),
       });
     }
   };
