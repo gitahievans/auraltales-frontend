@@ -17,7 +17,7 @@ import { useEffect, useState } from "react";
 import { proxy } from "valtio";
 
 export const boughtState = proxy({
-  bought: true,
+  bought: false,
 });
 
 interface Author {

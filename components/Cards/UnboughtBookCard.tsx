@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import Image from "next/image";
 import React, { use, useEffect, useRef, useState } from "react";
@@ -12,56 +12,68 @@ import {
 import { Audiobook } from "@/types/types";
 import { useMediaQuery } from "@mantine/hooks";
 import { Howl } from "howler";
+import { useSession } from "next-auth/react";
+import { notifications } from "@mantine/notifications";
 
 const UnboughtBookCard = ({ book }: { book: Audiobook }) => {
-  console.log(book);
+  // console.log(book);
+  const { data: session } = useSession();
 
   const isMobile = useMediaQuery("(max-width: 767px)");
   const isMedium = useMediaQuery("(max-width: 1023px)");
   const isLarge = useMediaQuery("(min-width: 1024px)");
-  const soundRef = useRef<Howl | null>(null);
 
-  const [isPlaying, setIsPlaying] = useState(false);
+  const buyAudiobook = async () => {
+    const accessToken = session?.jwt;
+    console.log("accessToken", accessToken);
 
-  const loadAudio = (bookId: number) => {
-    if (!soundRef.current) {
-      soundRef.current = new Howl({
-        src: [`http://127.0.0.1:8000/streaming/stream/sample/${bookId}/`],
-        format: ["mp3"],
-        html5: true,
-        xhr: {
-          method: "GET",
+    const url = `http://127.0.0.1:8000/purchases/initiate-payment/buy/${book?.id}/`;
+    const callbackUrl = "https://7599-217-199-146-210.ngrok-free.app/success";
+    
+    try {
+      const response = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
         },
-        onplay: () => {
-          setIsPlaying(true);
-        },
-        onend: () => {
-          setIsPlaying(false);
-        },
-        onloaderror: (id, error) => {
-          console.error("Error loading audio:", error);
-        },
-        onplayerror: (id, error) => {
-          console.error("Error playing audio:", error);
-        },
+        body: JSON.stringify({
+          amount: +book?.buying_price,
+          email: session?.user?.email,
+          callback_url: callbackUrl,
+        }),
+      });
+
+      console.log("response", response);
+
+      if (response.redirected) {
+        window.location.href = response.url;
+        return;
+      }
+
+      const data = await response.json();
+      console.log("data:", data);
+
+      if (data.status) {
+        window.location.href = data.authorization_url!;
+      } else {
+        notifications.show({
+          title: "Error",
+          message: data.message,
+          color: "red",
+          position: "top-right",
+        });
+      }
+    } catch (error) {
+      console.error(error);
+      notifications.show({
+        title: "Error",
+        message: "Something went wrong. Please try again.",
+        color: "red",
+        position: "top-right",
       });
     }
-    soundRef.current.play();
-  }
-
-  const handleListenAudiobook = (bookId: number) => {
-    if (bookId) loadAudio(bookId);
   };
-
-  useEffect(() => {
-    if (soundRef.current) {
-      if (isPlaying) {
-        soundRef.current.play();
-      } else {
-        soundRef.current.pause();
-      }
-    }
-  }, [isPlaying]);
 
   return (
     <div className="flex flex-col md:flex-row p-6 rounded-lg items-center md:items-start gap-6 bg-[#061c19]">
@@ -74,16 +86,14 @@ const UnboughtBookCard = ({ book }: { book: Audiobook }) => {
           height={isMobile ? 250 : 500}
           className="rounded-lg object-cover"
         />
-        {
-          !isMobile && isMedium && (
-            <button onClick={() => handleListenAudiobook(book?.id)} className="flex items-center text-white bg-transparent border border-gray-400 rounded-xl w-fit px-4 py-2 hover:bg-white hover:text-black transition duration-300">
-              <span className="flex items-center space-x-2">
-                <IconPlayerPlayFilled />
-                <span>Listen Sample</span>
-              </span>
-            </button>
-          )
-        }
+        {!isMobile && isMedium && (
+          <button className="flex items-center text-white bg-transparent border border-gray-400 rounded-xl w-fit px-4 py-2 hover:bg-white hover:text-black transition duration-300">
+            <span className="flex items-center space-x-2">
+              <IconPlayerPlayFilled />
+              <span>Listen Sample</span>
+            </span>
+          </button>
+        )}
       </div>
 
       {/* Book Details */}
@@ -95,12 +105,13 @@ const UnboughtBookCard = ({ book }: { book: Audiobook }) => {
           {" "}
           <div className="flex flex-col items-center md:items-start gap-1 mt-3">
             <p className="text-gray-200 mb-1">
-              <span className="mr-2">  BY: </span>{" "}
+              <span className="mr-2"> BY: </span>{" "}
               {book?.authors && book?.authors?.length > 0 ? (
                 book.authors.map((author: any) => (
                   <span key={author.id}>
                     {author.name}
-                    {book.authors.length > 1 && author !== book.authors[book.authors.length - 1]
+                    {book.authors.length > 1 &&
+                    author !== book.authors[book.authors.length - 1]
                       ? ", "
                       : ""}
                   </span>
@@ -111,41 +122,37 @@ const UnboughtBookCard = ({ book }: { book: Audiobook }) => {
             </p>
             <p className="text-gray-300 mb-1">
               <span className="mr-2">NARRATED BY:</span>
-              {
-                book?.narrators?.length > 0 ? (
-                  book?.narrators.map((narrator) => (
-                    <span key={narrator.id}>{narrator.name}</span>
-                  ))) : (
-                  <span>Unknown Narrator</span>
-                )
-              }
+              {book?.narrators?.length > 0 ? (
+                book?.narrators.map((narrator) => (
+                  <span key={narrator.id}>{narrator.name}</span>
+                ))
+              ) : (
+                <span>Unknown Narrator</span>
+              )}
             </p>
           </div>
           <div className="flex flex-col items-center md:items-start gap-1 mt-3">
             <p className="text-gray-300 mb-1">Length: 12 Hrs, 35 Mins</p>
-            <p className="text-gray-300 mb-1">
-              Release Date: 12 May, 2024
-            </p>
+            <p className="text-gray-300 mb-1">Release Date: 12 May, 2024</p>
             <p className="text-gray-300 mb-4">Language: English</p>
           </div>
-
         </div>
 
-        {
-          (isMobile || isLarge) && (
-            <button onClick={() => handleListenAudiobook(book?.id)} className="flex items-center text-white bg-transparent border border-gray-400 rounded-xl w-fit px-4 py-2 hover:bg-white hover:text-black transition duration-300">
-              <span className="flex items-center space-x-2">
-                <IconPlayerPlayFilled />
-                <span>Listen Sample</span>
-              </span>
-            </button>
-          )
-        }
-
+        {(isMobile || isLarge) && (
+          <button className="flex items-center text-white bg-transparent border border-gray-400 rounded-xl w-fit px-4 py-2 hover:bg-white hover:text-black transition duration-300">
+            <span className="flex items-center space-x-2">
+              <IconPlayerPlayFilled />
+              <span>Listen Sample</span>
+            </span>
+          </button>
+        )}
       </div>
 
       <div className="w-full lg:w-[35%] space-y-4">
-        <button className="flex items-center justify-center w-full px-6 py-3 bg-green-600 text-white font-semibold rounded-xl hover:bg-green-800 transition-all duration-300 focus:outline-none">
+        <button
+          onClick={buyAudiobook}
+          className="flex items-center justify-center w-full px-6 py-3 bg-green-600 text-white font-semibold rounded-xl hover:bg-green-800 transition-all duration-300 focus:outline-none"
+        >
           <IconShoppingBag size={20} className="mr-2" />
           Buy for $12
         </button>

@@ -28,7 +28,6 @@ const Navbar = () => {
 
   const { data: session } = useSession();
 
-  console.log("session", session);
 
   const handleLogout = () => {
     localStorage.removeItem("access_token");
