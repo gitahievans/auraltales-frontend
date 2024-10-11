@@ -49,3 +49,8 @@ export interface Audiobook {
     narrators: Narrator[];
     chapters: Chapter[];
   }
+
+  export type PurchaseStatus = {
+    bought: boolean
+    rented: boolean
+  }

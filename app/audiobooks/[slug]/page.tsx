@@ -7,10 +7,19 @@ import BoughtBookCard from "@/components/Cards/BoughtBookCard";
 import ChapterCard from "@/components/Cards/ChapterCard";
 import UnboughtBookCard from "@/components/Cards/UnboughtBookCard";
 import { fetchedAudiobooks } from "@/state/state";
-import { Audiobook } from "@/types/types";
+import { Audiobook, PurchaseStatus } from "@/types/types";
 import { Divider, Grid, rem, Tabs } from "@mantine/core";
 import { useMediaQuery } from "@mantine/hooks";
-import { IconCheck, IconHeadphones, IconPlayerPlay, IconPlaylistX, IconUser, IconUserFilled } from "@tabler/icons-react";
+import {
+  IconCheck,
+  IconHeadphones,
+  IconPlayerPlay,
+  IconPlaylistX,
+  IconUser,
+  IconUserFilled,
+} from "@tabler/icons-react";
+import { get } from "http";
+import { useSession } from "next-auth/react";
 import React, { useEffect, useState } from "react";
 import { useSnapshot } from "valtio";
 
@@ -19,7 +28,6 @@ type PagePropsType = {
     slug: String;
   };
 };
-
 
 const ExpandableText = ({ children }) => {
   const [expanded, setExpanded] = useState(false);
@@ -42,30 +50,36 @@ const ExpandableText = ({ children }) => {
 const Page = ({ params }: PagePropsType) => {
   const { slug } = params;
   const [audioBook, setAudioBook] = useState<Audiobook | null>(null);
-
+  const [purchaseStatus, setPurchaseStatus] = useState<PurchaseStatus | null>(
+    null
+  );
   const audiobooksSnap = useSnapshot(fetchedAudiobooks);
   const { audiobooks } = audiobooksSnap;
   const iconStyle = { width: rem(12), height: rem(12) };
 
-  const boughtSnap = useSnapshot(boughtState);
-  const { bought } = boughtSnap;
+  console.log("audioBook", audioBook);
+  console.log("purchaseStatus", purchaseStatus);
+
+  const { data: session } = useSession();
 
   const isMobile = useMediaQuery("(max-width: 768px)");
 
   const fetchAudioBook = async () => {
     try {
-      const response = await fetch(`http://127.0.0.1:8000/api/audiobooks/${params.slug}`, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await fetch(
+        `http://127.0.0.1:8000/api/audiobooks/${params.slug}`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
       if (!response.ok) {
         throw new Error("Failed to fetch Audiobook details");
       }
       const data = await response.json();
       setAudioBook(data.audiobook);
-
     } catch (error) {
       console.error(error);
     }
@@ -75,8 +89,30 @@ const Page = ({ params }: PagePropsType) => {
     fetchAudioBook();
   }, [params.slug]);
 
+  useEffect(() => {
+    const getPurchaseStatus = async () => {
+      if (!audioBook) {
+        return;
+      }
 
+      try {
+        const response = await fetch(
+          `http://127.0.0.1:8000/purchases/check-purchase-status/${audioBook?.id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${session?.jwt}`,
+            },
+          }
+        );
+        const data = await response.json();
+        setPurchaseStatus(data);
+      } catch (error) {
+        console.error("Error fetching purchase status:", error);
+      }
+    };
 
+    getPurchaseStatus();
+  }, [audioBook]);
 
   return (
     <div className="flex flex-col gap-3 text-white min-h-[100dvh]">
@@ -84,7 +120,11 @@ const Page = ({ params }: PagePropsType) => {
         <p>Loading...</p>
       ) : (
         <>
-          {!bought ? <UnboughtBookCard book={audioBook} /> : <BoughtBookCard />}
+          {!purchaseStatus?.bought ? (
+            <UnboughtBookCard book={audioBook} />
+          ) : (
+            <BoughtBookCard book={audioBook} />
+          )}
           <Tabs defaultValue="summary" variant="pills" radius="md">
             <Tabs.List>
               <Tabs.Tab
@@ -151,12 +191,16 @@ const Page = ({ params }: PagePropsType) => {
             </Tabs.Panel>
           </Tabs>
 
-          {bought ? (
+          {purchaseStatus?.bought ? (
             <div className="flex flex-col gap-4 mt-8">
               <h1 className="text-xl font-bold text-secondary">Chapters</h1>
               <div className="flex flex-col gap-4">
                 {audioBook?.chapters.map((chapter, index) => (
-                  <ChapterCard chapter={chapter} audioBook={audioBook} key={index} />
+                  <ChapterCard
+                    chapter={chapter}
+                    audioBook={audioBook}
+                    key={index}
+                  />
                 ))}
               </div>
             </div>

@@ -16,7 +16,7 @@ import { useSession } from "next-auth/react";
 import { notifications } from "@mantine/notifications";
 
 const UnboughtBookCard = ({ book }: { book: Audiobook }) => {
-  console.log(book);
+  // console.log(book);
   const { data: session } = useSession();
 
   const isMobile = useMediaQuery("(max-width: 767px)");
@@ -30,7 +30,7 @@ const UnboughtBookCard = ({ book }: { book: Audiobook }) => {
 
   const buyAudiobook = async () => {
     const accessToken = session?.jwt;
-    console.log("accessToken", accessToken);
+    // console.log("accessToken", accessToken);
 
     const url = `http://127.0.0.1:8000/purchases/initiate-payment/buy/${book?.id}/`;
     const callbackUrl = "https://7599-217-199-146-210.ngrok-free.app/success";
@@ -49,7 +49,7 @@ const UnboughtBookCard = ({ book }: { book: Audiobook }) => {
         }),
       });
 
-      console.log("response", response);
+      // console.log("response", response);
 
       if (response.redirected) {
         window.location.href = response.url;
@@ -57,7 +57,7 @@ const UnboughtBookCard = ({ book }: { book: Audiobook }) => {
       }
 
       const data = await response.json();
-      console.log("data:", data);
+      // console.log("data:", data);
 
       if (data.status) {
         window.location.href = data.authorization_url!;
