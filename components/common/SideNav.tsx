@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useSnapshot } from "valtio";
 import { sideNavState } from "@/state/state";
 import Image from "next/image";
@@ -14,31 +14,61 @@ import {
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { signOut, useSession } from "next-auth/react";
+import axios from "axios";
+import { log } from "console";
+
+type Category = {
+  id: number;
+  name: string;
+};
+
+type Collection = {
+  id: number;
+  name: string;
+};
 
 const SideNav = () => {
   const sideBarSnap = useSnapshot(sideNavState);
   const [isBrowseOpen, setIsBrowseOpen] = useState(false);
   const [isListsOpen, setIsListsOpen] = useState(false);
   const { open } = sideBarSnap;
+  const [categories, setCategories] = useState([]);
+  const [collections, setCollections] = useState([]);
 
   const { data: session } = useSession();
 
-  const inactiveLinkStyles =
-    "px-3 lg:px-6 py-2 text-sm lg:text-lg font-medium hover:bg-gray-200 border-b-2 border-b-transparent rounded-3xl  transition-all duration-500";
-  const activeLinkStyles = `border-b-2 border-b-accent-color px-3 lg:px-6 py-2 text-sm lg:text-lg font-medium transition-all duration-500 `;
+  const fetchCollections = async () => {
+    try {
+      const response = await axios.get(
+        "http://127.0.0.1:8000/api/collections/"
+      );
 
-  const browseCategories = [
-    { name: "Fiction", path: "/audiobooks/fiction" },
-    { name: "Non-Fiction", path: "/audiobooks/non-fiction" },
-    { name: "Sci-Fi", path: "/audiobooks/sci-fi" },
-    { name: "Romance", path: "/audiobooks/romance" },
-  ];
+      if (response.status === 200) {
+        setCollections(response.data.collections);
+      }
+    } catch (error) {
+      console.error("Error fetching collections:", error);
+    }
+  };
 
-  const listCollections = [
-    { name: "New Releases", path: "new-releases" },
-    { name: "Best Sellers", path: "best-sellers" },
-    { name: "Editor's Picks", path: "editor-picks" },
-  ];
+  const fetchCategories = async () => {
+    try {
+      const response = await axios.get("http://127.0.0.1:8000/api/categories/");
+
+      if (response.status === 200) {
+        setCategories(response.data.categories);
+      }
+    } catch (error) {
+      console.error("Error fetching categories:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchCategories();
+    fetchCollections();
+  }, []);
+
+  console.log("collections", collections, "categories", categories);
 
   return (
     <div className="bg-primary h-full p-2">
@@ -80,10 +110,10 @@ const SideNav = () => {
                 transition={{ duration: 0.3, ease: "linear" }}
                 className="overflow-hidden pl-8 mt-2 space-y-2"
               >
-                {browseCategories.map((category) => (
+                {categories?.map((category: Category) => (
                   <li key={category.name} className="hover:underline">
                     <Link
-                      href={`/audiobooks/categories/${category.name.toLowerCase()}`}
+                      href={`/audiobooks/categories/${category.id}`}
                       className="text-white hover:underline"
                     >
                       {category.name}
@@ -121,10 +151,10 @@ const SideNav = () => {
                 transition={{ duration: 0.3, ease: "linear" }}
                 className="overflow-hidden pl-8 mt-2 space-y-2"
               >
-                {listCollections.map((collection) => (
-                  <li key={collection.name} className="hover:underline">
+                {collections?.map((collection: Collection) => (
+                  <li key={collection?.name} className="hover:underline">
                     <Link
-                      href={`/audiobooks/collections/${collection.path}`}
+                      href={`/audiobooks/collections/${collection.id}`}
                       className="text-white"
                     >
                       {collection.name}

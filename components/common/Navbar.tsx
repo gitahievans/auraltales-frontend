@@ -28,12 +28,11 @@ const Navbar = () => {
 
   const { data: session } = useSession();
 
-
   const handleLogout = () => {
     localStorage.removeItem("access_token");
     localStorage.removeItem("refresh_token");
+    signOut();
     userState.isLoggedIn = false;
-    router.push("auth/login");
   };
 
   const isMobile = useMediaQuery("(max-width: 767px)");
@@ -93,7 +92,7 @@ const Navbar = () => {
             shadow="xl"
             width={170}
             withArrow
-            transitionProps={{ transition: 'fade-up', duration: 150 }}
+            transitionProps={{ transition: "fade-up", duration: 150 }}
             styles={{
               dropdown: {
                 backgroundColor: "#041714",
@@ -103,7 +102,7 @@ const Navbar = () => {
                 "&:hover": {
                   backgroundColor: "white",
                   color: "black",
-                }
+                },
               },
             }}
           >
@@ -124,7 +123,8 @@ const Navbar = () => {
                 </div>
                 <div className="flex flex-col">
                   <h3 className="text-base md:text-lg font-semibold">
-                    {`${session.user?.name}` || `${session.user?.firstName} ${session.user?.lastName}`}
+                    {`${session.user?.name}` ||
+                      `${session.user?.firstName} ${session.user?.lastName}`}
                   </h3>
                   <p className="text-xs md:text-sm">{session.user?.email}</p>
                 </div>
@@ -143,7 +143,7 @@ const Navbar = () => {
                   <IconLogout style={{ width: rem(14), height: rem(14) }} />
                 }
               >
-                <button onClick={() => signOut()}>Logout</button>
+                <button onClick={handleLogout}>Logout</button>
               </Menu.Item>
             </Menu.Dropdown>
           </Menu>

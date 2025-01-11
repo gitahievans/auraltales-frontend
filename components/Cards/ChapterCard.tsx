@@ -20,7 +20,7 @@ const ChapterCard: React.FC<{ chapter: Chapter; audioBook: Audiobook }> = ({
     const audiobookData = encodeURIComponent(JSON.stringify(audioBook));
 
     window.open(
-      `/audiobooks/audioplayer/${chapter.id}?audiobook=${audiobookData}`,
+      `/audiobooks/audioplayer/${chapter?.id}?audiobook=${audiobookData}`,
       "_blank",
       "noopener,noreferrer,width=500,height=800"
     );

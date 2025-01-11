@@ -39,50 +39,19 @@ const LoginForm = () => {
       });
       setError("Login failed. Check your credentials and try again.");
     }
+  };
 
-    // try {
-    //   const response = await fetch("http://127.0.0.1:8000/accounts/login/", {
-    //     method: "POST",
-    //     headers: {
-    //       "Content-Type": "application/json",
-    //     },
+  const handleGoogleSignIn = async () => {
+    try {
+      const result = await signIn("google", {
+        callbackUrl: window.location.origin,
+        redirect: true,
+      });
 
-    //     body: JSON.stringify({ email, password }),
-    //   });
-
-    //   console.log("response", response);
-
-    //   if (response.ok) {
-    //     console.log("logged in successfully");
-    //     const data = await response.json();
-    //     localStorage.setItem("access_token", data.access);
-    //     localStorage.setItem("refresh_token", data.refresh);
-
-    //     userState.user = data.user;
-    //     userState.isLoggedIn = true;
-
-    //     setSuccess("Login successful!");
-    //     setError("");
-    //     router.push("/");
-    //   } else {
-    //     notifications.show({
-    //       title: 'Error Loggin in',
-    //       message: 'Login failed, please try again',
-    //       color: 'red',
-    //       position: 'top-right',
-    //     })
-    //     const errorData = await response.json();
-    //     setError(errorData.detail || "Login failed");
-    //     setSuccess("");
-    //   }
-    // } catch (error: any) {
-    //   notifications.show({
-    //     title: 'Error Loggin in',
-    //     message: { error },
-    //   })
-    //   setError("An error occurred");
-    //   setSuccess("");
-    // }
+      console.log("Sign-in result:", result); // Debug log
+    } catch (error) {
+      console.error("Error signing in:", error);
+    }
   };
 
   return (
@@ -94,7 +63,7 @@ const LoginForm = () => {
         >
           <Image
             className="w-8 h-8 mr-2"
-            src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/logo.svg" 
+            src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/logo.svg"
             alt="logo"
             width={32}
             height={32}
@@ -110,7 +79,10 @@ const LoginForm = () => {
               Sign in to your account
             </h1>
             <div className="flex justify-center mb-6 w-full">
-              <button onClick={() => signIn("google")} className="flex items-center border border-gray-500 gap-4 font-medium rounded-xl text-white text-sm md:text-base px-5 py-2.5 shadow-md bg-transparent hover:bg-green-950 transition-colors w-full">
+              <button
+                onClick={handleGoogleSignIn}
+                className="flex items-center border border-gray-500 gap-4 font-medium rounded-xl text-white text-sm md:text-base px-5 py-2.5 shadow-md bg-transparent hover:bg-green-950 transition-colors w-full"
+              >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   x="0px"

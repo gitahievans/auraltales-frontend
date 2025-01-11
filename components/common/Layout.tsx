@@ -12,18 +12,9 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
   const [mobileOpened, { toggle: toggleMobile }] = useDisclosure();
   const [desktopOpened, { toggle: toggleDesktop }] = useDisclosure(false);
 
-  const isMobile = useMediaQuery("(max-width: 767px)");
-  const isMedium = useMediaQuery("(max-width: 1023px)");
-  const isLarge = useMediaQuery("(min-width: 1024px)");
-
   return (
     <div className="flex flex-col bg-primary font-main px-2 mx-auto">
-      {/* <div className="mx-auto flex flex-col items-center mt-14 py-6 w-full">
-        <SideNav />
-        <Navbar />
-        <main className="mx-auto">{children}</main>
-        <Footer />
-      </div> */}
+      
       <AppShell
         padding="md"
         header={{ height: 60 }}

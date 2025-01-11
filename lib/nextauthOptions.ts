@@ -4,6 +4,7 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import { notifications } from "@mantine/notifications";
 
 export const nextAuthOptions: NextAuthOptions = {
+  debug: true,
   providers: [
     CredentialsProvider({
       name: "Credentials",
@@ -48,10 +49,19 @@ export const nextAuthOptions: NextAuthOptions = {
         }
       },
     }),
+    
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID as string,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
+      authorization: {
+        params: {
+          prompt: "consent",
+          access_type: "offline",
+          response_type: "code",
+        },
+      },
       profile(profile) {
+        console.log("Google profile", profile);
         return {
           id: profile.sub,
           name: profile.given_name,
@@ -66,6 +76,8 @@ export const nextAuthOptions: NextAuthOptions = {
   },
   callbacks: {
     async signIn({ user, account, profile }) {
+      console.log("Signin Callback", { user, account, profile });
+
       if (account?.provider === "google") {
         try {
           const res = await fetch(
@@ -84,19 +96,32 @@ export const nextAuthOptions: NextAuthOptions = {
             }
           );
 
+          if (!res.ok) {
+            console.error("Server response not ok:", await res.text());
+            return false;
+          }
+
           const result = await res.json();
+          console.log("Backend response:", result);
 
           if (result?.exists || result.user_created) {
             return true;
-          } else {
-            return false;
           }
+
+          notifications.show({
+            title: "Error",
+            message: "Failed to create or verify user account",
+            color: "red",
+            position: "top-center",
+          });
+
+          return false;
         } catch (error: any) {
           console.error("Error creating user", error);
 
           notifications.show({
             title: "Error",
-            message: `${error}`,
+            message: error.message || "Failed to Authenticate with Google",
             color: "red",
             position: "top-right",
           });

@@ -118,7 +118,7 @@ export default function Home() {
 
   return (
     <div className="flex flex-col gap-4">
-      {!mobile ? <HeroSection /> : null}
+      {/* {!mobile ? <HeroSection /> : null} */}
       {mobile ? <MobileHero /> : null}
       <div className="mt-4">
         {categories.length > 0

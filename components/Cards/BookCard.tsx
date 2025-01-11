@@ -3,6 +3,8 @@ import Image, { StaticImageData } from "next/image";
 import Link from "next/link";
 import defaultPoster from "@/public/Images/soundleaf-files/posters/Gemini_Generated_Image_v8c5gbv8c5gbv8c5.jpeg";
 import { Audiobook, Category, Chapter, Collection, Narrator } from "@/types/types";
+// implement lazy loading
+
 
 interface BookCardProps {
   book: {
@@ -27,7 +29,7 @@ interface BookCardProps {
 const BookCard: React.FC<BookCardProps> = ({ book }) => {
   return (
     <Link
-      href={`audiobooks/${book?.slug}`}
+      href={`/audiobooks/${book?.slug}`}
       className="bg-dark-green text-white rounded-lg shadow-lg hover:shadow-2xl hover:scale-105 overflow-hidden w-full max-w-52 cursor-pointer flex flex-col transition-all duration-300"
     >
       {/* TODO: Add placeholder image to show before poster shows */}
