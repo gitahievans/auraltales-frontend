@@ -20,11 +20,13 @@ import { log } from "console";
 type Category = {
   id: number;
   name: string;
+  audiobooks: [];
 };
 
 type Collection = {
   id: number;
   name: string;
+  audiobooks: [];
 };
 
 const SideNav = () => {
@@ -44,7 +46,11 @@ const SideNav = () => {
       );
 
       if (response.status === 200) {
-        setCollections(response.data.collections);
+        const filteredCollections = response.data.collections.filter(
+          (collection: Collection) =>
+            collection.audiobooks && collection.audiobooks.length > 0
+        );
+        setCollections(filteredCollections);
       }
     } catch (error) {
       console.error("Error fetching collections:", error);
@@ -56,7 +62,11 @@ const SideNav = () => {
       const response = await axios.get("http://127.0.0.1:8000/api/categories/");
 
       if (response.status === 200) {
-        setCategories(response.data.categories);
+        const filteredCategories = response.data.categories.filter(
+          (category: Category) =>
+            category.audiobooks && category.audiobooks.length > 0
+        );
+        setCategories(filteredCategories);
       }
     } catch (error) {
       console.error("Error fetching categories:", error);

@@ -2,45 +2,43 @@
 
 import BookCard from "@/components/Cards/BookCard";
 import { books } from "@/Constants/Books";
-import { useRouter } from "next/navigation";
 import React, { useEffect } from "react";
 import axios from "axios";
-import { error } from "console";
 import Head from "next/head";
 import { Loader } from "@mantine/core";
 
-type CategoryPropsType = {
+type CollectionPropsType = {
   params: {
-    categoryId: number;
+    collectionId: number;
   };
 };
 
-const CategoryPage = ({ params }: CategoryPropsType) => {
-  const { categoryId } = params;
+const CollectionPage = ({ params }: CollectionPropsType) => {
+  const { collectionId } = params;
+
   const [audiobooks, setAudiobooks] = React.useState([]);
   const [title, setTitle] = React.useState("");
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState("");
 
   useEffect(() => {
-    fetchCategoryAudiobooks();
-  }, [categoryId]);
+    fetchCollectionAudiobooks();
+  }, [collectionId]);
 
-  const fetchCategoryAudiobooks = async () => {
+  const fetchCollectionAudiobooks = async () => {
     try {
       setLoading(true);
       setError("");
       const response = await axios.get(
-        `http://127.0.0.1:8000/api/categories/${categoryId}`
+        `http://127.0.0.1:8000/api/collections/${collectionId}`
       );
 
       if (response.status === 200) {
-        console.log("categories", response.data);
         setTitle(response.data.category);
         setAudiobooks(response.data.audiobooks);
       }
     } catch (error) {
-      console.error("Error fetching categories:", error);
+      console.error("Error fetching collections:", error);
     } finally {
       setLoading(false);
     }
@@ -76,4 +74,4 @@ const CategoryPage = ({ params }: CategoryPropsType) => {
   );
 };
 
-export default CategoryPage;
+export default CollectionPage;
