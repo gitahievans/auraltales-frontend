@@ -13,8 +13,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
   const [desktopOpened, { toggle: toggleDesktop }] = useDisclosure(false);
 
   return (
-    <div className="flex flex-col bg-primary font-main px-2 mx-auto">
-      
+    <div className="flex flex-col bg-primary font-main max-w-7xl mx-auto">
       <AppShell
         padding="md"
         header={{ height: 60 }}
@@ -30,26 +29,29 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
         }}
       >
         <AppShell.Header withBorder={false}>
-          <div className="flex items-center h-full bg-primary px-2">
-            <Burger
-              opened={mobileOpened}
-              onClick={toggleMobile}
-              hiddenFrom="sm"
-              size="sm"
-              color="white"
-            />
-            <Burger
-              opened={desktopOpened}
-              onClick={toggleDesktop}
-              visibleFrom="sm"
-              size="sm"
-              color="white"
-            />
-            <div className="w-full mx-auto px-2">
-              <Navbar />
+          <div className="flex items-center h-full bg-primary px-2 w-full">
+            <div className="max-w-7xl w-full mx-auto flex items-center">
+              <Burger
+                opened={mobileOpened}
+                onClick={toggleMobile}
+                hiddenFrom="sm"
+                size="sm"
+                color="white"
+              />
+              <Burger
+                opened={desktopOpened}
+                onClick={toggleDesktop}
+                visibleFrom="sm"
+                size="sm"
+                color="white"
+              />
+              <div className="w-full px-2">
+                <Navbar />
+              </div>
             </div>
           </div>
         </AppShell.Header>
+
         <AppShell.Navbar withBorder={false}>
           <SideNav />
         </AppShell.Navbar>

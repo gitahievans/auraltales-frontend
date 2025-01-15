@@ -15,12 +15,13 @@ import { useMediaQuery } from "@mantine/hooks";
 import { Howl } from "howler";
 import { useSession } from "next-auth/react";
 import { notifications } from "@mantine/notifications";
+import { Loader } from "@mantine/core";
 
 const UnboughtBookCard = ({ book }: { book: Audiobook }) => {
   const { data: session } = useSession();
   const [isPlaying, setIsPlaying] = useState(false);
   const soundRef = useRef<Howl | null>(null);
-
+  const [audioSampleLoading, setAudioSampleLoading] = useState(false);
   const isMobile = useMediaQuery("(max-width: 767px)");
   const isMedium = useMediaQuery("(max-width: 1023px)");
   const isLarge = useMediaQuery("(min-width: 1024px)");
@@ -39,6 +40,7 @@ const UnboughtBookCard = ({ book }: { book: Audiobook }) => {
   }, [book, session]);
 
   const listenSample = () => {
+    // add a loading state before playing starts
     if (!book?.audio_sample) {
       notifications.show({
         title: "Error",
@@ -49,6 +51,8 @@ const UnboughtBookCard = ({ book }: { book: Audiobook }) => {
       return;
     }
 
+    setAudioSampleLoading(true);
+
     // If sound is already initialized
     if (soundRef.current) {
       if (isPlaying) {
@@ -58,6 +62,8 @@ const UnboughtBookCard = ({ book }: { book: Audiobook }) => {
         soundRef.current.play();
         setIsPlaying(true);
       }
+
+      setAudioSampleLoading(false);
       return;
     }
 
@@ -65,10 +71,14 @@ const UnboughtBookCard = ({ book }: { book: Audiobook }) => {
     soundRef.current = new Howl({
       src: [book.audio_sample],
       html5: true,
-      onplay: () => setIsPlaying(true),
+      onplay: () => {
+        setIsPlaying(true);
+        setAudioSampleLoading(false);
+      },
       onend: () => setIsPlaying(false),
       onstop: () => setIsPlaying(false),
       onloaderror: () => {
+        setAudioSampleLoading(false);
         notifications.show({
           title: "Error",
           message: "Failed to load audio sample. Please try again.",
@@ -77,6 +87,7 @@ const UnboughtBookCard = ({ book }: { book: Audiobook }) => {
         });
       },
       onplayerror: () => {
+        setAudioSampleLoading(false);
         notifications.show({
           title: "Error",
           message: "Failed to play audio sample. Please try again.",
@@ -153,8 +164,14 @@ const UnboughtBookCard = ({ book }: { book: Audiobook }) => {
       className="flex items-center text-white bg-transparent border border-gray-400 rounded-xl w-fit px-4 py-2 hover:bg-white hover:text-black transition duration-300"
     >
       <span className="flex items-center space-x-2">
-        {isPlaying ? <IconPlayerStop /> : <IconPlayerPlayFilled />}
-        <span>{isPlaying ? "Stop Sample" : "Listen Sample"}</span>
+        {audioSampleLoading ? (
+          <Loader size="sm" color="white" />
+        ) : (
+          <>
+            {isPlaying ? <IconPlayerStop /> : <IconPlayerPlayFilled />}
+            <span>{isPlaying ? "Stop Sample" : "Listen Sample"}</span>
+          </>
+        )}
       </span>
     </button>
   );
@@ -162,7 +179,7 @@ const UnboughtBookCard = ({ book }: { book: Audiobook }) => {
   return (
     <div className="flex flex-col md:flex-row p-6 rounded-lg items-center md:items-start gap-6 bg-[#061c19]">
       {/* Book Cover */}
-      <div className="flex flex-col gap-4 items-start justify-center lg:w-[35%]">
+      <div className="flex flex-col gap-4 items-start justify-center lg:w-[35%] xl:w-[25%]">
         <Image
           src={book?.poster || poster}
           alt="Book Cover"

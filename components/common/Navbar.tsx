@@ -40,7 +40,7 @@ const Navbar = () => {
   const isDesktop = useMediaQuery("(min-width: 1025px)");
 
   return (
-    <section className="flex items-center justify-between py-2 text-white bg-primary">
+    <section className="flex items-center justify-between py-2 text-white bg-primary mx-auto">
       <div className="flex gap-1 items-center">
         <Link
           href="/"

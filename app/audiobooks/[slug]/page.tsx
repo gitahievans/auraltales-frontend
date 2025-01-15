@@ -147,7 +147,7 @@ const Page = ({ params }: PagePropsType) => {
   }, [audioBook, audiobooks]);
 
   return (
-    <div className="flex flex-col gap-3 text-white min-h-[100dvh]">
+    <div className="flex flex-col gap-3 text-white min-h-[100dvh] max-w-5xl mx-auto">
       {!audioBook ? (
         <p>Loading...</p>
       ) : (
@@ -235,7 +235,7 @@ const Page = ({ params }: PagePropsType) => {
             <h1 className="text-xl font-bold text-secondary">
               More Like This One
             </h1>
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 xl:grid-cols-5">
+            <div className="flex flex-row gap-4 flex-wrap">
               {relatedBooks.length > 0
                 ? relatedBooks.map((item, index) => (
                     <BookCard book={item} key={index} />
