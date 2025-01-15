@@ -29,7 +29,7 @@ type PagePropsType = {
   };
 };
 
-const ExpandableText = ({ children }) => {
+const ExpandableText = ({ children }: { children: string }) => {
   const [expanded, setExpanded] = useState(false);
 
   return (
@@ -53,8 +53,17 @@ const Page = ({ params }: PagePropsType) => {
   const [purchaseStatus, setPurchaseStatus] = useState<PurchaseStatus | null>(
     null
   );
-  const audiobooksSnap = useSnapshot(fetchedAudiobooks);
-  const { audiobooks } = audiobooksSnap;
+
+  const [audiobooks, setAudiobooks] = useState<Audiobook[]>([]);
+
+  useEffect(() => {
+    const storedAudiobooks = localStorage.getItem("audiobooks");
+    console.log("Retrieved audiobooks from localStorage:", storedAudiobooks);
+    if (storedAudiobooks) {
+      setAudiobooks(JSON.parse(storedAudiobooks));
+    }
+  }, []);
+
   const iconStyle = { width: rem(12), height: rem(12) };
 
   console.log("audioBook", audioBook);
@@ -64,10 +73,12 @@ const Page = ({ params }: PagePropsType) => {
 
   const isMobile = useMediaQuery("(max-width: 768px)");
 
+  console.log("audiobooks in details", audiobooks.length);
+
   const fetchAudioBook = async () => {
     try {
       const response = await fetch(
-        `http://127.0.0.1:8000/api/audiobooks/${params.slug}`,
+        `http://127.0.0.1:8000/api/audiobooks/${slug}`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -210,9 +221,9 @@ const Page = ({ params }: PagePropsType) => {
             <h1 className="text-xl font-bold text-secondary">
               More Like This One
             </h1>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 xl:grid-cols-4">
-              {audiobooks?.map((_, index) => (
-                <BookCard book={audioBook} key={index} />
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 xl:grid-cols-5">
+              {audiobooks?.map((item, index) => (
+                <BookCard book={item} key={index} />
               ))}
             </div>
           </div>

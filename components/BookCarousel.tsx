@@ -1,7 +1,12 @@
 import React from "react";
 // import { books } from "@/Constants/Books";
 import BookCard from "./Cards/BookCard";
-import { IconArrowNarrowRight, IconArrowRight, IconChevronLeft, IconChevronRight } from "@tabler/icons-react";
+import {
+  IconArrowNarrowRight,
+  IconArrowRight,
+  IconChevronLeft,
+  IconChevronRight,
+} from "@tabler/icons-react";
 // import Carousel from "./Carousel/Carousel";
 import { Carousel, CarouselSlide } from "@mantine/carousel";
 import { useMediaQuery } from "@mantine/hooks";
@@ -12,13 +17,13 @@ type Props = {
 };
 
 const BookCarousel: React.FC<Props> = ({ title, books }) => {
-  const isMobile = useMediaQuery('(max-width: 768px)');
-  const isTablet = useMediaQuery('(min-width: 769px) and (max-width: 1024px)');
+  const isMobile = useMediaQuery("(max-width: 768px)");
+  const isTablet = useMediaQuery("(min-width: 769px) and (max-width: 1024px)");
 
   const getSlideSize = () => {
-    if (isMobile) return '50%';
-    if (isTablet) return '33.333%';
-    return '16.666%';
+    if (isMobile) return "50%";
+    if (isTablet) return "33.333%";
+    return "16.666%";
   };
 
   const getSlidesToScroll = () => {
@@ -46,10 +51,10 @@ const BookCarousel: React.FC<Props> = ({ title, books }) => {
         controlsOffset="xs"
         controlSize={40}
         classNames={{
-          control: 'bg-white/30 text-white hover:bg-white/50',
+          control: "bg-white/30 text-white hover:bg-white/50",
         }}
       >
-        {books.concat(books).map((book: any, index: number) => (
+        {books.map((book: any, index: number) => (
           <Carousel.Slide key={index}>
             <BookCard book={book} />
           </Carousel.Slide>

@@ -81,7 +81,6 @@ export default function Home() {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          // Authorization: `Bearer ${accessToken}`,
         },
       });
 
@@ -95,7 +94,8 @@ export default function Home() {
 
       if (Array.isArray(data.audiobooks)) {
         setAudiobooks(data.audiobooks);
-        fetchedAudiobooks.audiobooks = data.audiobooks;
+        localStorage.setItem("audiobooks", JSON.stringify(data.audiobooks));
+        console.log("Saved audiobooks to localStorage");
 
         const categories = data.audiobooks.flatMap((book: Audiobook) =>
           book.categories.map((category: Category) => category.name)
@@ -116,17 +116,24 @@ export default function Home() {
     fetchAudiobooks();
   }, []);
 
+  console.log("audiobooks", audiobooks);
+
   return (
-    <div className="flex flex-col gap-4">
-      {/* {!mobile ? <HeroSection /> : null} */}
-      {mobile ? <MobileHero /> : null}
-      <div className="mt-4">
-        {categories.length > 0
-          ? categories.map((cat, i) => (
-              <BookCarousel key={i} title={cat} books={audiobooks} />
-            ))
-          : Array.from({ length: 6 }).map((cat, i) => <SkeletonCarousel key={i} />)}
-      </div>
+    <div className="mt-4">
+      {categories.length > 0
+        ? categories.map((cat, i) => {
+            const booksInCategory = audiobooks?.filter((book) =>
+              book.categories.some((category) => category.name === cat)
+            );
+
+            if (booksInCategory.length > 0) {
+              return (
+                <BookCarousel key={i} title={cat} books={booksInCategory} />
+              );
+            }
+            return null; // Do not render if no audiobooks exist for the category
+          })
+        : Array.from({ length: 6 }).map((_, i) => <SkeletonCarousel key={i} />)}
     </div>
   );
 }
