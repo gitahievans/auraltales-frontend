@@ -53,7 +53,7 @@ const Page = ({ params }: PagePropsType) => {
   const [purchaseStatus, setPurchaseStatus] = useState<PurchaseStatus | null>(
     null
   );
-
+  const [relatedBooks, setRelatedBooks] = useState<Audiobook[]>([]);
   const [audiobooks, setAudiobooks] = useState<Audiobook[]>([]);
 
   useEffect(() => {
@@ -98,7 +98,7 @@ const Page = ({ params }: PagePropsType) => {
 
   useEffect(() => {
     fetchAudioBook();
-  }, [params.slug]);
+  }, [slug]);
 
   useEffect(() => {
     const getPurchaseStatus = async () => {
@@ -124,6 +124,27 @@ const Page = ({ params }: PagePropsType) => {
 
     getPurchaseStatus();
   }, [audioBook]);
+
+  useEffect(() => {
+    if (audioBook && audiobooks.length > 0) {
+      // Get related books by matching categories or collection
+      const related = audiobooks.filter((book) => {
+        const sharedCategories = book.categories.some((category) =>
+          audioBook.categories.map((cat) => cat.name).includes(category.name)
+        );
+
+        const sharedCollections = book.collections.some((collection) =>
+          audioBook.collections.map((col) => col.name).includes(collection.name)
+        );
+
+        return (
+          (sharedCategories || sharedCollections) && book?.id !== audioBook?.id
+        );
+      });
+
+      setRelatedBooks(related);
+    }
+  }, [audioBook, audiobooks]);
 
   return (
     <div className="flex flex-col gap-3 text-white min-h-[100dvh]">
@@ -164,14 +185,7 @@ const Page = ({ params }: PagePropsType) => {
 
             <Tabs.Panel value="summary">
               <ExpandableText>
-                Lorem ipsum dolor sit amet, consectetur adipisicing elit. Rerum
-                omnis minus aut corporis maxime, ullam quaerat laborum
-                perspiciatis quasi tempora quos sit sunt similique
-                exercitationem necessitatibus quisquam libero vero adipisci.
-                Lorem ipsum dolor sit amet, consectetur adipisicing elit. Rerum
-                omnis minus aut corporis maxime, ullam quaerat laborum
-                perspiciatis quasi tempora quos sit sunt similique
-                exercitationem necessitatibus quisquam libero vero adipisci.
+               {audioBook?.description}
               </ExpandableText>
             </Tabs.Panel>
 
@@ -222,9 +236,13 @@ const Page = ({ params }: PagePropsType) => {
               More Like This One
             </h1>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 xl:grid-cols-5">
-              {audiobooks?.map((item, index) => (
-                <BookCard book={item} key={index} />
-              ))}
+              {relatedBooks.length > 0
+                ? relatedBooks.map((item, index) => (
+                    <BookCard book={item} key={index} />
+                  ))
+                : audiobooks?.map((item, index) => (
+                    <BookCard book={item} key={index} />
+                  ))}
             </div>
           </div>
         </>

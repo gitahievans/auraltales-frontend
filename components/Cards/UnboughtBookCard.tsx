@@ -7,17 +7,19 @@ import {
   IconListDetails,
   IconPlayerPlay,
   IconPlayerPlayFilled,
+  IconPlayerStop,
   IconShoppingBag,
 } from "@tabler/icons-react";
 import { Audiobook } from "@/types/types";
 import { useMediaQuery } from "@mantine/hooks";
-// import { Howl } from "howler";
+import { Howl } from "howler";
 import { useSession } from "next-auth/react";
 import { notifications } from "@mantine/notifications";
 
 const UnboughtBookCard = ({ book }: { book: Audiobook }) => {
-  // console.log(book);
   const { data: session } = useSession();
+  const [isPlaying, setIsPlaying] = useState(false);
+  const soundRef = useRef<Howl | null>(null);
 
   const isMobile = useMediaQuery("(max-width: 767px)");
   const isMedium = useMediaQuery("(max-width: 1023px)");
@@ -26,7 +28,66 @@ const UnboughtBookCard = ({ book }: { book: Audiobook }) => {
   useEffect(() => {
     localStorage.setItem("audiobookToBuy", JSON.stringify(book));
     localStorage.setItem("session", JSON.stringify(session));
+
+    // Cleanup function to stop and unload audio when component unmounts
+    return () => {
+      if (soundRef.current) {
+        soundRef.current.stop();
+        soundRef.current.unload();
+      }
+    };
   }, [book, session]);
+
+  const listenSample = () => {
+    if (!book?.audio_sample) {
+      notifications.show({
+        title: "Error",
+        message: "No audio sample available for this book.",
+        color: "red",
+        position: "top-right",
+      });
+      return;
+    }
+
+    // If sound is already initialized
+    if (soundRef.current) {
+      if (isPlaying) {
+        soundRef.current.stop();
+        setIsPlaying(false);
+      } else {
+        soundRef.current.play();
+        setIsPlaying(true);
+      }
+      return;
+    }
+
+    // Initialize new Howl instance
+    soundRef.current = new Howl({
+      src: [book.audio_sample],
+      html5: true,
+      onplay: () => setIsPlaying(true),
+      onend: () => setIsPlaying(false),
+      onstop: () => setIsPlaying(false),
+      onloaderror: () => {
+        notifications.show({
+          title: "Error",
+          message: "Failed to load audio sample. Please try again.",
+          color: "red",
+          position: "top-right",
+        });
+      },
+      onplayerror: () => {
+        notifications.show({
+          title: "Error",
+          message: "Failed to play audio sample. Please try again.",
+          color: "red",
+          position: "top-right",
+        });
+      },
+    });
+
+    soundRef.current.play();
+  };
 
   const buyAudiobook = async () => {
     const accessToken = session?.jwt;
@@ -86,6 +147,18 @@ const UnboughtBookCard = ({ book }: { book: Audiobook }) => {
     }
   };
 
+  const PlayButton = () => (
+    <button
+      onClick={listenSample}
+      className="flex items-center text-white bg-transparent border border-gray-400 rounded-xl w-fit px-4 py-2 hover:bg-white hover:text-black transition duration-300"
+    >
+      <span className="flex items-center space-x-2">
+        {isPlaying ? <IconPlayerStop /> : <IconPlayerPlayFilled />}
+        <span>{isPlaying ? "Stop Sample" : "Listen Sample"}</span>
+      </span>
+    </button>
+  );
+
   return (
     <div className="flex flex-col md:flex-row p-6 rounded-lg items-center md:items-start gap-6 bg-[#061c19]">
       {/* Book Cover */}
@@ -97,14 +170,7 @@ const UnboughtBookCard = ({ book }: { book: Audiobook }) => {
           height={isMobile ? 250 : 500}
           className="rounded-lg object-cover"
         />
-        {!isMobile && isMedium && (
-          <button className="flex items-center text-white bg-transparent border border-gray-400 rounded-xl w-fit px-4 py-2 hover:bg-white hover:text-black transition duration-300">
-            <span className="flex items-center space-x-2">
-              <IconPlayerPlayFilled />
-              <span>Listen Sample</span>
-            </span>
-          </button>
-        )}
+        {!isMobile && isMedium && <PlayButton />}
       </div>
 
       {/* Book Details */}
@@ -149,14 +215,7 @@ const UnboughtBookCard = ({ book }: { book: Audiobook }) => {
           </div>
         </div>
 
-        {(isMobile || isLarge) && (
-          <button className="flex items-center text-white bg-transparent border border-gray-400 rounded-xl w-fit px-4 py-2 hover:bg-white hover:text-black transition duration-300">
-            <span className="flex items-center space-x-2">
-              <IconPlayerPlayFilled />
-              <span>Listen Sample</span>
-            </span>
-          </button>
-        )}
+        {(isMobile || isLarge) && <PlayButton />}
       </div>
 
       <div className="w-full lg:w-[35%] space-y-4">
