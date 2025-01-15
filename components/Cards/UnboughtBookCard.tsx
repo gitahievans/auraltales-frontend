@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 
 import Image from "next/image";
@@ -16,8 +17,19 @@ import { Howl } from "howler";
 import { useSession } from "next-auth/react";
 import { notifications } from "@mantine/notifications";
 import { Loader } from "@mantine/core";
+import axios from "axios";
+import {
+  addToWishlist,
+  checkAudiobookInWishlist,
+  removeFromWishlist,
+} from "@/lib/store";
 
-const UnboughtBookCard = ({ book }: { book: Audiobook }) => {
+type propsType = {
+  book: Audiobook;
+  wishlistItems: any;
+};
+
+const UnboughtBookCard = ({ book, wishlistItems }: propsType) => {
   const { data: session } = useSession();
   const [isPlaying, setIsPlaying] = useState(false);
   const soundRef = useRef<Howl | null>(null);
@@ -25,12 +37,24 @@ const UnboughtBookCard = ({ book }: { book: Audiobook }) => {
   const isMobile = useMediaQuery("(max-width: 767px)");
   const isMedium = useMediaQuery("(max-width: 1023px)");
   const isLarge = useMediaQuery("(min-width: 1024px)");
+  const [inWishList, setInWishList] = useState(false);
+  const [addWishLoading, setAddWishLoading] = useState(false);
+  const [removeWishLoading, setRemoveWishLoading] = useState(false);
+  const access = session?.jwt;
+
+  const checkWishlistStatus = async () => {
+    if (access) {
+      const isInWishlist = await checkAudiobookInWishlist(book.id, access);
+      setInWishList(isInWishlist);
+    }
+  };
 
   useEffect(() => {
     localStorage.setItem("audiobookToBuy", JSON.stringify(book));
     localStorage.setItem("session", JSON.stringify(session));
 
-    // Cleanup function to stop and unload audio when component unmounts
+    checkWishlistStatus();
+
     return () => {
       if (soundRef.current) {
         soundRef.current.stop();
@@ -44,7 +68,7 @@ const UnboughtBookCard = ({ book }: { book: Audiobook }) => {
     if (!book?.audio_sample) {
       notifications.show({
         title: "Error",
-        message: "No audio sample available for this book.",
+        message: "No audio sample available for this book?.",
         color: "red",
         position: "top-right",
       });
@@ -69,7 +93,7 @@ const UnboughtBookCard = ({ book }: { book: Audiobook }) => {
 
     // Initialize new Howl instance
     soundRef.current = new Howl({
-      src: [book.audio_sample],
+      src: [book?.audio_sample],
       html5: true,
       onplay: () => {
         setIsPlaying(true);
@@ -158,6 +182,36 @@ const UnboughtBookCard = ({ book }: { book: Audiobook }) => {
     }
   };
 
+  const handleAddToWishlist = async () => {
+    if (!access) {
+      // TODO: Give a modal to log in
+      notifications.show({
+        title: "Error",
+        message: "You must be logged in to add to wishlist.",
+        color: "red",
+        position: "top-right",
+      });
+      return;
+    }
+
+    addToWishlist(book?.id!, access!, setAddWishLoading);
+  };
+
+  const handleRemoveFromWishList = async () => {
+    if (!access) {
+      // TODO: Give a modal to log in
+      notifications.show({
+        title: "Error",
+        message: "You must be logged in to remove from wishlist.",
+        color: "red",
+        position: "top-right",
+      });
+      return;
+    }
+
+    removeFromWishlist(book?.id!, access!, setRemoveWishLoading);
+  };
+
   const PlayButton = () => (
     <button
       onClick={listenSample}
@@ -201,11 +255,11 @@ const UnboughtBookCard = ({ book }: { book: Audiobook }) => {
             <p className="text-gray-200 mb-1">
               <span className="mr-2"> BY: </span>{" "}
               {book?.authors && book?.authors?.length > 0 ? (
-                book.authors.map((author: any) => (
+                book?.authors.map((author: any) => (
                   <span key={author.id}>
                     {author.name}
-                    {book.authors.length > 1 &&
-                    author !== book.authors[book.authors.length - 1]
+                    {book?.authors.length > 1 &&
+                    author !== book?.authors[book?.authors.length - 1]
                       ? ", "
                       : ""}
                   </span>
@@ -243,10 +297,31 @@ const UnboughtBookCard = ({ book }: { book: Audiobook }) => {
           <IconShoppingBag size={20} className="mr-2" />
           Buy for $12
         </button>
-        <button className="flex items-center justify-center w-full px-6 py-3 text-white font-semibold rounded-xl border border-gray-400 hover:bg-white hover:text-black transition-all duration-300 ease-in-out focus:outline-none">
-          <IconListDetails size={20} className="mr-2" />
-          Add to Wish List
-        </button>
+        {!inWishList ? (
+          <button
+            onClick={handleAddToWishlist}
+            className="flex items-center justify-center w-full px-6 py-3 text-white font-semibold rounded-xl border border-gray-400 hover:bg-white hover:text-black transition-all duration-300 ease-in-out focus:outline-none"
+          >
+            {addWishLoading ? (
+              <Loader size="sm" color="white" />
+            ) : (
+              <IconListDetails size={20} className="mr-2" />
+            )}
+            Add to Wishlist
+          </button>
+        ) : (
+          <button
+            onClick={handleRemoveFromWishList}
+            className="flex items-center justify-center w-full px-6 py-3 text-white font-semibold rounded-xl border border-gray-400 hover:bg-white hover:text-black transition-all duration-300 ease-in-out focus:outline-none"
+          >
+            {removeWishLoading ? (
+              <Loader size="sm" color="white" />
+            ) : (
+              <IconListDetails size={20} className="mr-2" />
+            )}
+            Remove from Wishlist
+          </button>
+        )}
       </div>
     </div>
   );
