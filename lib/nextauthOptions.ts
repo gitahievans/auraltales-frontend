@@ -3,6 +3,8 @@ import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { notifications } from "@mantine/notifications";
 
+const API_URL = "http://127.0.0.1:8000";
+
 export const nextAuthOptions: NextAuthOptions = {
   debug: true,
   providers: [
@@ -26,7 +28,7 @@ export const nextAuthOptions: NextAuthOptions = {
           return null;
         }
 
-        const res = await fetch("http://127.0.0.1:8000/accounts/login/", {
+        const res = await fetch(`${API_URL}/accounts/login/`, {
           method: "POST",
           body: JSON.stringify({
             email: credentials?.email,
@@ -49,7 +51,7 @@ export const nextAuthOptions: NextAuthOptions = {
         }
       },
     }),
-    
+
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID as string,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
@@ -80,21 +82,18 @@ export const nextAuthOptions: NextAuthOptions = {
 
       if (account?.provider === "google") {
         try {
-          const res = await fetch(
-            "http://127.0.0.1:8000/accounts/google_signup/",
-            {
-              method: "POST",
-              body: JSON.stringify({
-                email: user.email,
-                first_name: user.name?.split(" ")[0],
-                last_name: user.name?.split(" ")[1],
-                avatar: user.image,
-              }),
-              headers: {
-                "Content-Type": "application/json",
-              },
-            }
-          );
+          const res = await fetch(`${API_URL}/accounts/google_signup/`, {
+            method: "POST",
+            body: JSON.stringify({
+              email: user.email,
+              first_name: user.name?.split(" ")[0],
+              last_name: user.name?.split(" ")[1],
+              avatar: user.image,
+            }),
+            headers: {
+              "Content-Type": "application/json",
+            },
+          });
 
           if (!res.ok) {
             console.error("Server response not ok:", await res.text());
@@ -105,6 +104,12 @@ export const nextAuthOptions: NextAuthOptions = {
           console.log("Backend response:", result);
 
           if (result?.exists || result.user_created) {
+            // Add JWT tokens to the user object
+            user.jwt = result.access;
+            user.refresh = result.refresh;
+            // Add other user data if needed
+            user.first_name = result.user.first_name;
+            user.last_name = result.user.last_name;
             return true;
           }
 
@@ -118,7 +123,6 @@ export const nextAuthOptions: NextAuthOptions = {
           return false;
         } catch (error: any) {
           console.error("Error creating user", error);
-
           notifications.show({
             title: "Error",
             message: error.message || "Failed to Authenticate with Google",
@@ -149,6 +153,7 @@ export const nextAuthOptions: NextAuthOptions = {
       }
       return token;
     },
+
     async session({ session, token }) {
       session.user = {
         id: token.id as string,
@@ -166,6 +171,8 @@ export const nextAuthOptions: NextAuthOptions = {
     },
 
     async redirect({ url, baseUrl }) {
+      if (url.startsWith(baseUrl)) return url;
+      if (url.startsWith("/")) return `${baseUrl}${url}`;
       return baseUrl;
     },
   },

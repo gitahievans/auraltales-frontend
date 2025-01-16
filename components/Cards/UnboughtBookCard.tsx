@@ -36,6 +36,7 @@ const UnboughtBookCard = ({ book }: propsType) => {
   const [addWishLoading, setAddWishLoading] = useState(false);
   const [removeWishLoading, setRemoveWishLoading] = useState(false);
   const access = session?.jwt;
+  const from = "unbought";
 
   const checkWishlistStatus = async () => {
     if (access) {
@@ -113,7 +114,13 @@ const UnboughtBookCard = ({ book }: propsType) => {
       return;
     }
 
-    removeFromWishlist(book?.id!, access!, setRemoveWishLoading, setInWishList);
+    removeFromWishlist(
+      book?.id!,
+      access!,
+      setRemoveWishLoading,
+      setInWishList,
+      from
+    );
   };
 
   return (

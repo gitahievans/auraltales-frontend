@@ -57,7 +57,8 @@ export const removeFromWishlist = async (
   token: string,
   setRemoveWishLoading: React.Dispatch<React.SetStateAction<boolean>>,
   setInWishList: React.Dispatch<React.SetStateAction<boolean>>,
-  setWishlistItems: React.Dispatch<React.SetStateAction<WishlistItem[] | null>>
+  setWishlistItems: React.Dispatch<React.SetStateAction<WishlistItem[] | null>>,
+  from: string
 ) => {
   try {
     setRemoveWishLoading(true);
@@ -73,10 +74,12 @@ export const removeFromWishlist = async (
 
     if (response.status === 200 || response.status === 204) {
       setInWishList(false);
-      setWishlistItems(
-        (prev) =>
-          prev?.filter((item) => item.audiobook.id !== audiobookId) || null
-      );
+      if (from === "wishlist") {
+        setWishlistItems(
+          (prev) =>
+            prev?.filter((item) => item.audiobook.id !== audiobookId) || null
+        );
+      }
       notifications.show({
         title: "Success",
         message: "Audiobook removed from wishlist",

@@ -43,6 +43,7 @@ function WishlistCard({
   const [isPurchased, setPurchaseStatus] = useState<PurchaseStatus | null>(
     null
   );
+  const from = "wishlist";
   const access = session?.jwt;
 
   console.log("wishlist book", audiobook);
@@ -127,13 +128,6 @@ function WishlistCard({
 
   const handleRemoveFromWishList = async () => {
     if (!access) {
-      // TODO: Give a modal to log in
-      notifications.show({
-        title: "Error",
-        message: "You must be logged in to remove from wishlist.",
-        color: "red",
-        position: "top-right",
-      });
       return;
     }
 
@@ -142,7 +136,8 @@ function WishlistCard({
       access!,
       setRemoveWishLoading,
       setInWishList,
-      setWishlistItems
+      setWishlistItems,
+      from
     );
   };
 

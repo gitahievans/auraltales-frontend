@@ -9,7 +9,13 @@ import {
   IconBooks,
   IconChevronDown,
   IconChevronUp,
+  IconHistory,
+  IconHomeStar,
+  IconLayoutGridAdd,
+  IconLibrary,
+  IconLogout2,
   IconMist,
+  IconStars,
 } from "@tabler/icons-react";
 import { motion } from "framer-motion";
 import Link from "next/link";
@@ -201,14 +207,7 @@ const SideNav = () => {
               href="/"
               className="flex items-center p-2 text-white bg-green rounded-lg"
             >
-              <svg
-                className="w-6 h-6 mr-2"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"></path>
-              </svg>
+              <IconHomeStar className="mr-2" />
               Home
             </Link>
           </li>
@@ -217,14 +216,7 @@ const SideNav = () => {
               href="/library"
               className="flex items-center p-2 text-white rounded-lg hover:bg-green"
             >
-              <svg
-                className="w-6 h-6 mr-2"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path d="M7 3a1 1 0 000 2h6a1 1 0 100-2H7zM4 7a1 1 0 011-1h10a1 1 0 110 2H5a1 1 0 01-1-1zM2 11a2 2 0 012-2h12a2 2 0 012 2v4a2 2 0 01-2 2H4a2 2 0 01-2-2v-4z"></path>
-              </svg>
+              <IconLibrary className="mr-2" />
               My Library
             </Link>
           </li>
@@ -233,14 +225,7 @@ const SideNav = () => {
               href="/wishlist"
               className="flex items-center p-2 text-white rounded-lg hover:bg-green"
             >
-              <svg
-                className="w-6 h-6 mr-2"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM14 11a1 1 0 011 1v1h1a1 1 0 110 2h-1v1a1 1 0 11-2 0v-1h-1a1 1 0 110-2h1v-1a1 1 0 011-1z"></path>
-              </svg>
+              <IconLayoutGridAdd className="mr-2" />
               Wish List
               {/* {wishlistItems && wishlistItems.length > 0 && (
                 <div className="flex items-center justify-center bg-green-200 rounded-full ml-2 h-4 w-4">
@@ -251,23 +236,24 @@ const SideNav = () => {
               )} */}
             </Link>
           </li>
+
+          {/* favorites */}
+          <li>
+            <Link
+              href="/favorites"
+              className="flex items-center p-2 text-white rounded-lg hover:bg-green"
+            >
+              <IconStars className="w-6 h-6 mr-2" />
+              Favorites
+            </Link>
+          </li>
+
           <li>
             <Link
               href="/history"
               className="flex items-center p-2 text-white rounded-lg hover:bg-green"
             >
-              <svg
-                className="w-6 h-6 mr-2"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
-                  clipRule="evenodd"
-                ></path>
-              </svg>
+              <IconHistory className="mr-2" />
               Listen History
             </Link>
           </li>
@@ -296,18 +282,7 @@ const SideNav = () => {
                 onClick={() => signOut()}
                 className="flex items-center p-2 text-white bg-green rounded-lg"
               >
-                <svg
-                  className="w-6 h-6 mr-2"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z"
-                    clipRule="evenodd"
-                  ></path>
-                </svg>
+                <IconLogout2 className="mr-2" />
                 Logout
               </div>
             </li>
