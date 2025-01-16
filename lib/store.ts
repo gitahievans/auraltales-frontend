@@ -1,3 +1,5 @@
+import { WishlistItem } from "@/app/wishlist/page";
+import { PurchaseStatus } from "@/types/types";
 import { notifications } from "@mantine/notifications";
 import axios from "axios";
 export const baseUrl = "http://127.0.0.1:8000";
@@ -54,7 +56,8 @@ export const removeFromWishlist = async (
   audiobookId: number,
   token: string,
   setRemoveWishLoading: React.Dispatch<React.SetStateAction<boolean>>,
-  setInWishList: React.Dispatch<React.SetStateAction<boolean>>
+  setInWishList: React.Dispatch<React.SetStateAction<boolean>>,
+  setWishlistItems: React.Dispatch<React.SetStateAction<WishlistItem[] | null>>
 ) => {
   try {
     setRemoveWishLoading(true);
@@ -70,6 +73,10 @@ export const removeFromWishlist = async (
 
     if (response.status === 200 || response.status === 204) {
       setInWishList(false);
+      setWishlistItems(
+        (prev) =>
+          prev?.filter((item) => item.audiobook.id !== audiobookId) || null
+      );
       notifications.show({
         title: "Success",
         message: "Audiobook removed from wishlist",
@@ -103,7 +110,6 @@ export const checkAudiobookInWishlist = async (
   token: string
 ) => {
   try {
-    // Fetch the user's wishlist
     const response = await axios.get("http://127.0.0.1:8000/api/wishlist/", {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -111,12 +117,60 @@ export const checkAudiobookInWishlist = async (
     });
 
     if (response.status === 200) {
-      // Check if the audiobook exists in the wishlist
       const items = response.data.items || [];
       return items.some((item: any) => item.audiobook.id === audiobookId);
     }
   } catch (error) {
     console.error("Error fetching wishlist:", error);
-    return false; // Return false if there's an error
+    return false;
+  }
+};
+
+export const fetchWishlist = async (token: string | undefined) => {
+  if (!token) {
+    throw new Error("Authentication token is required to fetch the wishlist.");
+  }
+
+  try {
+    const response = await axios.get("http://127.0.0.1:8000/api/wishlist/", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (response.status === 200) {
+      return response.data.items; // Return the wishlist items
+    } else {
+      throw new Error("Failed to fetch wishlist.");
+    }
+  } catch (err) {
+    console.error("Error fetching wishlist:", err);
+    throw new Error("An error occurred while fetching the wishlist.");
+  }
+};
+
+export const checkPurchaseStatus = async (
+  audiobookId: number,
+  jwt: string
+): Promise<PurchaseStatus | null> => {
+  try {
+    const response = await fetch(
+      `http://127.0.0.1:8000/purchases/check-purchase-status/${audiobookId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${jwt}`,
+        },
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch purchase status");
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error fetching purchase status:", error);
+    return null;
   }
 };

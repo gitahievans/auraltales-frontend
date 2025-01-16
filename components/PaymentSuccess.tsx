@@ -1,8 +1,8 @@
 "use client";
 
-import { useSession } from "next-auth/react";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
 
 const PaymentSuccess = () => {
   const searchParams = useSearchParams();
@@ -14,8 +14,9 @@ const PaymentSuccess = () => {
 
   const access = session ? JSON.parse(session).jwt : null;
 
-  console.log("session", session);  
-  // console.log("audiobook", audiobook);
+  const router = useRouter(); // Initialize the router
+
+  console.log("session", session);
   console.log("reference", reference);
 
   useEffect(() => {
@@ -32,15 +33,18 @@ const PaymentSuccess = () => {
         .then((response) => response.json())
         .then((data) => {
           if (data.status === "success") {
-            // Handle successful payment
-            console.log("Payment verified successfully:", data);
+            // Navigate to the audiobook details page
+            router.push(`/audiobooks/${audiobook?.slug}`);
           } else {
             // Handle failed verification
             console.error("Payment verification failed");
           }
+        })
+        .catch((error) => {
+          console.error("Error verifying payment:", error);
         });
     }
-  }, [reference]);
+  }, [reference, audiobook?.id, access, router, audiobook?.slug]);
 
   return (
     <div className="w-full mx-auto max-w-5xl flex items-center justify-center min-h-[70dvh]">

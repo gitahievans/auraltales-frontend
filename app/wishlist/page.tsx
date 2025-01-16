@@ -7,6 +7,8 @@ import axios from "axios";
 import { useSession } from "next-auth/react";
 import { Audiobook } from "@/types/types";
 import WishlistCard from "@/components/Cards/WishListCard";
+import Link from "next/link";
+import { fetchWishlist } from "@/lib/store";
 
 // Define filter options based on your needs
 const filterOptions = [
@@ -30,38 +32,26 @@ const WishListPage = () => {
   const [wishlistItems, setWishlistItems] = useState<WishlistItem[] | null>(
     null
   );
-  const [error, setError] = useState<string | null>(null);
   const [selectedFilter, setSelectedFilter] = useState({
     value: "all",
     label: "All Books",
   });
 
   useEffect(() => {
-    const fetchWishlist = async () => {
+    const loadWishlist = async () => {
       try {
-        const response = await axios.get(
-          "http://127.0.0.1:8000/api/wishlist/",
-          {
-            headers: {
-              Authorization: `Bearer ${session?.jwt}`,
-            },
-          }
-        );
-
-        if (response.status === 200) {
-          setWishlistItems(response.data.items);
-        }
+        const items = await fetchWishlist(session?.jwt);
+        setWishlistItems(items);
       } catch (err) {
-        setError("Failed to load wishlist.");
+        console.log(err);
       }
     };
 
     if (session?.jwt) {
-      fetchWishlist();
+      loadWishlist();
     }
   }, [session?.jwt]);
 
-  // Filter and sort wishlist items based on selected filter
   const filteredItems = useMemo(() => {
     if (!wishlistItems) return null;
 
@@ -113,6 +103,8 @@ const WishListPage = () => {
     setSelectedFilter(option);
   };
 
+  console.log("filteredItems", filteredItems);
+
   return (
     <div className="text-white flex flex-col gap-4 min-h-[80dvh]">
       <h1 className="text-3xl font-bold mb-4 text-white">My Wish List</h1>
@@ -129,19 +121,30 @@ const WishListPage = () => {
         />
       </div>
 
-      {error && <p className="text-red-500">{error}</p>}
-
       <div className="flex flex-col gap-2">
         {filteredItems?.map((item: WishlistItem) => (
-          <WishlistCard key={item.id} audiobook={item} />
+          <WishlistCard
+            key={item.id}
+            audiobook={item}
+            setWishlistItems={setWishlistItems}
+          />
         ))}
       </div>
 
-      {filteredItems?.length === 0 && (
-        <p className="text-center text-gray-400 mt-8">
-          Your wishlist is empty.
-        </p>
-      )}
+      {!filteredItems ||
+        (filteredItems.length === 0 && (
+          <div className="flex flex-col gap-2 items-center justify-center">
+            <p className="text-center text-gray-400">
+              Add books to your wishlist to start listening.
+            </p>
+            <Link
+              href="/"
+              className="border border-gray-400 px-4 py-2 rounded-md"
+            >
+              Explore Audibooks
+            </Link>
+          </div>
+        ))}
     </div>
   );
 };

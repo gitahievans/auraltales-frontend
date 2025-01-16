@@ -6,6 +6,7 @@ import BookCard from "@/components/Cards/BookCard";
 import BoughtBookCard from "@/components/Cards/BoughtBookCard";
 import ChapterCard from "@/components/Cards/ChapterCard";
 import UnboughtBookCard from "@/components/Cards/UnboughtBookCard";
+import { checkPurchaseStatus } from "@/lib/store";
 import { fetchedAudiobooks } from "@/state/state";
 import { Audiobook, PurchaseStatus } from "@/types/types";
 import { Divider, Grid, rem, Tabs } from "@mantine/core";
@@ -71,8 +72,6 @@ const Page = ({ params }: PagePropsType) => {
 
   const { data: session } = useSession();
 
-  const isMobile = useMediaQuery("(max-width: 768px)");
-
   console.log("audiobooks in details", audiobooks.length);
 
   const fetchAudioBook = async () => {
@@ -102,28 +101,16 @@ const Page = ({ params }: PagePropsType) => {
 
   useEffect(() => {
     const getPurchaseStatus = async () => {
-      if (!audioBook) {
+      if (!audioBook || !session?.jwt) {
         return;
       }
 
-      try {
-        const response = await fetch(
-          `http://127.0.0.1:8000/purchases/check-purchase-status/${audioBook?.id}`,
-          {
-            headers: {
-              Authorization: `Bearer ${session?.jwt}`,
-            },
-          }
-        );
-        const data = await response.json();
-        setPurchaseStatus(data);
-      } catch (error) {
-        console.error("Error fetching purchase status:", error);
-      }
+      const status = await checkPurchaseStatus(audioBook.id, session.jwt);
+      setPurchaseStatus(status);
     };
 
     getPurchaseStatus();
-  }, [audioBook]);
+  }, [audioBook, session?.jwt]);
 
   useEffect(() => {
     if (audioBook && audiobooks.length > 0) {
@@ -184,35 +171,15 @@ const Page = ({ params }: PagePropsType) => {
             <Divider mb={30} mt={10} />
 
             <Tabs.Panel value="summary">
-              <ExpandableText>
-               {audioBook?.description}
-              </ExpandableText>
+              <ExpandableText>{audioBook?.description}</ExpandableText>
             </Tabs.Panel>
 
             <Tabs.Panel value="author">
-              <ExpandableText>
-                Lorem ipsum dolor sit amet, consectetur adipisicing elit. Rerum
-                omnis minus aut corporis maxime, ullam quaerat laborum
-                perspiciatis quasi tempora quos sit sunt similique
-                exercitationem necessitatibus quisquam libero vero adipisci.
-                Lorem ipsum dolor sit amet, consectetur adipisicing elit. Rerum
-                omnis minus aut corporis maxime, ullam quaerat laborum
-                perspiciatis quasi tempora quos sit sunt similique
-                exercitationem necessitatibus quisquam libero vero adipisci.
-                Lorem ipsum dolor sit amet, consectetur adipisicing elit. Rerum
-                omnis minus aut corporis maxime, ullam quaerat laborum
-                perspiciatis quasi tempora quos sit sunt similique
-                exercitationem necessitatibus quisquam libero vero adipisci.
-              </ExpandableText>
+              <ExpandableText>Lorem ipsum dolor sit amet,</ExpandableText>
             </Tabs.Panel>
 
             <Tabs.Panel value="narrator">
-              <ExpandableText>
-                Lorem ipsum dolor sit amet, consectetur adipisicing elit. Rerum
-                omnis minus aut corporis maxime, ullam quaerat laborum
-                perspiciatis quasi tempora quos sit sunt similique
-                exercitationem necessitatibus quisquam libero vero adipisci.
-              </ExpandableText>
+              <ExpandableText>Lorem ipsum dolor sit amet,</ExpandableText>
             </Tabs.Panel>
           </Tabs>
 

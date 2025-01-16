@@ -3,9 +3,12 @@
 
 import Image from "next/image";
 import React, { use, useEffect, useRef, useState } from "react";
-import poster from "@/public/Images/soundleaf-files/posters/Gemini_Generated_Image_6g64ay6g64ay6g64.jpeg";
-import { IconListDetails, IconShoppingBag } from "@tabler/icons-react";
-import { Audiobook } from "@/types/types";
+import {
+  IconListDetails,
+  IconPlaylist,
+  IconShoppingBag,
+} from "@tabler/icons-react";
+import { Audiobook, PurchaseStatus } from "@/types/types";
 import { useMediaQuery } from "@mantine/hooks";
 import { Howl } from "howler";
 import { useSession } from "next-auth/react";
@@ -14,13 +17,21 @@ import { Loader } from "@mantine/core";
 import {
   addToWishlist,
   checkAudiobookInWishlist,
+  checkPurchaseStatus,
   removeFromWishlist,
 } from "@/lib/store";
 import { buyAudiobook, listenSample } from "@/lib/audiobookActions.ts";
 import PlayButton from "../PlayButton";
 import { WishlistItem } from "@/app/wishlist/page";
+import Link from "next/link";
 
-function WishlistCard({ audiobook }: { audiobook: WishlistItem }) {
+function WishlistCard({
+  audiobook,
+  setWishlistItems,
+}: {
+  audiobook: WishlistItem;
+  setWishlistItems: React.Dispatch<React.SetStateAction<WishlistItem[] | null>>;
+}) {
   const { data: session } = useSession();
   const [isPlaying, setIsPlaying] = useState(false);
   const soundRef = useRef<Howl | null>(null);
@@ -29,6 +40,9 @@ function WishlistCard({ audiobook }: { audiobook: WishlistItem }) {
   const [inWishList, setInWishList] = useState(false);
   const [addWishLoading, setAddWishLoading] = useState(false);
   const [removeWishLoading, setRemoveWishLoading] = useState(false);
+  const [isPurchased, setPurchaseStatus] = useState<PurchaseStatus | null>(
+    null
+  );
   const access = session?.jwt;
 
   console.log("wishlist book", audiobook);
@@ -83,6 +97,19 @@ function WishlistCard({ audiobook }: { audiobook: WishlistItem }) {
     }
   };
 
+  useEffect(() => {
+    const getPurchaseStatus = async () => {
+      if (!audiobook || !session?.jwt) {
+        return;
+      }
+
+      const status = await checkPurchaseStatus(audiobook.id, session.jwt);
+      setPurchaseStatus(status);
+    };
+
+    getPurchaseStatus();
+  }, [audiobook, session?.jwt]);
+
   const handleAddToWishlist = async () => {
     if (!access) {
       // TODO: Give a modal to log in
@@ -110,7 +137,13 @@ function WishlistCard({ audiobook }: { audiobook: WishlistItem }) {
       return;
     }
 
-    removeFromWishlist(book?.id!, access!, setRemoveWishLoading, setInWishList);
+    removeFromWishlist(
+      book?.id!,
+      access!,
+      setRemoveWishLoading,
+      setInWishList,
+      setWishlistItems
+    );
   };
 
   return (
@@ -181,13 +214,27 @@ function WishlistCard({ audiobook }: { audiobook: WishlistItem }) {
 
       {/* Actions */}
       <div className="w-full lg:w-[35%] space-y-4">
-        <button
-          onClick={handleBuyAudiobook}
-          className="flex items-center justify-center w-full px-6 py-3 bg-[#1F8505] text-white font-semibold rounded-xl hover:bg-[#21440F] transition-all duration-300 focus:outline-none"
-        >
-          <IconShoppingBag size={20} className="mr-2" />
-          Buy for ${book?.buying_price || "12"}
-        </button>
+        {!isPurchased ? (
+          <button
+            onClick={handleBuyAudiobook}
+            className="flex items-center justify-center w-full px-6 py-3 bg-[#1F8505] text-white font-semibold rounded-xl hover:bg-[#21440F] transition-all duration-300 focus:outline-none"
+          >
+            <IconShoppingBag size={20} className="mr-2" />
+            Buy: KES {book?.buying_price}
+          </button>
+        ) : isPurchased ? (
+          <Link
+            href={`/audiobooks/${book?.slug}`}
+            className="flex items-center justify-center w-full px-6 py-3 bg-[#1F8505] text-white font-semibold rounded-xl hover:bg-[#21440F] transition-all duration-300 focus:outline-none"
+          >
+            <IconPlaylist size={20} className="mr-2" />
+            Owned: View Book
+          </Link>
+        ) : (
+          <div>
+            <Loader size="sm" color="#1CFAC4" />
+          </div>
+        )}
 
         {!inWishList ? (
           <button

@@ -193,7 +193,7 @@ const UnboughtBookCard = ({ book }: propsType) => {
           className="flex items-center justify-center w-full px-6 py-3 bg-green-600 text-white font-semibold rounded-xl hover:bg-green-800 transition-all duration-300 focus:outline-none"
         >
           <IconShoppingBag size={20} className="mr-2" />
-          Buy for $12
+          Buy: KES {book?.buying_price}
         </button>
         {!inWishList ? (
           <button
