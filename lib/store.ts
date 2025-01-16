@@ -5,7 +5,8 @@ export const baseUrl = "http://127.0.0.1:8000";
 export const addToWishlist = async (
   audiobookId: number,
   token: string,
-  setAddWishLoading: React.Dispatch<React.SetStateAction<boolean>>
+  setAddWishLoading: React.Dispatch<React.SetStateAction<boolean>>,
+  setInWishList: React.Dispatch<React.SetStateAction<boolean>>
 ) => {
   try {
     setAddWishLoading(true);
@@ -20,8 +21,7 @@ export const addToWishlist = async (
     );
 
     if (response.status === 200 || response.status === 201) {
-      // Optionally, update the UI or state
-      //   setInWishList(true);
+      setInWishList(true);
       notifications.show({
         title: "Success",
         message: "Audiobook added to wishlist",
@@ -53,7 +53,8 @@ export const addToWishlist = async (
 export const removeFromWishlist = async (
   audiobookId: number,
   token: string,
-  setRemoveWishLoading: React.Dispatch<React.SetStateAction<boolean>>
+  setRemoveWishLoading: React.Dispatch<React.SetStateAction<boolean>>,
+  setInWishList: React.Dispatch<React.SetStateAction<boolean>>
 ) => {
   try {
     setRemoveWishLoading(true);
@@ -68,8 +69,7 @@ export const removeFromWishlist = async (
     );
 
     if (response.status === 200 || response.status === 204) {
-      // update the UI or state here
-      //   setInWishList(false);
+      setInWishList(false);
       notifications.show({
         title: "Success",
         message: "Audiobook removed from wishlist",

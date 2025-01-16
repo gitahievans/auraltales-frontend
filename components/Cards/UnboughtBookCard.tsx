@@ -194,7 +194,7 @@ const UnboughtBookCard = ({ book, wishlistItems }: propsType) => {
       return;
     }
 
-    addToWishlist(book?.id!, access!, setAddWishLoading);
+    addToWishlist(book?.id!, access!, setAddWishLoading, setInWishList);
   };
 
   const handleRemoveFromWishList = async () => {
@@ -209,7 +209,7 @@ const UnboughtBookCard = ({ book, wishlistItems }: propsType) => {
       return;
     }
 
-    removeFromWishlist(book?.id!, access!, setRemoveWishLoading);
+    removeFromWishlist(book?.id!, access!, setRemoveWishLoading, setInWishList);
   };
 
   const PlayButton = () => (
