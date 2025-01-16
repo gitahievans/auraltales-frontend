@@ -11,7 +11,6 @@ import { Howl } from "howler";
 import { useSession } from "next-auth/react";
 import { notifications } from "@mantine/notifications";
 import { Loader } from "@mantine/core";
-import axios from "axios";
 import {
   addToWishlist,
   checkAudiobookInWishlist,
@@ -19,23 +18,21 @@ import {
 } from "@/lib/store";
 import { buyAudiobook, listenSample } from "@/lib/audiobookActions.ts";
 import PlayButton from "../PlayButton";
+import { WishlistItem } from "@/app/wishlist/page";
 
-type propsType = {
-  book: Audiobook;
-};
-
-const UnboughtBookCard = ({ book }: propsType) => {
+function WishlistCard({ audiobook }: { audiobook: WishlistItem }) {
   const { data: session } = useSession();
   const [isPlaying, setIsPlaying] = useState(false);
   const soundRef = useRef<Howl | null>(null);
   const [audioSampleLoading, setAudioSampleLoading] = useState(false);
   const isMobile = useMediaQuery("(max-width: 767px)");
-  const isMedium = useMediaQuery("(max-width: 1023px)");
-  const isLarge = useMediaQuery("(min-width: 1024px)");
   const [inWishList, setInWishList] = useState(false);
   const [addWishLoading, setAddWishLoading] = useState(false);
   const [removeWishLoading, setRemoveWishLoading] = useState(false);
   const access = session?.jwt;
+
+  console.log("wishlist book", audiobook);
+  const book = audiobook.audiobook;
 
   const checkWishlistStatus = async () => {
     if (access) {
@@ -117,91 +114,88 @@ const UnboughtBookCard = ({ book }: propsType) => {
   };
 
   return (
-    <div className="flex flex-col md:flex-row p-6 rounded-lg items-center md:items-start gap-6 bg-[#061c19]">
+    <div className="flex flex-col md:flex-row p-6 rounded-lg items-center md:items-start gap-6 bg-[#041714]">
       {/* Book Cover */}
       <div className="flex flex-col gap-4 items-start justify-center lg:w-[35%] xl:w-[25%]">
         <Image
-          src={book?.poster || poster}
-          alt="Book Cover"
+          src={book?.poster || "/api/placeholder/250/250"}
+          alt={book?.title || "Book Cover"}
           width={isMobile ? 250 : 500}
           height={isMobile ? 250 : 500}
           className="rounded-lg object-cover"
         />
-        {!isMobile && isMedium && (
-          <PlayButton
-            isPlaying={isPlaying}
-            audioSampleLoading={audioSampleLoading}
-            onClick={handleListenSample}
-          />
-        )}
       </div>
 
       {/* Book Details */}
       <div className="flex flex-col gap-2 w-full lg:w-[35%] items-center md:items-start">
-        <h2 className="text-2xl font-semibold text-white mb-2 uppercase">
+        <h2 className="text-2xl font-semibold text-[#1CFAC4] mb-2 uppercase">
           {book?.title}
         </h2>
+
         <div className="flex flex-col gap-2">
-          {" "}
           <div className="flex flex-col items-center md:items-start gap-1 mt-3">
-            <p className="text-gray-200 mb-1">
-              <span className="mr-2"> BY: </span>{" "}
-              {book?.authors && book?.authors?.length > 0 ? (
-                book?.authors.map((author: any) => (
-                  <span key={author.id}>
-                    {author.name}
-                    {book?.authors.length > 1 &&
-                    author !== book?.authors[book?.authors.length - 1]
-                      ? ", "
-                      : ""}
-                  </span>
-                ))
-              ) : (
-                <span>Unknown Author</span>
-              )}
+            <p className="text-[#FFFFFF] mb-1">
+              <span className="text-[#A9A9AA] mr-2">BY:</span>
+              {book?.authors?.map((author, index) => (
+                <span key={author.id}>
+                  {author.name}
+                  {index < book.authors.length - 1 ? ", " : ""}
+                </span>
+              ))}
             </p>
-            <p className="text-gray-300 mb-1">
-              <span className="mr-2">NARRATED BY:</span>
-              {book?.narrators?.length > 0 ? (
-                book?.narrators.map((narrator) => (
-                  <span key={narrator.id}>{narrator.name}</span>
-                ))
-              ) : (
-                <span>Unknown Narrator</span>
-              )}
+            <p className="text-[#FFFFFF] mb-1">
+              <span className="text-[#A9A9AA] mr-2">NARRATED BY:</span>
+              {book?.narrators?.map((narrator, index) => (
+                <span key={narrator.id}>
+                  {narrator.name}
+                  {index < book.narrators.length - 1 ? ", " : ""}
+                </span>
+              ))}
             </p>
           </div>
+
           <div className="flex flex-col items-center md:items-start gap-1 mt-3">
-            <p className="text-gray-300 mb-1">Length: 12 Hrs, 35 Mins</p>
-            <p className="text-gray-300 mb-1">Release Date: 12 May, 2024</p>
-            <p className="text-gray-300 mb-4">Language: English</p>
+            <p className="text-[#FFFFFF] mb-1">
+              <span className="text-[#A9A9AA] mr-2">Length:</span>
+              {book?.length}
+            </p>
+            <p className="text-[#FFFFFF] mb-1">
+              <span className="text-[#A9A9AA] mr-2">Release Date:</span>
+              {book?.date_published}
+            </p>
+            <p className="text-[#FFFFFF] mb-1">
+              <span className="text-[#A9A9AA] mr-2">Language:</span>
+              English
+            </p>
           </div>
         </div>
 
-        {(isMobile || isLarge) && (
+        <div className="mt-4">
           <PlayButton
             isPlaying={isPlaying}
             audioSampleLoading={audioSampleLoading}
             onClick={handleListenSample}
           />
-        )}
+        </div>
       </div>
 
+      {/* Actions */}
       <div className="w-full lg:w-[35%] space-y-4">
         <button
           onClick={handleBuyAudiobook}
-          className="flex items-center justify-center w-full px-6 py-3 bg-green-600 text-white font-semibold rounded-xl hover:bg-green-800 transition-all duration-300 focus:outline-none"
+          className="flex items-center justify-center w-full px-6 py-3 bg-[#1F8505] text-white font-semibold rounded-xl hover:bg-[#21440F] transition-all duration-300 focus:outline-none"
         >
           <IconShoppingBag size={20} className="mr-2" />
-          Buy for $12
+          Buy for ${book?.buying_price || "12"}
         </button>
+
         {!inWishList ? (
           <button
             onClick={handleAddToWishlist}
-            className="flex items-center justify-center w-full px-6 py-3 text-white font-semibold rounded-xl border border-gray-400 hover:bg-white hover:text-black transition-all duration-300 ease-in-out focus:outline-none"
+            className="flex items-center justify-center w-full px-6 py-3 text-[#1CFAC4] font-semibold rounded-xl border border-[#1CFAC4] hover:bg-[#152D09] transition-all duration-300 ease-in-out focus:outline-none"
           >
             {addWishLoading ? (
-              <Loader size="sm" color="white" />
+              <Loader size="sm" color="#1CFAC4" />
             ) : (
               <IconListDetails size={20} className="mr-2" />
             )}
@@ -210,10 +204,10 @@ const UnboughtBookCard = ({ book }: propsType) => {
         ) : (
           <button
             onClick={handleRemoveFromWishList}
-            className="flex items-center justify-center w-full px-6 py-3 text-white font-semibold rounded-xl border border-gray-400 hover:bg-white hover:text-black transition-all duration-300 ease-in-out focus:outline-none"
+            className="flex items-center justify-center w-full px-6 py-3 text-[#1CFAC4] font-semibold rounded-xl border border-[#1CFAC4] hover:bg-[#152D09] transition-all duration-300 ease-in-out focus:outline-none"
           >
             {removeWishLoading ? (
-              <Loader size="sm" color="white" />
+              <Loader size="sm" color="#1CFAC4" />
             ) : (
               <IconListDetails size={20} className="mr-2" />
             )}
@@ -223,6 +217,6 @@ const UnboughtBookCard = ({ book }: propsType) => {
       </div>
     </div>
   );
-};
+}
 
-export default UnboughtBookCard;
+export default WishlistCard;
