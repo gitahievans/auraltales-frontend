@@ -4,6 +4,89 @@ import { notifications } from "@mantine/notifications";
 import axios from "axios";
 export const baseUrl = "http://127.0.0.1:8000";
 
+export const addToFavorites = async (
+  audiobookId: number,
+  token: string,
+  setLoading: React.Dispatch<React.SetStateAction<boolean>>,
+  setInFavorites: React.Dispatch<React.SetStateAction<boolean>>
+) => {
+  try {
+    setLoading(true);
+    const response = await axios.post(
+      `${process.env.NEXT_PUBLIC_API_URL}/favorites/add/`,
+      {
+        audiobook_id: audiobookId,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    if (response.status === 200 || response.status === 201) {
+      setInFavorites(true);
+      notifications.show({
+        title: "Success",
+        message: "Audiobook added to favorites",
+        color: "green",
+        position: "top-right",
+      });
+    }
+  } catch (error: any) {
+    console.error("Error adding to favorites:", error);
+    notifications.show({
+      title: "Error",
+      message: error.response?.data?.message || "Failed to add to favorites",
+      color: "red",
+      position: "top-right",
+    });
+  } finally {
+    setLoading(false);
+  }
+};
+
+export const removeFromFavorites = async (
+  audiobookId: number,
+  token: string,
+  setLoading: React.Dispatch<React.SetStateAction<boolean>>,
+  setInFavorites: React.Dispatch<React.SetStateAction<boolean>>
+) => {
+  try {
+    setLoading(true);
+    const response = await axios.delete(
+      `${process.env.NEXT_PUBLIC_API_URL}/favorites/remove/${audiobookId}/`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    if (response.status === 204) {
+      // Changed to check for 204 status
+      setInFavorites(false);
+      notifications.show({
+        title: "Success",
+        message: "Audiobook removed from favorites",
+        color: "green",
+        position: "top-right",
+      });
+    }
+  } catch (error: any) {
+    console.error("Error removing from favorites:", error);
+    notifications.show({
+      title: "Error",
+      message:
+        error.response?.data?.message || "Failed to remove from favorites",
+      color: "red",
+      position: "top-right",
+    });
+  } finally {
+    setLoading(false);
+  }
+};
+
 export const addToWishlist = async (
   audiobookId: number,
   token: string,
@@ -129,6 +212,53 @@ export const checkAudiobookInWishlist = async (
   }
 };
 
+export const checkAudiobookInFavorites = async (
+  audiobookId: number,
+  token: string
+): Promise<boolean> => {
+  try {
+    const response = await axios.get(
+      `${process.env.NEXT_PUBLIC_API_URL}/favorites/`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    if (response.status === 200) {
+      const items = response.data.items || [];
+      return items.some((item: any) => item.audiobook.id === audiobookId);
+    }
+    return false;
+  } catch (error) {
+    console.error("Error checking favorites status:", error);
+    return false;
+  }
+};
+
+export const fetchFavorites = async (token?: string) => {
+  if (!token) {
+    throw new Error("Authentication token is required to fetch favorites.");
+  }
+  try {
+    const response = await axios.get("http://127.0.0.1:8000/api/favorites/", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (response.status === 200) {
+      return response.data.items;
+    } else {
+      throw new Error("Failed to fetch favorites.");
+    }
+  } catch (error) {
+    console.error("Error fetching favorites:", error);
+    throw error;
+  }
+};
+
 export const fetchWishlist = async (token: string | undefined) => {
   if (!token) {
     throw new Error("Authentication token is required to fetch the wishlist.");
@@ -142,7 +272,7 @@ export const fetchWishlist = async (token: string | undefined) => {
     });
 
     if (response.status === 200) {
-      return response.data.items; // Return the wishlist items
+      return response.data.items;
     } else {
       throw new Error("Failed to fetch wishlist.");
     }

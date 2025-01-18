@@ -1,14 +1,71 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import Image from "next/image";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import poster from "@/public/Images/soundleaf-files/posters/Gemini_Generated_Image_6g64ay6g64ay6g64.jpeg";
-import { IconPlayerPlayFilled, IconStar } from "@tabler/icons-react";
+import { IconPlayerPlayFilled, IconStar, IconStars } from "@tabler/icons-react";
 import { useMediaQuery } from "@mantine/hooks";
 import { Audiobook } from "@/types/types";
+import {
+  addToFavorites,
+  checkAudiobookInFavorites,
+  removeFromFavorites,
+} from "@/lib/store";
+import { useSession } from "next-auth/react";
+import { Loader } from "@mantine/core";
 
 const BoughtBookCard = ({ book }: { book: Audiobook }) => {
   const isMobile = useMediaQuery("(max-width: 767px)");
   const isMedium = useMediaQuery("(max-width: 1023px)");
   const isLarge = useMediaQuery("(min-width: 1024px)");
+  const [isLoading, setIsLoading] = useState(false);
+  const [inFavorites, setInFavorites] = useState(false);
+  const { data: session } = useSession();
+  const access = session?.jwt;
+
+  const handleAddToFavorites = async () => {
+    if (!access) return;
+    await addToFavorites(book.id, access, setIsLoading, setInFavorites);
+  };
+
+  const handleRemoveFromFavorites = async () => {
+    if (!access) return;
+    await removeFromFavorites(book.id, access, setIsLoading, setInFavorites);
+  };
+
+  const checkFavoritesStatus = async () => {
+    if (access) {
+      const isInFavorites = await checkAudiobookInFavorites(book?.id, access);
+      setInFavorites(isInFavorites);
+    }
+  };
+
+  useEffect(() => {
+    checkFavoritesStatus();
+  }, [access, book?.id]);
+
+  const renderFavoriteButton = () => {
+    const handleClick = inFavorites
+      ? handleRemoveFromFavorites
+      : handleAddToFavorites;
+    const buttonText = inFavorites
+      ? "Remove from Favorites"
+      : "Add to Favorites";
+
+    return (
+      <button
+        onClick={handleClick}
+        disabled={isLoading}
+        className="flex items-center justify-center w-full px-6 py-3 text-white font-semibold rounded-xl border border-gray-400 hover:bg-white hover:text-black transition-all duration-300 ease-in-out focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed"
+      >
+        {isLoading ? (
+          <Loader size="sm" color="white" />
+        ) : (
+          <IconStars size={20} className="mr-2" />
+        )}
+        {buttonText}
+      </button>
+    );
+  };
 
   return (
     <div className="flex flex-col md:flex-row p-6 rounded-lg items-center md:items-start gap-6 bg-[#061c19]">
@@ -81,10 +138,8 @@ const BoughtBookCard = ({ book }: { book: Audiobook }) => {
           <IconPlayerPlayFilled size={20} className="mr-2" />
           Listen Now
         </button>
-        <button className="flex items-center justify-center w-full px-6 py-3 text-white font-semibold rounded-xl border border-gray-400 hover:bg-white hover:text-black transition-all duration-300 ease-in-out focus:outline-none">
-          <IconStar size={20} className="mr-2" />
-          Add to Favourites
-        </button>
+
+        {renderFavoriteButton()}
       </div>
     </div>
   );

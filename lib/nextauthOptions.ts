@@ -43,7 +43,7 @@ export const nextAuthOptions: NextAuthOptions = {
           return {
             id: credentials.email,
             jwt: user.access,
-            refreshToken: user.refresh,
+            refresh: user.refresh,
             ...user.user,
           };
         } else {
