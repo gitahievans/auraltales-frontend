@@ -1,3 +1,4 @@
+import { FavoriteItem } from "@/app/favorites/page";
 import { WishlistItem } from "@/app/wishlist/page";
 import { PurchaseStatus } from "@/types/types";
 import { notifications } from "@mantine/notifications";
@@ -50,7 +51,9 @@ export const removeFromFavorites = async (
   audiobookId: number,
   token: string,
   setLoading: React.Dispatch<React.SetStateAction<boolean>>,
-  setInFavorites: React.Dispatch<React.SetStateAction<boolean>>
+  setInFavorites: React.Dispatch<React.SetStateAction<boolean>>,
+  setFavoriteItems: React.Dispatch<React.SetStateAction<FavoriteItem[] | null>>,
+  from: string
 ) => {
   try {
     setLoading(true);
@@ -66,6 +69,12 @@ export const removeFromFavorites = async (
     if (response.status === 204) {
       // Changed to check for 204 status
       setInFavorites(false);
+      if (from === "favorites") {
+        setFavoriteItems(
+          (prev) =>
+            prev?.filter((item) => item.audiobook.id !== audiobookId) || null
+        );
+      }
       notifications.show({
         title: "Success",
         message: "Audiobook removed from favorites",

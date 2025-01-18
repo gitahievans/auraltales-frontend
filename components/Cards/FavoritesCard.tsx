@@ -14,11 +14,17 @@ import {
   IconStars,
 } from "@tabler/icons-react";
 import { useSession } from "next-auth/react";
-import { addToFavorites } from "@/lib/store";
+import { addToFavorites, removeFromFavorites } from "@/lib/store";
 import Link from "next/link";
 import { listenSample } from "@/lib/audiobookActions.ts";
 
-const FavoriteCard = ({ audiobook }: FavoriteItem) => {
+const FavoriteCard = ({
+  audiobook,
+  setFavoriteItems,
+}: {
+  audiobook: FavoriteItem;
+  setFavoriteItems: React.Dispatch<React.SetStateAction<FavoriteItem[] | null>>;
+}) => {
   // Calculate a random rating between 4 and 5 for display
   const rating = Math.floor(Math.random() * (5 - 4 + 1) + 4);
   const isMobile = useMediaQuery("(max-width: 767px)");
@@ -30,11 +36,20 @@ const FavoriteCard = ({ audiobook }: FavoriteItem) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const { data: session } = useSession();
   const access = session?.jwt;
+  const [isLoading, setIsLoading] = useState(false);
 
-  console.log("audiobook", audiobook);
+  const from = "favorites";
 
-  const handleRemoveFromFavorites = () => {
-    // Implement logic to remove the book from favorites
+  const handleRemoveFromFavorites = async () => {
+    if (!access) return;
+    await removeFromFavorites(
+      favBook?.id,
+      access,
+      setIsLoading,
+      setInFavorites,
+      setFavoriteItems,
+      from
+    );
   };
 
   const handleListenSample = () => {
