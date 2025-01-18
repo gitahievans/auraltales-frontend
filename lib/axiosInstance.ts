@@ -2,13 +2,20 @@ import axios from "axios";
 
 // Create an instance of Axios with default configuration
 const axiosInstance = axios.create({
-  baseURL: "https://bootlight.onrender.com",
+  baseURL: process.env.NEXT_PUBLIC_API_URL,
 });
+
+// Function to get the session object from localStorage
+const getSession = () => {
+  const session = localStorage.getItem("session");
+  return session ? JSON.parse(session) : null;
+};
 
 // Add request interceptor
 axiosInstance.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem("token");
+    const session = getSession();
+    const token = session?.jwt;
 
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
@@ -37,26 +44,37 @@ axiosInstance.interceptors.response.use(
       originalRequest.sent = true;
 
       try {
-        const refreshToken = localStorage.getItem("refreshToken");
+        const session = getSession();
+        const refreshToken = session?.refreshToken;
+
+        if (!refreshToken) {
+          return Promise.reject(error);
+        }
+
+        // Refresh the token
         const response = await axios.post(
-          "https://bootlight.onrender.com/api/token/refresh",
+          `${process.env.NEXT_PUBLIC_API_URL}/accounts/token/refresh`,
           {
             refresh: refreshToken,
-          },
-          {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("token")}`,
-            },
           }
         );
-        const { access, refresh } = response.data;
-        localStorage.setItem("token", access);
-        localStorage.setItem("refreshToken", refresh);
 
+        const { access, refresh } = response.data;
+
+        // Update the session object in localStorage
+        const updatedSession = {
+          ...session,
+          jwt: access,
+          refreshToken: refresh,
+        };
+        localStorage.setItem("session", JSON.stringify(updatedSession));
+
+        // Update the Authorization header and retry the original request
         originalRequest.headers.Authorization = `Bearer ${access}`;
         return axiosInstance(originalRequest);
       } catch (refreshError) {
-        console.log(refreshError);
+        console.log("Refresh token error:", refreshError);
+        // Handle logout or session expiration logic here if needed
       }
     }
 

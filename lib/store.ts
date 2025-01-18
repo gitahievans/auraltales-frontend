@@ -14,7 +14,7 @@ export const addToFavorites = async (
   try {
     setLoading(true);
     const response = await axios.post(
-      `${process.env.NEXT_PUBLIC_API_URL}/favorites/add/`,
+      `${process.env.NEXT_PUBLIC_API_URL}/api/favorites/add/`,
       {
         audiobook_id: audiobookId,
       },
@@ -58,7 +58,7 @@ export const removeFromFavorites = async (
   try {
     setLoading(true);
     const response = await axios.delete(
-      `${process.env.NEXT_PUBLIC_API_URL}/favorites/remove/${audiobookId}/`,
+      `${process.env.NEXT_PUBLIC_API_URL}/api/favorites/remove/${audiobookId}/`,
       {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -227,7 +227,7 @@ export const checkAudiobookInFavorites = async (
 ): Promise<boolean> => {
   try {
     const response = await axios.get(
-      `${process.env.NEXT_PUBLIC_API_URL}/favorites/`,
+      `${process.env.NEXT_PUBLIC_API_URL}/api/favorites/`,
       {
         headers: {
           Authorization: `Bearer ${token}`,

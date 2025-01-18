@@ -15,6 +15,7 @@ import { IconArrowRight } from "@tabler/icons-react";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { proxy } from "valtio";
+import axiosInstance from "@/lib/axiosInstance";
 
 export const boughtState = proxy({
   bought: false,
@@ -75,22 +76,18 @@ export default function Home() {
 
   console.log("session", session);
 
+  //TODO: implement axiosInstance here
   const fetchAudiobooks = async () => {
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/audiobooks/", {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await axiosInstance("api/audiobooks/");
 
-      if (!response.ok) {
+      if (response.status !== 200) {
         throw new Error("Network response was not ok");
       }
 
-      const data = await response.json();
+      const data = response.data;
 
-      console.log(data);
+      console.log("data using axios instance", data);
 
       if (Array.isArray(data.audiobooks)) {
         setAudiobooks(data.audiobooks);
@@ -115,8 +112,6 @@ export default function Home() {
   useEffect(() => {
     fetchAudiobooks();
   }, []);
-
-  console.log("audiobooks", audiobooks);
 
   return (
     <div className="mt-4">

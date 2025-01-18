@@ -257,25 +257,25 @@ const SideNav = () => {
               Listen History
             </Link>
           </li>
-          <li className="pt-4 pb-2">
+          {/* <li className="pt-4 pb-2">
             <span className="text-gray-400">More</span>
-          </li>
-          <li>
+          </li> */}
+          {/* <li>
             <Link
               href="#"
               className="flex items-center p-2 text-white rounded-lg hover:bg-green"
             >
               How to Listen
             </Link>
-          </li>
-          <li>
+          </li> */}
+          {/* <li>
             <Link
               href="#"
               className="flex items-center p-2 text-white rounded-lg hover:bg-green"
             >
               Need Help?
             </Link>
-          </li>
+          </li> */}
           {session && session.user && (
             <li>
               <div
