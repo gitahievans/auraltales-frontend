@@ -6,6 +6,7 @@ import BookCard from "@/components/Cards/BookCard";
 import BoughtBookCard from "@/components/Cards/BoughtBookCard";
 import ChapterCard from "@/components/Cards/ChapterCard";
 import UnboughtBookCard from "@/components/Cards/UnboughtBookCard";
+import axiosInstance from "@/lib/axiosInstance";
 import { checkPurchaseStatus } from "@/lib/store";
 import { fetchedAudiobooks } from "@/state/state";
 import { Audiobook, PurchaseStatus } from "@/types/types";
@@ -19,6 +20,7 @@ import {
   IconUser,
   IconUserFilled,
 } from "@tabler/icons-react";
+import axios from "axios";
 import { get } from "http";
 import { useSession } from "next-auth/react";
 import React, { useEffect, useState } from "react";
@@ -76,19 +78,12 @@ const Page = ({ params }: PagePropsType) => {
 
   const fetchAudioBook = async () => {
     try {
-      const response = await fetch(
-        `http://127.0.0.1:8000/api/audiobooks/${slug}`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      const response = await axiosInstance.get(`/api/audiobooks/${slug}`);
 
-      if (!response.ok) {
+      if (response.status !== 200) {
         throw new Error("Failed to fetch Audiobook details");
       }
-      const data = await response.json();
+      const data = await response.data;
       setAudioBook(data.audiobook);
     } catch (error) {
       console.error(error);

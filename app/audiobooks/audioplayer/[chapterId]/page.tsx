@@ -1,6 +1,7 @@
 "use client";
 
 import AudioPlayer from "@/components/AudioPlayer";
+import axiosInstance from "@/lib/axiosInstance";
 import { Chapter } from "@/types/types";
 import { useSearchParams } from "next/navigation";
 import React from "react";
@@ -21,20 +22,15 @@ const Page = ({ params }: { params: { chapterId: string } }) => {
   // Fetch chapters using the chapterId
   const fetchChapters = async () => {
     try {
-      const response = await fetch(
-        `http://127.0.0.1:8000/api/audiobooks/${parsedAudiobook.slug}/chapters`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
+      const response = await axiosInstance.get(
+        `/api/audiobooks/${parsedAudiobook.slug}/chapters`
       );
 
-      if (!response.ok) {
+      if (response.status !== 200) {
         throw new Error("Failed to fetch Audiobook details");
       }
 
-      const data = await response.json();
+      const data = await response.data;
       console.log("data", data);
 
       setChapters(data.chapters);

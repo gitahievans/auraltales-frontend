@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useSearchParams } from "next/navigation";
+import axiosInstance from "@/lib/axiosInstance";
 
 const PaymentSuccess = () => {
   const searchParams = useSearchParams();
@@ -22,27 +23,23 @@ const PaymentSuccess = () => {
   useEffect(() => {
     if (reference) {
       // Send request to backend to verify payment
-      fetch(
-        `http://127.0.0.1:8000/purchases/verify-payment/buy/${reference}?audiobook_id=${audiobook?.id}`,
-        {
-          headers: {
-            Authorization: `Bearer ${access}`,
-          },
-        }
-      )
-        .then((response) => response.json())
-        .then((data) => {
-          if (data.status === "success") {
-            // Navigate to the audiobook details page
+      const verifyPayment = async () => {
+        try {
+          const response = await axiosInstance.get(
+            `/purchases/verify-payment/buy/${reference}?audiobook_id=${audiobook?.id}`
+          );
+
+          if (response.data.status === "success") {
             router.push(`/audiobooks/${audiobook?.slug}`);
           } else {
-            // Handle failed verification
             console.error("Payment verification failed");
           }
-        })
-        .catch((error) => {
+        } catch (error) {
           console.error("Error verifying payment:", error);
-        });
+        }
+      };
+
+      verifyPayment();
     }
   }, [reference, audiobook?.id, access, router, audiobook?.slug]);
 

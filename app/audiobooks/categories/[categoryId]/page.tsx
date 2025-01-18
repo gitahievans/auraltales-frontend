@@ -8,6 +8,7 @@ import axios from "axios";
 import { error } from "console";
 import Head from "next/head";
 import { Loader } from "@mantine/core";
+import axiosInstance from "@/lib/axiosInstance";
 
 type CategoryPropsType = {
   params: {
@@ -30,9 +31,7 @@ const CategoryPage = ({ params }: CategoryPropsType) => {
     try {
       setLoading(true);
       setError("");
-      const response = await axios.get(
-        `http://127.0.0.1:8000/api/categories/${categoryId}`
-      );
+      const response = await axiosInstance.get(`/api/categories/${categoryId}`);
 
       if (response.status === 200) {
         console.log("categories", response.data);

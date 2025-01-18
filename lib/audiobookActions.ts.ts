@@ -1,6 +1,7 @@
 import { notifications } from "@mantine/notifications";
 import { Howl } from "howler";
 import { Audiobook } from "@/types/types";
+import axiosInstance from "./axiosInstance";
 
 export const buyAudiobook = async (
   bookId: number,
@@ -11,39 +12,40 @@ export const buyAudiobook = async (
   const url = `http://127.0.0.1:8000/purchases/initiate-payment/buy/${bookId}/`;
   const callbackUrl = "https://7599-217-199-146-210.ngrok-free.app/success";
 
+  if (!accessToken) {
+    notifications.show({
+      title: "Error",
+      message: "Authorization token is missing.",
+      color: "red",
+      position: "top-right",
+    });
+    return;
+  }
+
   try {
-    const response = await fetch(url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${accessToken}`,
-      },
-      body: JSON.stringify({
-        amount: buyingPrice,
-        email: userEmail,
-        callback_url: callbackUrl,
-      }),
+    const response = await axiosInstance.post(url, {
+      amount: buyingPrice,
+      email: userEmail,
+      callback_url: callbackUrl,
     });
 
-    if (response.redirected) {
-      window.location.href = response.url;
+    if (response.data.redirected) {
+      window.location.href = response.data.url;
       return;
     }
 
-    const data = await response.json();
-
-    if (data.status) {
-      window.location.href = data.authorization_url!;
+    if (response.data.status) {
+      window.location.href = response.data.authorization_url!;
     } else {
       notifications.show({
         title: "Error",
-        message: data.message,
+        message: response.data.message,
         color: "red",
         position: "top-right",
       });
     }
   } catch (error) {
-    console.error(error);
+    console.error("Error initiating payment:", error);
     notifications.show({
       title: "Error",
       message: "Something went wrong. Please try again.",

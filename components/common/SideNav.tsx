@@ -24,6 +24,7 @@ import axios from "axios";
 import { log } from "console";
 import { WishlistItem } from "@/app/wishlist/page";
 import { fetchWishlist } from "@/lib/store";
+import axiosInstance from "@/lib/axiosInstance";
 
 type Category = {
   id: number;
@@ -51,9 +52,7 @@ const SideNav = () => {
 
   const fetchCollections = async () => {
     try {
-      const response = await axios.get(
-        "http://127.0.0.1:8000/api/collections/"
-      );
+      const response = await axiosInstance.get("/api/collections/");
 
       if (response.status === 200) {
         const filteredCollections = response.data.collections.filter(
@@ -69,7 +68,7 @@ const SideNav = () => {
 
   const fetchCategories = async () => {
     try {
-      const response = await axios.get("http://127.0.0.1:8000/api/categories/");
+      const response = await axiosInstance.get("/api/categories/");
 
       if (response.status === 200) {
         const filteredCategories = response.data.categories.filter(

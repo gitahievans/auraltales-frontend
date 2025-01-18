@@ -6,6 +6,7 @@ import React, { useEffect } from "react";
 import axios from "axios";
 import Head from "next/head";
 import { Loader } from "@mantine/core";
+import axiosInstance from "@/lib/axiosInstance";
 
 type CollectionPropsType = {
   params: {
@@ -29,8 +30,8 @@ const CollectionPage = ({ params }: CollectionPropsType) => {
     try {
       setLoading(true);
       setError("");
-      const response = await axios.get(
-        `http://127.0.0.1:8000/api/collections/${collectionId}`
+      const response = await axiosInstance.get(
+        `/api/collections/${collectionId}`
       );
 
       if (response.status === 200) {
