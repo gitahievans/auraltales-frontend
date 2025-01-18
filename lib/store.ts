@@ -2,8 +2,7 @@ import { FavoriteItem } from "@/app/favorites/page";
 import { WishlistItem } from "@/app/wishlist/page";
 import { PurchaseStatus } from "@/types/types";
 import { notifications } from "@mantine/notifications";
-import axios from "axios";
-export const baseUrl = "http://127.0.0.1:8000";
+import axiosInstance from "./axiosInstance";
 
 export const addToFavorites = async (
   audiobookId: number,
@@ -13,17 +12,9 @@ export const addToFavorites = async (
 ) => {
   try {
     setLoading(true);
-    const response = await axios.post(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/favorites/add/`,
-      {
-        audiobook_id: audiobookId,
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
+    const response = await axiosInstance.post(`/api/favorites/add/`, {
+      audiobook_id: audiobookId,
+    });
 
     if (response.status === 200 || response.status === 201) {
       setInFavorites(true);
@@ -57,13 +48,8 @@ export const removeFromFavorites = async (
 ) => {
   try {
     setLoading(true);
-    const response = await axios.delete(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/favorites/remove/${audiobookId}/`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
+    const response = await axiosInstance.delete(
+      `/api/favorites/remove/${audiobookId}/`
     );
 
     if (response.status === 204) {
@@ -104,15 +90,9 @@ export const addToWishlist = async (
 ) => {
   try {
     setAddWishLoading(true);
-    const response = await axios.post(
-      "http://127.0.0.1:8000/api/wishlist/add/",
-      { audiobook_id: audiobookId },
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
+    const response = await axiosInstance.post("/api/wishlist/add/", {
+      audiobook_id: audiobookId,
+    });
 
     if (response.status === 200 || response.status === 201) {
       setInWishList(true);
@@ -155,13 +135,8 @@ export const removeFromWishlist = async (
   try {
     setRemoveWishLoading(true);
     // Make a DELETE request to remove the audiobook from the wishlist
-    const response = await axios.delete(
-      `http://127.0.0.1:8000/api/wishlist/remove/${audiobookId}/`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
+    const response = await axiosInstance.delete(
+      `/api/wishlist/remove/${audiobookId}/`
     );
 
     if (response.status === 200 || response.status === 204) {
@@ -205,11 +180,7 @@ export const checkAudiobookInWishlist = async (
   token: string
 ) => {
   try {
-    const response = await axios.get("http://127.0.0.1:8000/api/wishlist/", {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    const response = await axiosInstance.get("/api/wishlist/");
 
     if (response.status === 200) {
       const items = response.data.items || [];
@@ -226,14 +197,7 @@ export const checkAudiobookInFavorites = async (
   token: string
 ): Promise<boolean> => {
   try {
-    const response = await axios.get(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/favorites/`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
+    const response = await axiosInstance.get(`/api/favorites/`);
 
     if (response.status === 200) {
       const items = response.data.items || [];
@@ -251,11 +215,7 @@ export const fetchFavorites = async (token?: string) => {
     throw new Error("Authentication token is required to fetch favorites.");
   }
   try {
-    const response = await axios.get("http://127.0.0.1:8000/api/favorites/", {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    const response = await axiosInstance.get("/api/favorites/");
 
     if (response.status === 200) {
       return response.data.items;
@@ -268,17 +228,9 @@ export const fetchFavorites = async (token?: string) => {
   }
 };
 
-export const fetchWishlist = async (token: string | undefined) => {
-  if (!token) {
-    throw new Error("Authentication token is required to fetch the wishlist.");
-  }
-
+export const fetchWishlist = async () => {
   try {
-    const response = await axios.get("http://127.0.0.1:8000/api/wishlist/", {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    const response = await axiosInstance.get("/api/wishlist/");
 
     if (response.status === 200) {
       return response.data.items;
@@ -296,20 +248,15 @@ export const checkPurchaseStatus = async (
   jwt: string
 ): Promise<PurchaseStatus | null> => {
   try {
-    const response = await fetch(
-      `http://127.0.0.1:8000/purchases/check-purchase-status/${audiobookId}`,
-      {
-        headers: {
-          Authorization: `Bearer ${jwt}`,
-        },
-      }
+    const response = await axiosInstance.get(
+      `/purchases/check-purchase-status/${audiobookId}`
     );
 
-    if (!response.ok) {
+    if (response.status !== 200) {
       throw new Error("Failed to fetch purchase status");
     }
 
-    const data = await response.json();
+    const data = response.data;
     return data;
   } catch (error) {
     console.error("Error fetching purchase status:", error);

@@ -14,8 +14,10 @@ const getSession = () => {
 // Add request interceptor
 axiosInstance.interceptors.request.use(
   (config) => {
-    const session = getSession();
-    const token = session?.jwt;
+    const parsedSession = getSession();
+    const token = parsedSession?.jwt;
+
+    console.log("token in axios instance", token);
 
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
@@ -28,6 +30,8 @@ axiosInstance.interceptors.request.use(
     } else if (config.headers["Content-Type"] !== "application/json") {
       config.headers["Content-Type"] = "multipart/form-data";
     }
+    console.log("config returned", config);
+
     return config;
   },
   (error) => {
@@ -75,6 +79,7 @@ axiosInstance.interceptors.response.use(
       } catch (refreshError) {
         console.log("Refresh token error:", refreshError);
         // Handle logout or session expiration logic here if needed
+        return Promise.reject(refreshError);
       }
     }
 

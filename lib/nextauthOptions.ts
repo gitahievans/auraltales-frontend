@@ -167,10 +167,6 @@ export const nextAuthOptions: NextAuthOptions = {
       session.jwt = token.jwt as string;
       session.refreshToken = token.refreshToken as string;
 
-      if (typeof window !== "undefined") {
-        localStorage.setItem("session", JSON.stringify(session));
-      }
-
       return session;
     },
 
