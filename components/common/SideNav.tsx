@@ -85,7 +85,7 @@ const SideNav = () => {
   useEffect(() => {
     const loadWishlist = async () => {
       try {
-        const items = await fetchWishlist(session?.jwt);
+        const items = await fetchWishlist();
         setWishlistItems(items);
       } catch (err) {
         console.log(err);
@@ -279,7 +279,7 @@ const SideNav = () => {
             <li>
               <div
                 onClick={() => signOut()}
-                className="flex items-center p-2 text-white bg-green rounded-lg"
+                className="flex items-center p-2 text-white bg-green rounded-lg cursor-pointer"
               >
                 <IconLogout2 className="mr-2" />
                 Logout

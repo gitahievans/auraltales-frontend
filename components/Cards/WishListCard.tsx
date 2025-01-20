@@ -1,62 +1,72 @@
-import Image from "next/image";
 import React, { useEffect, useRef, useState } from "react";
-import {
-  IconListDetails,
-  IconPlaylist,
-  IconShoppingBag,
-  IconPlayerPlay,
-  IconPlayerPause,
-  IconClock,
-} from "@tabler/icons-react";
-import { Audiobook, PurchaseStatus } from "@/types/types";
+import Image from "next/image";
+import { Loader } from "@mantine/core";
 import { useMediaQuery } from "@mantine/hooks";
+import Link from "next/link";
 import { Howl } from "howler";
 import { useSession } from "next-auth/react";
 import { notifications } from "@mantine/notifications";
-import { Loader } from "@mantine/core";
+import {
+  IconPlayerPlay,
+  IconPlayerPause,
+  IconClock,
+  IconShoppingBag,
+  IconListDetails,
+  IconStarFilled,
+} from "@tabler/icons-react";
 import {
   addToWishlist,
   checkAudiobookInWishlist,
   checkPurchaseStatus,
   removeFromWishlist,
 } from "@/lib/store";
-import { buyAudiobook, listenSample } from "@/lib/audiobookActions.ts";
-import Link from "next/link";
 import { WishlistItem } from "@/app/wishlist/page";
+import { PurchaseStatus } from "@/types/types";
+import { buyAudiobook, listenSample } from "@/lib/audiobookActions.ts";
 
-function WishlistCard({
-  audiobook,
-  setWishlistItems,
-}: {
+interface WishlistCardProps {
   audiobook: WishlistItem;
   setWishlistItems: React.Dispatch<React.SetStateAction<WishlistItem[] | null>>;
-}) {
+}
+
+const WishlistCard: React.FC<WishlistCardProps> = ({
+  audiobook,
+  setWishlistItems,
+}) => {
   const { data: session } = useSession();
-  const [isPlaying, setIsPlaying] = useState(false);
-  const soundRef = useRef<Howl | null>(null);
-  const [audioSampleLoading, setAudioSampleLoading] = useState(false);
   const isMobile = useMediaQuery("(max-width: 767px)");
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [audioSampleLoading, setAudioSampleLoading] = useState(false);
   const [inWishList, setInWishList] = useState(false);
   const [addWishLoading, setAddWishLoading] = useState(false);
   const [removeWishLoading, setRemoveWishLoading] = useState(false);
   const [isPurchased, setPurchaseStatus] = useState<PurchaseStatus | null>(
     null
   );
-  const from = "wishlist";
-  const access = session?.jwt;
-  const book = audiobook.audiobook;
+  const soundRef = useRef<Howl | null>(null);
 
-  const checkWishlistStatus = async () => {
-    if (access) {
-      const isInWishlist = await checkAudiobookInWishlist(book.id, access);
-      setInWishList(isInWishlist);
-    }
-  };
+  const book = audiobook.audiobook;
+  const access = session?.jwt;
+  const from = "wishlist";
 
   useEffect(() => {
+    const checkWishlistStatus = async () => {
+      if (access) {
+        const isInWishlist = await checkAudiobookInWishlist(book.id, access);
+        setInWishList(isInWishlist);
+      }
+    };
+
     localStorage.setItem("audiobookToBuy", JSON.stringify(book));
     localStorage.setItem("session", JSON.stringify(session));
     checkWishlistStatus();
+
+    const getPurchaseStatus = async () => {
+      if (!audiobook || !access) return;
+      const status = await checkPurchaseStatus(audiobook.id, access);
+      setPurchaseStatus(status);
+    };
+    getPurchaseStatus();
 
     return () => {
       if (soundRef.current) {
@@ -64,7 +74,7 @@ function WishlistCard({
         soundRef.current.unload();
       }
     };
-  }, [book, session]);
+  }, [book, session, access, audiobook]);
 
   const handleListenSample = () => {
     listenSample(
@@ -77,13 +87,10 @@ function WishlistCard({
   };
 
   const handleBuyAudiobook = () => {
-    const accessToken = session?.jwt;
     const userEmail = session?.user?.email;
-    const bookId = book.id;
-    const buyingPrice = +book.buying_price;
 
-    if (accessToken && userEmail) {
-      buyAudiobook(bookId, buyingPrice, userEmail, accessToken);
+    if (access && userEmail) {
+      buyAudiobook(book.id, +book.buying_price, userEmail, access);
     } else {
       notifications.show({
         title: "Error",
@@ -93,15 +100,6 @@ function WishlistCard({
       });
     }
   };
-
-  useEffect(() => {
-    const getPurchaseStatus = async () => {
-      if (!audiobook || !session?.jwt) return;
-      const status = await checkPurchaseStatus(audiobook.id, session.jwt);
-      setPurchaseStatus(status);
-    };
-    getPurchaseStatus();
-  }, [audiobook, session?.jwt]);
 
   const handleAddToWishlist = async () => {
     if (!access) {
@@ -113,14 +111,14 @@ function WishlistCard({
       });
       return;
     }
-    addToWishlist(book?.id!, access!, setAddWishLoading, setInWishList);
+    addToWishlist(book.id, access, setAddWishLoading, setInWishList);
   };
 
   const handleRemoveFromWishList = async () => {
     if (!access) return;
     removeFromWishlist(
-      book?.id!,
-      access!,
+      book.id,
+      access,
       setRemoveWishLoading,
       setInWishList,
       setWishlistItems,
@@ -129,75 +127,75 @@ function WishlistCard({
   };
 
   return (
-    <div className="relative overflow-hidden rounded-xl bg-[#041714] hover:shadow-lg transition-all duration-300">
-      <div className="flex flex-col md:flex-row">
-        {/* Left Section - Image and Quick Actions */}
-        <div className="relative group md:w-1/3">
+    <div className="bg-[#041714] rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 group">
+      <div className="flex flex-col h-full">
+        {/* Top Section with Image and Overlay */}
+        <div className="relative aspect-[4/3] md:aspect-[16/9]">
           <Image
-            src={book?.poster || "/api/placeholder/250/250"}
-            alt={book?.title || "Book Cover"}
-            width={isMobile ? 300 : 400}
-            height={isMobile ? 300 : 400}
-            className="object-cover w-full h-[300px] md:h-full rounded-t-xl md:rounded-l-xl md:rounded-t-none"
+            src={book.poster}
+            alt={book.title}
+            layout="fill"
+            objectFit="cover"
+            className="transition-transform duration-300 group-hover:scale-105"
           />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#041714] to-transparent opacity-90" />
 
-          {/* Overlay with quick actions */}
-          <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-            <button
-              onClick={handleListenSample}
-              className="p-4 rounded-full bg-[#1F8505] hover:bg-[#21440F] transition-all duration-300"
-            >
-              {audioSampleLoading ? (
-                <Loader size="sm" color="#1CFAC4" />
-              ) : isPlaying ? (
-                <IconPlayerPause className="w-8 h-8 text-white" />
-              ) : (
-                <IconPlayerPlay className="w-8 h-8 text-white" />
-              )}
-            </button>
+          {/* Quick Actions Overlay */}
+          <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-black/60">
+            <div className="flex gap-4">
+              <button
+                onClick={handleListenSample}
+                className="p-4 rounded-full bg-[#1F8505] hover:bg-[#21440F] transition-all duration-300"
+              >
+                {audioSampleLoading ? (
+                  <Loader size="sm" color="#1CFAC4" />
+                ) : isPlaying ? (
+                  <IconPlayerPause className="w-8 h-8 text-white" />
+                ) : (
+                  <IconPlayerPlay className="w-8 h-8 text-white" />
+                )}
+              </button>
+            </div>
           </div>
         </div>
 
-        {/* Right Section - Content */}
+        {/* Content Section */}
         <div className="p-6 flex flex-col flex-grow">
-          {/* Header */}
+          {/* Title and Rating */}
           <div className="mb-4">
-            <h3 className="text-2xl font-bold text-[#1CFAC4] mb-2">
-              {book?.title}
+            <h3 className="text-xl font-bold text-[#1CFAC4] mb-2 line-clamp-2">
+              {book.title}
             </h3>
+            {book.rating && (
+              <div className="flex items-center gap-1">
+                {[...Array(5)].map((_, index) => (
+                  <IconStarFilled
+                    key={index}
+                    size={16}
+                    className={
+                      index < book.rating! ? "text-[#1F8505]" : "text-gray-600"
+                    }
+                  />
+                ))}
+              </div>
+            )}
           </div>
 
-          {/* Content */}
-          <div className="space-y-3 text-[#FFFFFF] mb-6">
-            <p>
+          {/* Book Details */}
+          <div className="space-y-2 text-sm text-[#FFFFFF] mb-4">
+            <p className="line-clamp-1">
               <span className="text-[#A9A9AA]">By:</span>{" "}
-              {book?.authors?.map((author, index) => (
+              {book.authors.map((author, index) => (
                 <span key={author.id}>
                   {author.name}
                   {index < book.authors.length - 1 ? ", " : ""}
                 </span>
               ))}
             </p>
-            <p>
-              <span className="text-[#A9A9AA]">Narrated by:</span>{" "}
-              {book?.narrators?.map((narrator, index) => (
-                <span key={narrator.id}>
-                  {narrator.name}
-                  {index < book.narrators.length - 1 ? ", " : ""}
-                </span>
-              ))}
-            </p>
             <div className="flex items-center gap-2">
-              <IconClock className="w-4 h-4 text-[#1CFAC4]" />
-              <span>{book?.length}</span>
+              <IconClock size={16} className="text-[#1CFAC4]" />
+              <span>{book.length}</span>
             </div>
-            <p>
-              <span className="text-[#A9A9AA]">Release Date:</span>{" "}
-              {book?.date_published}
-            </p>
-            <p>
-              <span className="text-[#A9A9AA]">Language:</span> English
-            </p>
           </div>
 
           {/* Action Buttons */}
@@ -205,48 +203,48 @@ function WishlistCard({
             {!isPurchased ? (
               <button
                 onClick={handleBuyAudiobook}
-                className="flex items-center justify-center w-full px-6 py-3 bg-[#1F8505] text-white font-semibold rounded-xl hover:bg-[#21440F] transition-all duration-300 focus:outline-none"
+                className="flex items-center justify-center w-full px-6 py-3 bg-[#1F8505] text-white font-semibold rounded-xl hover:bg-[#21440F] transition-all duration-300"
               >
                 <IconShoppingBag size={20} className="mr-2" />
-                Buy: KES {book?.buying_price}
+                Buy: KES {book.buying_price}
               </button>
-            ) : isPurchased ? (
-              <Link
-                href={`/audiobooks/${book?.slug}`}
-                className="flex items-center justify-center w-full px-6 py-3 bg-[#1F8505] text-white font-semibold rounded-xl hover:bg-[#21440F] transition-all duration-300 focus:outline-none"
-              >
-                <IconPlaylist size={20} className="mr-2" />
-                Owned: View Book
-              </Link>
             ) : (
-              <div className="flex justify-center">
-                <Loader size="sm" color="#1CFAC4" />
-              </div>
+              <Link
+                href={`/audiobooks/${book.slug}`}
+                className="flex items-center justify-center w-full px-6 py-3 bg-[#1F8505] text-white font-semibold rounded-xl hover:bg-[#21440F] transition-all duration-300"
+              >
+                <IconPlayerPlay size={20} className="mr-2" />
+                Play Audiobook
+              </Link>
             )}
 
             {!inWishList ? (
               <button
                 onClick={handleAddToWishlist}
-                className="flex items-center justify-center w-full px-6 py-3 text-[#1CFAC4] font-semibold rounded-xl border border-[#1CFAC4] hover:bg-[#152D09] transition-all duration-300 ease-in-out focus:outline-none"
+                className="flex items-center justify-center w-full px-6 py-3 text-[#1CFAC4] font-semibold rounded-xl border border-[#1CFAC4] hover:bg-[#152D09] transition-all duration-300"
               >
                 {addWishLoading ? (
                   <Loader size="sm" color="#1CFAC4" />
                 ) : (
-                  <IconListDetails size={20} className="mr-2" />
+                  <>
+                    <IconListDetails size={20} className="mr-2" />
+                    Add to Wishlist
+                  </>
                 )}
-                Add to Wishlist
               </button>
             ) : (
               <button
                 onClick={handleRemoveFromWishList}
-                className="flex items-center justify-center w-full px-6 py-3 text-[#1CFAC4] font-semibold rounded-xl border border-[#1CFAC4] hover:bg-[#152D09] transition-all duration-300 ease-in-out focus:outline-none"
+                className="flex items-center justify-center w-full px-6 py-3 text-[#1CFAC4] font-semibold rounded-xl border border-[#1CFAC4] hover:bg-[#152D09] transition-all duration-300"
               >
                 {removeWishLoading ? (
                   <Loader size="sm" color="#1CFAC4" />
                 ) : (
-                  <IconListDetails size={20} className="mr-2" />
+                  <>
+                    <IconListDetails size={20} className="mr-2" />
+                    Remove from Wishlist
+                  </>
                 )}
-                Remove from Wishlist
               </button>
             )}
           </div>
@@ -254,6 +252,6 @@ function WishlistCard({
       </div>
     </div>
   );
-}
+};
 
 export default WishlistCard;

@@ -11,6 +11,7 @@ import {
   Text,
   Title,
   Grid,
+  ActionIcon,
 } from "@mantine/core";
 import {
   IconSearch,
@@ -18,6 +19,7 @@ import {
   IconHistory,
   IconBookmark,
   IconSortAscending,
+  IconX,
 } from "@tabler/icons-react";
 import LibraryCard from "@/components/Cards/LibraryCard";
 import axiosInstance from "@/lib/axiosInstance";
@@ -144,6 +146,13 @@ const MyLibraryPage = () => {
             value={searchQuery}
             onChange={(event) => setSearchQuery(event.currentTarget.value)}
             leftSection={<IconSearch size={20} />}
+            rightSection={
+              searchQuery && (
+                <ActionIcon color="green" onClick={() => setSearchQuery("")}>
+                  <IconX size={16} />
+                </ActionIcon>
+              )
+            }
             styles={{
               input: {
                 backgroundColor: "#041714",
@@ -178,6 +187,7 @@ const MyLibraryPage = () => {
               dropdown: {
                 backgroundColor: "#041714",
                 borderColor: "rgba(28, 250, 196, 0.2)",
+                color: "white",
               },
               option: {
                 "&[data-selected]": {

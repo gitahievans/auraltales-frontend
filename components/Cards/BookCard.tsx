@@ -1,16 +1,18 @@
-import React from "react";
-import Image, { StaticImageData } from "next/image";
+import React, { useRef, useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
-import defaultPoster from "@/public/Images/soundleaf-files/posters/Gemini_Generated_Image_v8c5gbv8c5gbv8c5.jpeg";
+import { Loader } from "@mantine/core";
+import { Howl } from "howler";
 import {
-  Audiobook,
-  Author,
-  Category,
-  Chapter,
-  Collection,
-  Narrator,
-} from "@/types/types";
-// implement lazy loading
+  IconPlayerPlay,
+  IconPlayerPause,
+  IconClock,
+  IconBookmarks,
+  IconShoppingCart,
+  IconCoin,
+} from "@tabler/icons-react";
+import defaultPoster from "@/public/Images/soundleaf-files/posters/Gemini_Generated_Image_v8c5gbv8c5gbv8c5.jpeg";
+import { Author, Category, Chapter, Collection, Narrator } from "@/types/types";
 
 interface BookCardProps {
   book: {
@@ -33,43 +35,82 @@ interface BookCardProps {
 }
 
 const BookCard: React.FC<BookCardProps> = ({ book }) => {
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [audioSampleLoading, setAudioSampleLoading] = useState(false);
+  const soundRef = useRef<Howl | null>(null);
+
+  const handleListenSample = () => {
+    if (!book.audio_sample) return;
+
+    if (soundRef.current) {
+      if (isPlaying) {
+        soundRef.current.pause();
+        setIsPlaying(false);
+      } else {
+        soundRef.current.play();
+        setIsPlaying(true);
+      }
+      return;
+    }
+
+    setAudioSampleLoading(true);
+    const sound = new Howl({
+      src: [book.audio_sample],
+      html5: true,
+      onend: () => {
+        setIsPlaying(false);
+      },
+      onload: () => {
+        setAudioSampleLoading(false);
+        sound.play();
+        setIsPlaying(true);
+      },
+      onloaderror: () => {
+        setAudioSampleLoading(false);
+      },
+    });
+
+    soundRef.current = sound;
+  };
+
   return (
-    <Link
-      href={`/audiobooks/${book?.slug}`}
-      className="bg-dark-green text-white rounded-lg shadow-lg hover:shadow-2xl hover:scale-105 overflow-hidden w-full max-w-52 cursor-pointer flex flex-col transition-all duration-300"
-    >
-      {/* TODO: Add placeholder image to show before poster shows */}
-      <Image
-        src={book?.poster || defaultPoster}
-        alt="title"
-        className="w-full object-cover rounded-lg"
-        width={500}
-        height={500}
-        layout="responsive"
-        loading="lazy"
-      />
-      <div className="p-2 sm:p-4 flex flex-col">
-        <h3 className="text-base font-semibold mb-1 line-clamp-2">
-          {book?.title}
-        </h3>
-        <p className="text-gray-200 mb-1 text-sm">
-          <span className="mr-2"> BY: </span>{" "}
-          {book?.authors && book?.authors?.length > 0 ? (
-            book.authors.map((author: any) => (
-              <span key={author.id}>
-                {author.name}
-                {book.authors.length > 1 &&
-                author !== book.authors[book.authors.length - 1]
-                  ? ", "
-                  : ""}
-              </span>
-            ))
-          ) : (
-            <span>Unknown Author</span>
-          )}
-        </p>
+    <div className="bg-[#041714] rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 group">
+      <div className="flex flex-col h-full">
+        <div className="relative aspect-[4/3] md:aspect-[16/9]">
+          <Image
+            src={book.poster || defaultPoster}
+            alt={book.title}
+            layout="fill"
+            objectFit="cover"
+            className="transition-transform duration-300 group-hover:scale-105"
+          />
+        </div>
+
+        <div className="px-2 py-4 flex flex-col flex-grow">
+          <div className="mb-2">
+            <h3 className=" font-bold text-[#1CFAC4] line-clamp-1">
+              {book.title}
+            </h3>
+          </div>
+
+          <div className="text-sm text-[#FFFFFF] mb-4">
+            <p className="line-clamp-1">
+              <span className="text-[#A9A9AA]">By:</span>{" "}
+              {book.authors && book.authors.length > 0 ? (
+                book.authors.map((author, index) => (
+                  <span key={author.id}>
+                    {author.name}
+                    {index < book.authors.length - 1 ? ", " : ""}
+                  </span>
+                ))
+              ) : (
+                <span>Unknown Author</span>
+              )}
+            </p>
+          </div>
+        </div>
       </div>
-    </Link>
+    </div>
   );
 };
 

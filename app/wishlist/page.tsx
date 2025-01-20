@@ -1,25 +1,29 @@
 "use client";
 
-import { customStyles } from "@/styles/FilterStyles";
-import React, { useEffect, useState, useMemo } from "react";
-import Select from "react-select";
-import axios from "axios";
+import React, { useState, useEffect, useMemo } from "react";
 import { useSession } from "next-auth/react";
+import {
+  ActionIcon,
+  Container,
+  Grid,
+  Loader,
+  Select,
+  Tabs,
+  Text,
+  TextInput,
+  Title,
+} from "@mantine/core";
+import {
+  IconSearch,
+  IconBooks,
+  IconSortAscending,
+  IconHeart,
+  IconCalendar,
+  IconX,
+} from "@tabler/icons-react";
 import { Audiobook } from "@/types/types";
 import WishlistCard from "@/components/Cards/WishListCard";
-import Link from "next/link";
 import { fetchWishlist } from "@/lib/store";
-
-// Define filter options based on your needs
-const filterOptions = [
-  { value: "all", label: "All Books" },
-  { value: "latest", label: "Latest Added" },
-  { value: "oldest", label: "Oldest Added" },
-  { value: "title_asc", label: "Title (A-Z)" },
-  { value: "title_desc", label: "Title (Z-A)" },
-  { value: "date_published_new", label: "Newest Release" },
-  { value: "date_published_old", label: "Oldest Release" },
-];
 
 export type WishlistItem = {
   id: number;
@@ -29,21 +33,23 @@ export type WishlistItem = {
 
 const WishListPage = () => {
   const { data: session } = useSession();
+  const [activeTab, setActiveTab] = useState<string | null>("all");
+  const [sortBy, setSortBy] = useState<string | null>("latest");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [loading, setLoading] = useState(true);
   const [wishlistItems, setWishlistItems] = useState<WishlistItem[] | null>(
     null
   );
-  const [selectedFilter, setSelectedFilter] = useState({
-    value: "all",
-    label: "All Books",
-  });
 
   useEffect(() => {
     const loadWishlist = async () => {
       try {
-        const items = await fetchWishlist(session?.jwt);
+        const items = await fetchWishlist();
         setWishlistItems(items);
       } catch (err) {
-        console.log(err);
+        console.error("Error fetching wishlist:", err);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -53,99 +59,205 @@ const WishListPage = () => {
   }, [session?.jwt]);
 
   const filteredItems = useMemo(() => {
-    if (!wishlistItems) return null;
+    if (!wishlistItems) return [];
 
-    const items = [...wishlistItems];
+    return wishlistItems.filter(
+      (item) =>
+        item.audiobook.title
+          .toLowerCase()
+          .includes(searchQuery.toLowerCase()) ||
+        item.audiobook.authors.some((author) =>
+          author.name.toLowerCase().includes(searchQuery.toLowerCase())
+        )
+    );
+  }, [wishlistItems, searchQuery]);
 
-    switch (selectedFilter.value) {
+  const sortedItems = useMemo(() => {
+    if (!filteredItems) return [];
+
+    const items = [...filteredItems];
+
+    switch (sortBy) {
       case "latest":
         return items.sort(
           (a, b) =>
             new Date(b.added_at).getTime() - new Date(a.added_at).getTime()
         );
-
       case "oldest":
         return items.sort(
           (a, b) =>
             new Date(a.added_at).getTime() - new Date(b.added_at).getTime()
         );
-
       case "title_asc":
         return items.sort((a, b) =>
           a.audiobook.title.localeCompare(b.audiobook.title)
         );
-
       case "title_desc":
         return items.sort((a, b) =>
           b.audiobook.title.localeCompare(a.audiobook.title)
         );
-
       case "date_published_new":
         return items.sort(
           (a, b) =>
             new Date(b.audiobook.date_published).getTime() -
             new Date(a.audiobook.date_published).getTime()
         );
-
       case "date_published_old":
         return items.sort(
           (a, b) =>
             new Date(a.audiobook.date_published).getTime() -
             new Date(b.audiobook.date_published).getTime()
         );
-
-      default: // "all"
+      default:
         return items;
     }
-  }, [wishlistItems, selectedFilter]);
-
-  const handleFilterChange = (option: any) => {
-    setSelectedFilter(option);
-  };
-
-  console.log("filteredItems", filteredItems);
+  }, [filteredItems, sortBy]);
 
   return (
-    <div className="text-white flex flex-col gap-4 min-h-[80dvh]">
-      <h1 className="text-3xl font-bold mb-4 text-white">My Wish List</h1>
-
-      <div className="flex items-center gap-6">
-        <p>Filter</p>
-        <Select
-          options={filterOptions}
-          styles={customStyles}
-          className="w-56"
-          value={selectedFilter}
-          onChange={handleFilterChange}
-          isSearchable={false}
-        />
+    <Container size="xl" py="xl">
+      {/* Header Section */}
+      <div className="mb-8">
+        <Title order={1} style={{ color: "#1CFAC4" }} className="mb-2">
+          My Wishlist
+        </Title>
+        <Text color="#A9A9AA">Books you want to read in the future</Text>
       </div>
 
-      <div className="flex flex-col gap-2">
-        {filteredItems?.map((item: WishlistItem) => (
-          <WishlistCard
-            key={item.id}
-            audiobook={item}
-            setWishlistItems={setWishlistItems}
+      {/* Filters and Search */}
+      <Grid mb="xl">
+        <Grid.Col span={{ base: 12, md: 9 }}>
+          <TextInput
+            placeholder="Search your library..."
+            value={searchQuery}
+            onChange={(event) => setSearchQuery(event.currentTarget.value)}
+            leftSection={<IconSearch size={20} />}
+            rightSection={
+              searchQuery && (
+                <ActionIcon color="green" onClick={() => setSearchQuery("")}>
+                  <IconX size={16} />
+                </ActionIcon>
+              )
+            }
+            styles={{
+              input: {
+                backgroundColor: "#041714",
+                borderColor: "rgba(28, 250, 196, 0.2)",
+                color: "white",
+                "&:focus": {
+                  borderColor: "#1CFAC4",
+                },
+              },
+            }}
           />
-        ))}
-      </div>
+        </Grid.Col>
+        <Grid.Col span={{ base: 12, md: 3 }}>
+          <Select
+            value={sortBy}
+            onChange={setSortBy}
+            data={[
+              { value: "latest", label: "Latest Added" },
+              { value: "oldest", label: "Oldest Added" },
+              { value: "title_asc", label: "Title (A-Z)" },
+              { value: "title_desc", label: "Title (Z-A)" },
+              { value: "date_published_new", label: "Newest Release" },
+              { value: "date_published_old", label: "Oldest Release" },
+            ]}
+            leftSection={<IconSortAscending size={20} />}
+            styles={{
+              input: {
+                backgroundColor: "#041714",
+                borderColor: "rgba(28, 250, 196, 0.2)",
+                color: "white",
+                "&:focus": {
+                  borderColor: "#1CFAC4",
+                },
+              },
+              dropdown: {
+                backgroundColor: "#041714",
+                borderColor: "rgba(28, 250, 196, 0.2)",
+                color: "white",
+              },
+              option: {
+                "&[data-selected]": {
+                  backgroundColor: "#1F8505",
+                },
+                "&[data-hovered]": {
+                  backgroundColor: "#21440F",
+                },
+              },
+            }}
+          />
+        </Grid.Col>
+      </Grid>
 
-      {!filteredItems ||
-        (filteredItems.length === 0 && (
-          <div className="flex flex-col gap-2 items-center justify-center">
-            <p className="text-center text-gray-400">
-              Add books to your wishlist to start listening.
-            </p>
-            <Link
-              href="/"
-              className="border border-gray-400 px-4 py-2 rounded-md"
-            >
-              Explore Audibooks
-            </Link>
-          </div>
-        ))}
-    </div>
+      {/* Tabs */}
+      <Tabs
+        value={activeTab}
+        onChange={setActiveTab}
+        mb="xl"
+        styles={{
+          list: {
+            borderBottom: "1px solid rgba(28, 250, 196, 0.2)",
+          },
+          tab: {
+            color: "#A9A9AA",
+            "&:hover": {
+              color: "#1CFAC4",
+            },
+            "&[data-active]": {
+              color: "#1CFAC4",
+              borderColor: "#1CFAC4",
+            },
+          },
+        }}
+      >
+        <Tabs.List>
+          <Tabs.Tab value="all" leftSection={<IconBooks size={20} />}>
+            All Books
+          </Tabs.Tab>
+          <Tabs.Tab value="recent" leftSection={<IconCalendar size={20} />}>
+            Recently Added
+          </Tabs.Tab>
+          <Tabs.Tab value="favorites" leftSection={<IconHeart size={20} />}>
+            Favorites
+          </Tabs.Tab>
+        </Tabs.List>
+      </Tabs>
+
+      {/* Books Grid */}
+      {loading ? (
+        <div className="flex justify-center items-center py-12">
+          <Loader size="lg" color="#1CFAC4" />
+        </div>
+      ) : sortedItems?.length > 0 ? (
+        <Grid>
+          {sortedItems?.map((item) => (
+            <Grid.Col key={item.id} span={{ base: 12, sm: 6, md: 4, lg: 3 }}>
+              <WishlistCard
+                audiobook={item}
+                setWishlistItems={setWishlistItems}
+              />
+            </Grid.Col>
+          ))}
+        </Grid>
+      ) : (
+        <div className="text-center py-12">
+          <IconBooks
+            size={48}
+            className="mx-auto mb-4"
+            style={{ color: "#A9A9AA" }}
+          />
+          <Title order={3} style={{ color: "#1CFAC4" }} className="mb-2">
+            No books found
+          </Title>
+          <Text color="#A9A9AA">
+            {searchQuery
+              ? "No books match your search criteria"
+              : "Your wishlist is empty"}
+          </Text>
+        </div>
+      )}
+    </Container>
   );
 };
 
