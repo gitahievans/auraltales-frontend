@@ -13,7 +13,7 @@ import {
 import { useSession } from "next-auth/react";
 import { Loader } from "@mantine/core";
 
-const BoughtBookCard = ({ book }: { book: Audiobook }) => {
+const BoughtBookCard = ({ book, open }: { book: Audiobook; open: any }) => {
   const isMobile = useMediaQuery("(max-width: 767px)");
   const isMedium = useMediaQuery("(max-width: 1023px)");
   const isLarge = useMediaQuery("(min-width: 1024px)");
@@ -68,78 +68,125 @@ const BoughtBookCard = ({ book }: { book: Audiobook }) => {
   };
 
   return (
-    <div className="flex flex-col md:flex-row p-6 rounded-lg items-center md:items-start gap-6 bg-[#061c19]">
-      {/* Book Cover */}
-      <div className="flex flex-col gap-4 items-start justify-center lg:w-[35%]">
-        <Image
-          src={book?.poster || poster}
-          alt="Book Cover"
-          width={isMobile ? 250 : 500}
-          height={isMobile ? 250 : 500}
-          className="rounded-lg object-cover"
-        />
-      </div>
-
-      {/* Book Details */}
-      <div className="flex flex-col gap-2 w-full lg:w-[35%] items-center md:items-start">
-        <h2 className="text-2xl font-semibold text-white mb-2 uppercase">
-          {book?.title}
-        </h2>
-        <div className="flex flex-col gap-2">
-          {" "}
-          <div className="flex flex-col items-center md:items-start gap-1 mt-3">
-            <p className="text-gray-200 mb-1">
-              <span className="mr-2"> BY: </span>{" "}
-              {book?.authors && book?.authors?.length > 0 ? (
-                book.authors.map((author: any) => (
-                  <span key={author.id}>
-                    {author.name}
-                    {book.authors.length > 1 &&
-                    author !== book.authors[book.authors.length - 1]
-                      ? ", "
-                      : ""}
-                  </span>
-                ))
-              ) : (
-                <span>Unknown Author</span>
-              )}
-            </p>
-            <p className="text-gray-300 mb-1">
-              <span className="mr-2">NARRATED BY:</span>
-              {book?.narrators?.length > 0 ? (
-                book?.narrators.map((narrator) => (
-                  <span key={narrator.id}>{narrator.name}</span>
-                ))
-              ) : (
-                <span>Unknown Narrator</span>
-              )}
-            </p>
-          </div>
-          <div className="flex flex-col items-center md:items-start gap-1 mt-3">
-            <p className="text-gray-300 mb-1">Length: 12 Hrs, 35 Mins</p>
-            <p className="text-gray-300 mb-1">Release Date: 12 May, 2024</p>
-            <p className="text-gray-300 mb-4">Language: English</p>
+    <div className="bg-gradient-to-br from-[#062C2A] to-[#041714] text-white rounded-2xl shadow-2xl overflow-hidden transition-all duration-300 hover:shadow-3xl">
+      <div className="flex flex-col md:flex-row p-6 gap-6">
+        {/* Book Cover Section */}
+        <div className="flex flex-col gap-4 items-center md:items-start">
+          <div className="relative group">
+            <Image
+              src={book?.poster || poster}
+              alt="Book Cover"
+              width={400}
+              height={400}
+              className="rounded-xl object-cover shadow-lg group-hover:scale-105 transition-transform duration-300"
+            />
           </div>
         </div>
 
-        {(isMobile || isLarge) && (
-          <button className="flex items-center text-white bg-transparent border border-gray-400 rounded-xl w-fit px-4 py-2 hover:bg-white hover:text-black transition duration-300">
-            <span className="flex items-center space-x-2">
-              <IconPlayerPlayFilled />
-              <span>Listen Sample</span>
-            </span>
+        {/* Book Details Section */}
+        <div className="flex flex-col gap-4 w-full justify-start">
+          <div className="text-center md:text-left">
+            <h2 className="text-xl font-bold text-[#1CFAC4] uppercase mb-2">
+              {book?.title}
+            </h2>
+            <div className="space-y-2 text-gray-300">
+              <p>
+                <span className="font-semibold text-[#1CFAC4] mr-2">By:</span>
+                {book?.authors && book?.authors?.length > 0
+                  ? book?.authors.map((author: any) => author.name).join(", ")
+                  : "Unknown Author"}
+              </p>
+              <p>
+                <span className="font-semibold text-[#1CFAC4] mr-2">
+                  Narrated By:
+                </span>
+                {book?.narrators?.length > 0
+                  ? book?.narrators.map((narrator) => narrator.name).join(", ")
+                  : "Unknown Narrator"}
+              </p>
+              <div className="space-y-1 pt-2">
+                <p>Length: 12 Hrs, 35 Mins</p>
+                <p>Release Date: 12 May, 2024</p>
+                <p>Language: English</p>
+              </div>
+            </div>
+          </div>
+
+          {isMobile && (
+            <button
+              onClick={open}
+              className="flex items-center text-white bg-transparent border border-gray-400 rounded-xl w-full py-3 justify-center hover:bg-white hover:text-black transition duration-300"
+            >
+              <span className="flex items-center space-x-2">
+                <IconPlayerPlayFilled />
+                <span>Listen Sample</span>
+              </span>
+            </button>
+          )}
+        </div>
+
+        {/* Action Buttons Section */}
+        <div className="flex flex-col gap-4 w-full lg:w-1/3 justify-center">
+          <button
+            onClick={open}
+            className="w-full py-3 bg-green-600 text-white font-bold rounded-xl 
+          hover:bg-green-800 transition-colors duration-300 
+          flex items-center justify-center space-x-2 
+          transform hover:scale-105 active:scale-95"
+          >
+            <IconPlayerPlayFilled size={20} />
+            <span>Listen Now</span>
           </button>
-        )}
-      </div>
 
-      {/* Action Buttons */}
-      <div className="w-full lg:w-[35%] space-y-4">
-        <button className="flex items-center justify-center w-full px-6 py-3 bg-green-600 text-white font-semibold rounded-xl hover:bg-green-800 transition-all duration-300 focus:outline-none">
-          <IconPlayerPlayFilled size={20} className="mr-2" />
-          Listen Now
-        </button>
+          {!inFavorites ? (
+            <button
+              onClick={handleAddToFavorites}
+              className="w-full py-3 border-2 border-[#1CFAC4] text-[#1CFAC4] 
+            font-bold rounded-xl hover:bg-[#1CFAC4]/10 
+            transition-all duration-300 
+            flex items-center justify-center space-x-2
+            transform hover:scale-105 active:scale-95"
+            >
+              {isLoading ? (
+                <Loader size="sm" color="white" />
+              ) : (
+                <>
+                  <IconStars size={20} />
+                  <span>Add to Favorites</span>
+                </>
+              )}
+            </button>
+          ) : (
+            <button
+              onClick={handleRemoveFromFavorites}
+              className="w-full py-3 border-2 border-red-500 text-red-500 
+            font-bold rounded-xl hover:bg-red-500/10 
+            transition-all duration-300 
+            flex items-center justify-center space-x-2
+            transform hover:scale-105 active:scale-95"
+            >
+              {isLoading ? (
+                <Loader size="sm" color="white" />
+              ) : (
+                <>
+                  <IconStars size={20} />
+                  <span>Remove from Favorites</span>
+                </>
+              )}
+            </button>
+          )}
 
-        {renderFavoriteButton()}
+          {!isMobile && (
+            <div className="mt-3">
+              <button className="flex items-center text-white bg-transparent border border-gray-400 rounded-xl w-full py-3 justify-center hover:bg-white hover:text-black transition duration-300">
+                <span className="flex items-center space-x-2">
+                  <IconPlayerPlayFilled />
+                  <span>Listen Sample</span>
+                </span>
+              </button>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

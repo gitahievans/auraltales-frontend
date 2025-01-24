@@ -247,7 +247,7 @@ const SideNav = () => {
             </Link>
           </li>
 
-          <li>
+          {/* <li>
             <Link
               href="/history"
               className="flex items-center p-2 text-white rounded-lg hover:bg-green"
@@ -255,7 +255,7 @@ const SideNav = () => {
               <IconHistory className="mr-2" />
               Listen History
             </Link>
-          </li>
+          </li> */}
           {/* <li className="pt-4 pb-2">
             <span className="text-gray-400">More</span>
           </li> */}

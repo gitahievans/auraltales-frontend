@@ -27,15 +27,15 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
   }, [session, status]);
 
   // Optional: Load session from localStorage on initial render
-  useEffect(() => {
-    const savedSession = localStorage.getItem("session");
-    if (savedSession && !session) {
-      console.log(
-        "Found saved session in localStorage:",
-        JSON.parse(savedSession)
-      );
-    }
-  }, []);
+  // useEffect(() => {
+  //   const savedSession = localStorage.getItem("session");
+  //   if (savedSession && !session) {
+  //     console.log(
+  //       "Found saved session in localStorage:",
+  //       JSON.parse(savedSession)
+  //     );
+  //   }
+  // }, []);
 
   return (
     <SessionProvider session={session}>

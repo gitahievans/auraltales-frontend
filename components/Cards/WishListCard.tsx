@@ -53,7 +53,7 @@ const WishlistCard: React.FC<WishlistCardProps> = ({
     const checkWishlistStatus = async () => {
       if (access) {
         const isInWishlist = await checkAudiobookInWishlist(book.id, access);
-        setInWishList(isInWishlist);
+        if (isInWishlist) setInWishList(isInWishlist);
       }
     };
 
@@ -64,8 +64,11 @@ const WishlistCard: React.FC<WishlistCardProps> = ({
     const getPurchaseStatus = async () => {
       if (!audiobook || !access) return;
       const status = await checkPurchaseStatus(audiobook.id, access);
-      setPurchaseStatus(status);
+      if (status) {
+        setPurchaseStatus(status);
+      }
     };
+
     getPurchaseStatus();
 
     return () => {
@@ -75,6 +78,8 @@ const WishlistCard: React.FC<WishlistCardProps> = ({
       }
     };
   }, [book, session, access, audiobook]);
+
+  console.log("is purchased in wishlist", isPurchased);
 
   const handleListenSample = () => {
     listenSample(
@@ -166,7 +171,7 @@ const WishlistCard: React.FC<WishlistCardProps> = ({
             <h3 className="text-xl font-bold text-[#1CFAC4] mb-2 line-clamp-2">
               {book.title}
             </h3>
-            {book.rating && (
+            {book?.rating && (
               <div className="flex items-center gap-1">
                 {[...Array(5)].map((_, index) => (
                   <IconStarFilled
@@ -200,49 +205,31 @@ const WishlistCard: React.FC<WishlistCardProps> = ({
 
           {/* Action Buttons */}
           <div className="mt-auto space-y-3">
-            {!isPurchased ? (
+            {!isPurchased && book.buying_price && (
               <button
                 onClick={handleBuyAudiobook}
-                className="flex items-center justify-center w-full px-6 py-3 bg-[#1F8505] text-white font-semibold rounded-xl hover:bg-[#21440F] transition-all duration-300"
+                className="flex items-center justify-center w-full text-sm px-6 py-3 bg-[#1F8505] text-white font-semibold rounded-xl hover:bg-[#21440F] transition-all duration-300"
               >
                 <IconShoppingBag size={20} className="mr-2" />
                 Buy: KES {book.buying_price}
               </button>
-            ) : (
-              <Link
-                href={`/audiobooks/${book.slug}`}
-                className="flex items-center justify-center w-full px-6 py-3 bg-[#1F8505] text-white font-semibold rounded-xl hover:bg-[#21440F] transition-all duration-300"
-              >
-                <IconPlayerPlay size={20} className="mr-2" />
-                Play Audiobook
-              </Link>
             )}
 
-            {!inWishList ? (
-              <button
-                onClick={handleAddToWishlist}
-                className="flex items-center justify-center w-full px-6 py-3 text-[#1CFAC4] font-semibold rounded-xl border border-[#1CFAC4] hover:bg-[#152D09] transition-all duration-300"
-              >
-                {addWishLoading ? (
-                  <Loader size="sm" color="#1CFAC4" />
-                ) : (
-                  <>
-                    <IconListDetails size={20} className="mr-2" />
-                    Add to Wishlist
-                  </>
-                )}
-              </button>
-            ) : (
+            {inWishList && (
               <button
                 onClick={handleRemoveFromWishList}
-                className="flex items-center justify-center w-full px-6 py-3 text-[#1CFAC4] font-semibold rounded-xl border border-[#1CFAC4] hover:bg-[#152D09] transition-all duration-300"
+                className="w-full py-3 px-2 border-2 border-red-500 text-red-500 text-sm 
+                font-bold rounded-xl hover:bg-red-500/10 
+                transition-all duration-300 
+                flex items-center justify-center space-x-2
+                transform hover:scale-105 active:scale-95"
               >
                 {removeWishLoading ? (
                   <Loader size="sm" color="#1CFAC4" />
                 ) : (
                   <>
-                    <IconListDetails size={20} className="mr-2" />
-                    Remove from Wishlist
+                    <IconListDetails size={16} className="mr-2" />
+                    Remove
                   </>
                 )}
               </button>

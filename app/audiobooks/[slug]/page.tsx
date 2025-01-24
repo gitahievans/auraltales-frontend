@@ -1,28 +1,28 @@
 "use client";
 
 import { boughtState } from "@/app/page";
-import BookGrid from "@/components/BookCarousel";
 import BookCard from "@/components/Cards/BookCard";
 import BoughtBookCard from "@/components/Cards/BoughtBookCard";
 import ChapterCard from "@/components/Cards/ChapterCard";
 import UnboughtBookCard from "@/components/Cards/UnboughtBookCard";
+import AudioPlayerModal from "@/components/Modals/AudioPlayerModal";
+import TabsSection from "@/components/TabsSection";
 import axiosInstance from "@/lib/axiosInstance";
 import { checkPurchaseStatus } from "@/lib/store";
 import { fetchedAudiobooks } from "@/state/state";
 import { Audiobook, PurchaseStatus } from "@/types/types";
-import { Divider, Grid, rem, Tabs } from "@mantine/core";
-import { useMediaQuery } from "@mantine/hooks";
+import { Loader, rem, Tabs } from "@mantine/core";
+import { useDisclosure } from "@mantine/hooks";
 import {
-  IconCheck,
+  IconChevronLeft,
   IconHeadphones,
   IconPlayerPlay,
-  IconPlaylistX,
   IconUser,
-  IconUserFilled,
 } from "@tabler/icons-react";
 import axios from "axios";
 import { get } from "http";
 import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { useSnapshot } from "valtio";
 
@@ -30,24 +30,6 @@ type PagePropsType = {
   params: {
     slug: String;
   };
-};
-
-const ExpandableText = ({ children }: { children: string }) => {
-  const [expanded, setExpanded] = useState(false);
-
-  return (
-    <div>
-      <p className="text-gray-400">
-        {expanded ? children : `${children.substring(0, 250)}...`}
-      </p>
-      <button
-        onClick={() => setExpanded(!expanded)}
-        className="text-blue-400 hover:text-blue-700 focus:outline-none"
-      >
-        {expanded ? "See Less" : "See More"}
-      </button>
-    </div>
-  );
 };
 
 const Page = ({ params }: PagePropsType) => {
@@ -58,6 +40,9 @@ const Page = ({ params }: PagePropsType) => {
   );
   const [relatedBooks, setRelatedBooks] = useState<Audiobook[]>([]);
   const [audiobooks, setAudiobooks] = useState<Audiobook[]>([]);
+  const [opened, { open, close }] = useDisclosure();
+
+  const router = useRouter();
 
   useEffect(() => {
     const storedAudiobooks = localStorage.getItem("audiobooks");
@@ -109,7 +94,6 @@ const Page = ({ params }: PagePropsType) => {
 
   useEffect(() => {
     if (audioBook && audiobooks.length > 0) {
-      // Get related books by matching categories or collection
       const related = audiobooks.filter((book) => {
         const sharedCategories = book.categories.some((category) =>
           audioBook.categories.map((cat) => cat.name).includes(category.name)
@@ -129,86 +113,54 @@ const Page = ({ params }: PagePropsType) => {
   }, [audioBook, audiobooks]);
 
   return (
-    <div className="flex flex-col gap-3 text-white min-h-[100dvh] max-w-5xl mx-auto">
-      {!audioBook ? (
-        <p>Loading...</p>
-      ) : (
-        <>
-          {!purchaseStatus?.bought ? (
-            <UnboughtBookCard book={audioBook} />
-          ) : (
-            <BoughtBookCard book={audioBook} />
-          )}
-          <Tabs defaultValue="summary" variant="pills" radius="md">
-            <Tabs.List>
-              <Tabs.Tab
-                value="summary"
-                leftSection={<IconPlayerPlay style={iconStyle} />}
-              >
-                Summary
-              </Tabs.Tab>
-              <Tabs.Tab
-                value="author"
-                color="green"
-                leftSection={<IconUser style={iconStyle} />}
-              >
-                Author
-              </Tabs.Tab>
-              <Tabs.Tab
-                value="narrator"
-                color="cyan"
-                leftSection={<IconHeadphones style={iconStyle} />}
-              >
-                Narrator
-              </Tabs.Tab>
-            </Tabs.List>
+    <div className="min-h-[100dvh] bg-gradient-to-br from-[#041714] to-[#062C2A] text-white">
+      <button
+        onClick={() => router.back()}
+        className="flex items-center text-green-400 hover:text-green-500 mb-4 transition-colors"
+      >
+        <IconChevronLeft className="mr-2" />
+        Back to Library
+      </button>
+      <div className="container max-w-6xl mx-auto px-4 py-8 space-y-8">
+        {!audioBook ? (
+          <div className="flex justify-center items-center h-full">
+            <Loader color="#1CFAC4" size="xl" />
+          </div>
+        ) : (
+          <>
+            <div className="animate-fade-in">
+              {!purchaseStatus?.bought ? (
+                <UnboughtBookCard book={audioBook} />
+              ) : (
+                <BoughtBookCard book={audioBook} open={open} />
+              )}
+            </div>
 
-            <Divider mb={30} mt={10} />
+            <TabsSection audioBook={audioBook} />
 
-            <Tabs.Panel value="summary">
-              <ExpandableText>{audioBook?.description}</ExpandableText>
-            </Tabs.Panel>
+            <AudioPlayerModal
+              purchaseStatus={purchaseStatus}
+              audioBook={audioBook}
+              opened={opened}
+              close={close}
+            />
 
-            <Tabs.Panel value="author">
-              <ExpandableText>Lorem ipsum dolor sit amet,</ExpandableText>
-            </Tabs.Panel>
-
-            <Tabs.Panel value="narrator">
-              <ExpandableText>Lorem ipsum dolor sit amet,</ExpandableText>
-            </Tabs.Panel>
-          </Tabs>
-
-          {purchaseStatus?.bought ? (
-            <div className="flex flex-col gap-4 mt-8">
-              <h1 className="text-xl font-bold text-secondary">Chapters</h1>
-              <div className="flex flex-col gap-4">
-                {audioBook?.chapters.map((chapter, index) => (
-                  <ChapterCard
-                    chapter={chapter}
-                    audioBook={audioBook}
-                    key={index}
-                  />
-                ))}
+            {/* Related Books Section */}
+            <div className="space-y-6">
+              <h1 className="text-2xl font-bold text-[#1CFAC4]">
+                More Like This One
+              </h1>
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                {(relatedBooks.length > 0 ? relatedBooks : audiobooks).map(
+                  (item, index) => (
+                    <BookCard book={item} key={index} />
+                  )
+                )}
               </div>
             </div>
-          ) : null}
-
-          <div className="flex flex-col gap-4 mt-8">
-            <h1 className="text-xl font-bold text-secondary">
-              More Like This One
-            </h1>
-            <div className="flex flex-row gap-4 flex-wrap">
-              {relatedBooks.length > 0
-                ? relatedBooks.map((item, index) => (
-                    <BookCard book={item} key={index} />
-                  ))
-                : audiobooks?.map((item, index) => (
-                    <BookCard book={item} key={index} />
-                  ))}
-            </div>
-          </div>
-        </>
-      )}
+          </>
+        )}
+      </div>
     </div>
   );
 };

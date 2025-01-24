@@ -15,7 +15,11 @@ const PlayButton: React.FC<PlayButtonProps> = ({
   return (
     <button
       onClick={onClick}
-      className="flex items-center text-white bg-transparent border border-gray-400 rounded-xl w-fit px-4 py-2 hover:bg-white hover:text-black transition duration-300"
+      className="w-full py-3 border-2 border-[#1CFAC4] text-[#1CFAC4] 
+      font-bold rounded-xl hover:bg-[#1CFAC4]/10 
+      transition-all duration-300 
+      flex items-center justify-center space-x-2
+      transform hover:scale-105 active:scale-95"
     >
       <span className="flex items-center space-x-2">
         {audioSampleLoading ? (

@@ -74,42 +74,49 @@ const BookCard: React.FC<BookCardProps> = ({ book }) => {
   };
 
   return (
-    <div className="bg-[#041714] rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 group">
-      <div className="flex flex-col h-full">
-        <div className="relative aspect-[4/3] md:aspect-[16/9]">
+    <div className="bg-gradient-to-br from-[#062C2A] to-[#035c4f] rounded-xl overflow-hidden shadow-2xl hover:shadow-3xl transition-all duration-300 transform hover:-translate-y-2 group">
+      <Link href={`/audiobooks/${book.slug}`} className="block w-full">
+        <div className="aspect-[16/9] overflow-hidden">
           <Image
             src={book.poster || defaultPoster}
             alt={book.title}
-            layout="fill"
-            objectFit="cover"
-            className="transition-transform duration-300 group-hover:scale-105"
+            width={1200}
+            height={675}
+            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+            priority
           />
         </div>
 
-        <div className="px-2 py-4 flex flex-col flex-grow">
-          <div className="mb-2">
-            <h3 className=" font-bold text-[#1CFAC4] line-clamp-1">
+        <div className="p-3 space-y-4 bg-[#041714]/80 backdrop-blur-sm">
+          <div>
+            <h3 className="font-bold line-clamp-1 mb-2">
               {book.title}
             </h3>
-          </div>
-
-          <div className="text-sm text-[#FFFFFF] mb-4">
-            <p className="line-clamp-1">
-              <span className="text-[#A9A9AA]">By:</span>{" "}
-              {book.authors && book.authors.length > 0 ? (
-                book.authors.map((author, index) => (
-                  <span key={author.id}>
-                    {author.name}
-                    {index < book.authors.length - 1 ? ", " : ""}
-                  </span>
-                ))
-              ) : (
-                <span>Unknown Author</span>
-              )}
+            <p className="text-sm text-gray-300 line-clamp-1">
+              {book.authors && book.authors.length > 0
+                ? book.authors.map((author) => author.name).join(", ")
+                : "Unknown Author"}
             </p>
           </div>
+
+          <div className="flex items-center justify-between text-white">
+            <div className="flex items-center space-x-3">
+              <IconClock size={20} className="text-[#1CFAC4]" />
+              <span className="text-sm">{book.length || "N/A"}</span>
+            </div>
+            <button
+              className="text-gray-300 hover:text-[#1CFAC4] 
+            transition-colors transform hover:scale-110"
+              onClick={(e) => {
+                e.preventDefault();
+                // Add to bookmarks logic
+              }}
+            >
+              <IconBookmarks size={24} />
+            </button>
+          </div>
         </div>
-      </div>
+      </Link>
     </div>
   );
 };
