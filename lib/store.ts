@@ -184,6 +184,11 @@ export const checkAudiobookInWishlist = async (
 
     if (response.status === 200) {
       const items = response.data.items || [];
+      console.log(
+        "is in wishlist",
+        items.some((item: any) => item.audiobook.id === audiobookId)
+      );
+
       return items.some((item: any) => item.audiobook.id === audiobookId);
     }
   } catch (error) {
@@ -247,6 +252,8 @@ export const checkPurchaseStatus = async (
   audiobookId: number,
   jwt: string
 ): Promise<PurchaseStatus | null> => {
+  console.log("Checking purchase status for audiobook:", audiobookId);
+
   try {
     const response = await axiosInstance.get(
       `/purchases/check-purchase-status/${audiobookId}`
@@ -257,6 +264,8 @@ export const checkPurchaseStatus = async (
     }
 
     const data = response.data;
+    console.log("Purchase status:", data);
+
     return data;
   } catch (error) {
     console.error("Error fetching purchase status:", error);

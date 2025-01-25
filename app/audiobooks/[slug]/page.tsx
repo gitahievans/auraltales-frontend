@@ -84,6 +84,8 @@ const Page = ({ params }: PagePropsType) => {
       }
 
       const status = await checkPurchaseStatus(audioBook.id, session.jwt);
+      console.log("Purchase status for audiobook:", status?.bought);
+
       setPurchaseStatus(status);
     };
 

@@ -40,23 +40,21 @@ const WishlistCard: React.FC<WishlistCardProps> = ({
   const [inWishList, setInWishList] = useState(false);
   const [addWishLoading, setAddWishLoading] = useState(false);
   const [removeWishLoading, setRemoveWishLoading] = useState(false);
-  const [isPurchased, setPurchaseStatus] = useState<PurchaseStatus | null>(
-    null
-  );
+  const [isPurchased, setPurchaseStatus] = useState<boolean>(null);
   const soundRef = useRef<Howl | null>(null);
 
   const book = audiobook.audiobook;
   const access = session?.jwt;
   const from = "wishlist";
 
-  useEffect(() => {
-    const checkWishlistStatus = async () => {
-      if (access) {
-        const isInWishlist = await checkAudiobookInWishlist(book.id, access);
-        if (isInWishlist) setInWishList(isInWishlist);
-      }
-    };
+  const checkWishlistStatus = async () => {
+    if (access) {
+      const isInWishlist = await checkAudiobookInWishlist(book.id, access);
+      if (isInWishlist) setInWishList(isInWishlist);
+    }
+  };
 
+  useEffect(() => {
     localStorage.setItem("audiobookToBuy", JSON.stringify(book));
     localStorage.setItem("session", JSON.stringify(session));
     checkWishlistStatus();
@@ -65,7 +63,7 @@ const WishlistCard: React.FC<WishlistCardProps> = ({
       if (!audiobook || !access) return;
       const status = await checkPurchaseStatus(audiobook.id, access);
       if (status) {
-        setPurchaseStatus(status);
+        setPurchaseStatus(status?.bought);
       }
     };
 
@@ -79,7 +77,7 @@ const WishlistCard: React.FC<WishlistCardProps> = ({
     };
   }, [book, session, access, audiobook]);
 
-  console.log("is purchased in wishlist", isPurchased);
+  // console.log("is purchased in wishlist", isPurchased);
 
   const handleListenSample = () => {
     listenSample(
@@ -106,22 +104,9 @@ const WishlistCard: React.FC<WishlistCardProps> = ({
     }
   };
 
-  const handleAddToWishlist = async () => {
-    if (!access) {
-      notifications.show({
-        title: "Error",
-        message: "You must be logged in to add to wishlist.",
-        color: "red",
-        position: "top-right",
-      });
-      return;
-    }
-    addToWishlist(book.id, access, setAddWishLoading, setInWishList);
-  };
-
   const handleRemoveFromWishList = async () => {
     if (!access) return;
-    removeFromWishlist(
+    await removeFromWishlist(
       book.id,
       access,
       setRemoveWishLoading,
@@ -205,7 +190,7 @@ const WishlistCard: React.FC<WishlistCardProps> = ({
 
           {/* Action Buttons */}
           <div className="mt-auto space-y-3">
-            {!isPurchased && book.buying_price && (
+            {!isPurchased && book.buying_price ? (
               <button
                 onClick={handleBuyAudiobook}
                 className="flex items-center justify-center w-full text-sm px-6 py-3 bg-[#1F8505] text-white font-semibold rounded-xl hover:bg-[#21440F] transition-all duration-300"
@@ -213,27 +198,25 @@ const WishlistCard: React.FC<WishlistCardProps> = ({
                 <IconShoppingBag size={20} className="mr-2" />
                 Buy: KES {book.buying_price}
               </button>
-            )}
+            ) : null}
 
-            {inWishList && (
-              <button
-                onClick={handleRemoveFromWishList}
-                className="w-full py-3 px-2 border-2 border-red-500 text-red-500 text-sm 
+            <button
+              onClick={handleRemoveFromWishList}
+              className="w-full py-3 px-2 border-2 border-red-500 text-red-500 text-sm 
                 font-bold rounded-xl hover:bg-red-500/10 
                 transition-all duration-300 
                 flex items-center justify-center space-x-2
                 transform hover:scale-105 active:scale-95"
-              >
-                {removeWishLoading ? (
-                  <Loader size="sm" color="#1CFAC4" />
-                ) : (
-                  <>
-                    <IconListDetails size={16} className="mr-2" />
-                    Remove
-                  </>
-                )}
-              </button>
-            )}
+            >
+              {removeWishLoading ? (
+                <Loader size="sm" color="#1CFAC4" />
+              ) : (
+                <>
+                  <IconListDetails size={16} className="mr-2" />
+                  Remove
+                </>
+              )}
+            </button>
           </div>
         </div>
       </div>
