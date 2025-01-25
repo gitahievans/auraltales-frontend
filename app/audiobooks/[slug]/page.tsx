@@ -5,11 +5,9 @@ import BookCard from "@/components/Cards/BookCard";
 import BoughtBookCard from "@/components/Cards/BoughtBookCard";
 import ChapterCard from "@/components/Cards/ChapterCard";
 import UnboughtBookCard from "@/components/Cards/UnboughtBookCard";
-import AudioPlayerModal from "@/components/Modals/AudioPlayerModal";
 import TabsSection from "@/components/TabsSection";
 import axiosInstance from "@/lib/axiosInstance";
 import { checkPurchaseStatus } from "@/lib/store";
-import { fetchedAudiobooks } from "@/state/state";
 import { Audiobook, PurchaseStatus } from "@/types/types";
 import { Loader, rem, Tabs } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
@@ -137,13 +135,6 @@ const Page = ({ params }: PagePropsType) => {
             </div>
 
             <TabsSection audioBook={audioBook} />
-
-            <AudioPlayerModal
-              purchaseStatus={purchaseStatus}
-              audioBook={audioBook}
-              opened={opened}
-              close={close}
-            />
 
             {/* Related Books Section */}
             <div className="space-y-6">

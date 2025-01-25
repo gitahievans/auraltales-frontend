@@ -67,6 +67,16 @@ const BoughtBookCard = ({ book, open }: { book: Audiobook; open: any }) => {
     );
   };
 
+  const handleListenNowClick = () => {
+    const audiobookData = encodeURIComponent(JSON.stringify(book));
+
+    window.open(
+      `/audiobooks/audioplayer/${book?.id}?audiobook=${audiobookData}`,
+      "_blank",
+      "noopener,noreferrer,width=500,height=800"
+    );
+  };
+
   return (
     <div className="bg-gradient-to-br from-[#062C2A] to-[#041714] text-white rounded-2xl shadow-2xl overflow-hidden transition-all duration-300 hover:shadow-3xl">
       <div className="flex flex-col md:flex-row p-6 gap-6">
@@ -111,24 +121,12 @@ const BoughtBookCard = ({ book, open }: { book: Audiobook; open: any }) => {
               </div>
             </div>
           </div>
-
-          {isMobile && (
-            <button
-              onClick={open}
-              className="flex items-center text-white bg-transparent border border-gray-400 rounded-xl w-full py-3 justify-center hover:bg-white hover:text-black transition duration-300"
-            >
-              <span className="flex items-center space-x-2">
-                <IconPlayerPlayFilled />
-                <span>Listen Sample</span>
-              </span>
-            </button>
-          )}
         </div>
 
         {/* Action Buttons Section */}
         <div className="flex flex-col gap-4 w-full lg:w-1/3 justify-center">
           <button
-            onClick={open}
+            onClick={handleListenNowClick}
             className="w-full py-3 bg-green-600 text-white font-bold rounded-xl 
           hover:bg-green-800 transition-colors duration-300 
           flex items-center justify-center space-x-2 
@@ -174,17 +172,6 @@ const BoughtBookCard = ({ book, open }: { book: Audiobook; open: any }) => {
                 </>
               )}
             </button>
-          )}
-
-          {!isMobile && (
-            <div className="mt-3">
-              <button className="flex items-center text-white bg-transparent border border-gray-400 rounded-xl w-full py-3 justify-center hover:bg-white hover:text-black transition duration-300">
-                <span className="flex items-center space-x-2">
-                  <IconPlayerPlayFilled />
-                  <span>Listen Sample</span>
-                </span>
-              </button>
-            </div>
           )}
         </div>
       </div>

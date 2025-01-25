@@ -30,8 +30,8 @@ const NarrationSpeedMenu = ({ currentSpeed, onSpeedChange }) => {
     >
       <Menu.Target>
         <div className="flex flex-col items-center">
-          <IconGauge size={24} />
-          <span>Speed</span>
+          <IconGauge size={24} color="white" />
+          <span className="text-white">Speed</span>
         </div>
       </Menu.Target>
 

@@ -49,8 +49,8 @@ const AudioPlayerModal = ({
 
   return (
     <Modal
-      title="Audio Player"
-      size="xl"
+      title={audioBook?.title}
+      size="lg"
       opened={opened}
       onClose={close}
       closeOnClickOutside={false}

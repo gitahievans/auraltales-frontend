@@ -1,8 +1,15 @@
 import React from "react";
 import { Menu, Button } from "@mantine/core";
 import { IconChevronDown, IconList } from "@tabler/icons-react";
+import { Audiobook } from "@/types/types";
 
-const ChaptersMenu = ({ chapters }) => {
+const ChaptersMenu = ({
+  chapters,
+  audiobook,
+}: {
+  chapters: Chapter[];
+  audiobook: Audiobook;
+}) => {
   return (
     <Menu
       trigger="hover"
@@ -28,14 +35,14 @@ const ChaptersMenu = ({ chapters }) => {
     >
       <Menu.Target>
         <div className="flex flex-col items-center">
-          <IconList size={24} />
-          <span>Chapters</span>
+          <IconList size={24} color="white" />
+          <span className="text-white">Chapters</span>
         </div>
       </Menu.Target>
 
       <Menu.Dropdown className="bg-gray-900 border border-gray-700">
         <Menu.Label className="text-xl font-bold text-white px-4 py-2 border-b border-gray-700">
-          The Neurobiology of 'We'
+          {audiobook?.title}
         </Menu.Label>
         {chapters.map((chapter, index) => (
           <Menu.Item
