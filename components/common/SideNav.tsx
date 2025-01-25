@@ -9,7 +9,6 @@ import {
   IconBooks,
   IconChevronDown,
   IconChevronUp,
-  IconHistory,
   IconHomeStar,
   IconLayoutGridAdd,
   IconLibrary,
@@ -20,11 +19,10 @@ import {
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { signOut, useSession } from "next-auth/react";
-import axios from "axios";
-import { log } from "console";
-import { WishlistItem } from "@/app/wishlist/page";
-import { fetchWishlist } from "@/lib/store";
+import { usePathname } from "next/navigation";
 import axiosInstance from "@/lib/axiosInstance";
+import { fetchWishlist } from "@/lib/store";
+import { WishlistItem } from "@/app/wishlist/page";
 
 type Category = {
   id: number;
@@ -39,6 +37,7 @@ type Collection = {
 };
 
 const SideNav = () => {
+  const pathname = usePathname();
   const sideBarSnap = useSnapshot(sideNavState);
   const [isBrowseOpen, setIsBrowseOpen] = useState(false);
   const [isListsOpen, setIsListsOpen] = useState(false);
@@ -49,6 +48,9 @@ const SideNav = () => {
     null
   );
   const { data: session } = useSession();
+
+  console.log("pathname in sidenav", pathname);
+  
 
   const fetchCollections = async () => {
     try {
@@ -102,7 +104,10 @@ const SideNav = () => {
     fetchCollections();
   }, []);
 
-  // console.log("collections", collections, "categories", categories);
+  const navItemClassName = (path: string) =>
+    `flex items-center p-2 text-white rounded-lg ${
+      pathname === path ? "bg-green-700" : "hover:bg-green-800"
+    }`;
 
   return (
     <div className="bg-primary h-full p-2">
@@ -140,7 +145,7 @@ const SideNav = () => {
                   height: isBrowseOpen ? "auto" : 0,
                   opacity: isBrowseOpen ? 1 : 0,
                 }}
-                exit={{ height: 0, opacity: 0 }} // Exit animation for collapsing
+                exit={{ height: 0, opacity: 0 }}
                 transition={{ duration: 0.3, ease: "linear" }}
                 className="overflow-hidden pl-8 mt-2 space-y-2"
               >
@@ -202,84 +207,36 @@ const SideNav = () => {
             <span className="text-gray-400">You</span>
           </li>
           <li>
-            <Link
-              href="/"
-              className="flex items-center p-2 text-white bg-green rounded-lg"
-            >
+            <Link href="/" className={navItemClassName("/")}>
               <IconHomeStar className="mr-2" />
               Home
             </Link>
           </li>
           <li>
-            <Link
-              href="/library"
-              className="flex items-center p-2 text-white rounded-lg hover:bg-green"
-            >
+            <Link href="/library" className={navItemClassName("/library")}>
               <IconLibrary className="mr-2" />
               My Library
             </Link>
           </li>
           <li>
-            <Link
-              href="/wishlist"
-              className="flex items-center p-2 text-white rounded-lg hover:bg-green"
-            >
+            <Link href="/wishlist" className={navItemClassName("/wishlist")}>
               <IconLayoutGridAdd className="mr-2" />
               Wish List
-              {/* {wishlistItems && wishlistItems.length > 0 && (
-                <div className="flex items-center justify-center bg-green-200 rounded-full ml-2 h-4 w-4">
-                  <span className="text-[10px] font-bold text-black ">
-                    {wishlistItems.length}
-                  </span>
-                </div>
-              )} */}
             </Link>
           </li>
 
-          {/* favorites */}
           <li>
-            <Link
-              href="/favorites"
-              className="flex items-center p-2 text-white rounded-lg hover:bg-green"
-            >
+            <Link href="/favorites" className={navItemClassName("/favorites")}>
               <IconStars className="w-6 h-6 mr-2" />
               Favorites
             </Link>
           </li>
 
-          {/* <li>
-            <Link
-              href="/history"
-              className="flex items-center p-2 text-white rounded-lg hover:bg-green"
-            >
-              <IconHistory className="mr-2" />
-              Listen History
-            </Link>
-          </li> */}
-          {/* <li className="pt-4 pb-2">
-            <span className="text-gray-400">More</span>
-          </li> */}
-          {/* <li>
-            <Link
-              href="#"
-              className="flex items-center p-2 text-white rounded-lg hover:bg-green"
-            >
-              How to Listen
-            </Link>
-          </li> */}
-          {/* <li>
-            <Link
-              href="#"
-              className="flex items-center p-2 text-white rounded-lg hover:bg-green"
-            >
-              Need Help?
-            </Link>
-          </li> */}
           {session && session.user && (
             <li>
               <div
                 onClick={() => signOut()}
-                className="flex items-center p-2 text-white bg-green rounded-lg cursor-pointer"
+                className="flex items-center py-2 px-6 text-white bg-green rounded-lg cursor-pointer w-fit bg-red-950 hover:bg-red-800 transform transition-all duration-200 mt-6"
               >
                 <IconLogout2 className="mr-2" />
                 Logout

@@ -20,6 +20,8 @@ import {
   IconHeart,
   IconCalendar,
   IconX,
+  IconLayoutGridAdd,
+  IconShoppingBagHeart,
 } from "@tabler/icons-react";
 import { Audiobook } from "@/types/types";
 import WishlistCard from "@/components/Cards/WishListCard";
@@ -225,36 +227,55 @@ const WishListPage = () => {
       </Tabs>
 
       {/* Books Grid */}
-      {loading ? (
-        <div className="flex justify-center items-center py-12">
-          <Loader size="lg" color="#1CFAC4" />
-        </div>
-      ) : sortedItems?.length > 0 ? (
-        <Grid>
-          {sortedItems?.map((item) => (
-            <Grid.Col key={item.id} span={{ base: 12, sm: 6, md: 4, lg: 3 }}>
-              <WishlistCard
-                audiobook={item}
-                setWishlistItems={setWishlistItems}
+      {session?.user ? (
+        <>
+          {loading ? (
+            <div className="flex justify-center items-center py-12">
+              <Loader size="lg" color="#1CFAC4" />
+            </div>
+          ) : sortedItems?.length > 0 ? (
+            <Grid>
+              {sortedItems?.map((item) => (
+                <Grid.Col
+                  key={item.id}
+                  span={{ base: 12, sm: 6, md: 4, lg: 3 }}
+                >
+                  <WishlistCard
+                    audiobook={item}
+                    setWishlistItems={setWishlistItems}
+                  />
+                </Grid.Col>
+              ))}
+            </Grid>
+          ) : (
+            <div className="text-center py-12">
+              <IconBooks
+                size={48}
+                className="mx-auto mb-4"
+                style={{ color: "#A9A9AA" }}
               />
-            </Grid.Col>
-          ))}
-        </Grid>
+              <Title order={3} style={{ color: "#1CFAC4" }} className="mb-2">
+                No books found
+              </Title>
+              <Text color="#A9A9AA">
+                {searchQuery
+                  ? "No books match your search criteria"
+                  : "Your wishlist is empty"}
+              </Text>
+            </div>
+          )}
+        </>
       ) : (
         <div className="text-center py-12">
-          <IconBooks
+          <IconShoppingBagHeart
             size={48}
             className="mx-auto mb-4"
             style={{ color: "#A9A9AA" }}
           />
           <Title order={3} style={{ color: "#1CFAC4" }} className="mb-2">
-            No books found
+            Not Logged In
           </Title>
-          <Text color="#A9A9AA">
-            {searchQuery
-              ? "No books match your search criteria"
-              : "Your wishlist is empty"}
-          </Text>
+          <Text color="#A9A9AA">Please sign in to view your wishlist</Text>
         </div>
       )}
     </Container>

@@ -68,15 +68,13 @@ export default function Home() {
   const [audiobooks, setAudiobooks] = useState<Audiobook[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const [categories, setCategories] = useState<string[]>([]);
-
-  const mobile = useMediaQuery("(max-width: 640px)");
+  const [categoryNames, setCategoryNames] = useState<string[]>([]);
+  const [categoryObjects, setCategoryObjects] = useState<Category[]>([]);
 
   const { data: session } = useSession();
 
   console.log("session", session);
 
-  //TODO: implement axiosInstance here
   const fetchAudiobooks = async () => {
     try {
       const response = await axiosInstance("api/audiobooks/");
@@ -94,11 +92,21 @@ export default function Home() {
         localStorage.setItem("audiobooks", JSON.stringify(data.audiobooks));
         console.log("Saved audiobooks to localStorage");
 
-        const categories = data.audiobooks.flatMap((book: Audiobook) =>
+        const categoryObjects = data.audiobooks.flatMap((book: Audiobook) =>
+          book.categories.map((category: Category) => category)
+        );
+        const uniqueCategoryObjects: Category[] = Array.from(
+          new Set(categoryObjects)
+        );
+        setCategoryObjects(uniqueCategoryObjects);
+
+        const categoryNames = data.audiobooks.flatMap((book: Audiobook) =>
           book.categories.map((category: Category) => category.name)
         );
-        const uniqueCategories: string[] = Array.from(new Set(categories));
-        setCategories(uniqueCategories);
+        const uniqueCategoryNames: string[] = Array.from(
+          new Set(categoryNames)
+        );
+        setCategoryNames(uniqueCategoryNames);
       } else {
         setError("Data format is incorrect");
       }
@@ -115,15 +123,21 @@ export default function Home() {
 
   return (
     <div className="mt-4">
-      {categories.length > 0
-        ? categories.map((cat, i) => {
+      {categoryNames.length > 0
+        ? categoryNames.map((cat, i) => {
             const booksInCategory = audiobooks?.filter((book) =>
               book.categories.some((category) => category.name === cat)
             );
 
             if (booksInCategory.length > 0) {
               return (
-                <BookCarousel key={i} title={cat} books={booksInCategory} />
+                <BookCarousel
+                  key={i}
+                  title={cat}
+                  categoryNames={categoryNames}
+                  categoryObjects={categoryObjects}
+                  books={booksInCategory}
+                />
               );
             }
             return null; // Do not render if no audiobooks exist for the category

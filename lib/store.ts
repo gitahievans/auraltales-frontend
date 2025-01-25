@@ -19,7 +19,7 @@ export const addToFavorites = async (
     if (response.status === 200 || response.status === 201) {
       setInFavorites(true);
       notifications.show({
-        title: "Success",
+        title: "Added",
         message: "Audiobook added to favorites",
         color: "green",
         position: "top-right",
@@ -62,7 +62,7 @@ export const removeFromFavorites = async (
         );
       }
       notifications.show({
-        title: "Success",
+        title: "Removed",
         message: "Audiobook removed from favorites",
         color: "green",
         position: "top-right",
@@ -84,7 +84,6 @@ export const removeFromFavorites = async (
 
 export const addToWishlist = async (
   audiobookId: number,
-  token: string,
   setAddWishLoading: React.Dispatch<React.SetStateAction<boolean>>,
   setInWishList: React.Dispatch<React.SetStateAction<boolean>>
 ) => {
@@ -97,7 +96,7 @@ export const addToWishlist = async (
     if (response.status === 200 || response.status === 201) {
       setInWishList(true);
       notifications.show({
-        title: "Success",
+        title: "Added",
         message: "Audiobook added to wishlist",
         color: "green",
         position: "top-right",
@@ -126,7 +125,6 @@ export const addToWishlist = async (
 
 export const removeFromWishlist = async (
   audiobookId: number,
-  token: string,
   setRemoveWishLoading: React.Dispatch<React.SetStateAction<boolean>>,
   setInWishList: React.Dispatch<React.SetStateAction<boolean>>,
   setWishlistItems: React.Dispatch<React.SetStateAction<WishlistItem[] | null>>,
@@ -148,7 +146,7 @@ export const removeFromWishlist = async (
         );
       }
       notifications.show({
-        title: "Success",
+        title: "Removed",
         message: "Audiobook removed from wishlist",
         color: "green",
         position: "top-right",

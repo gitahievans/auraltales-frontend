@@ -99,7 +99,7 @@ const UnboughtBookCard = ({ book }: propsType) => {
       return;
     }
 
-    addToWishlist(book?.id!, access!, setAddWishLoading, setInWishList);
+    addToWishlist(book?.id!, setAddWishLoading, setInWishList);
   };
 
   const handleRemoveFromWishList = async () => {
@@ -114,13 +114,7 @@ const UnboughtBookCard = ({ book }: propsType) => {
       return;
     }
 
-    removeFromWishlist(
-      book?.id!,
-      access!,
-      setRemoveWishLoading,
-      setInWishList,
-      from
-    );
+    removeFromWishlist(book?.id!, setRemoveWishLoading, setInWishList, from);
   };
 
   return (

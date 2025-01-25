@@ -76,7 +76,6 @@ const MyLibraryPage = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(true);
   const [books, setBooks] = useState<LibraryBook[]>([]);
-
   useEffect(() => {
     const fetchLibrary = async () => {
       if (session?.jwt) {
@@ -122,7 +121,7 @@ const MyLibraryPage = () => {
       case "title":
         return a.audiobook.title.localeCompare(b.audiobook.title);
       case "progress":
-        return (b.audiobook.progress || 0) - (a.audiobook.progress || 0);
+        return (b.audiobook?.progress || 0) - (a.audiobook.progress || 0);
       default:
         return 0;
     }
@@ -239,25 +238,44 @@ const MyLibraryPage = () => {
         </Tabs.List>
       </Tabs>
 
-      {/* Books Grid */}
-      {loading ? (
-        <div className="flex justify-center items-center py-12">
-          <Loader size="lg" color="#1CFAC4" />
-        </div>
-      ) : sortedBooks?.length > 0 ? (
-        <Grid>
-          {sortedBooks?.map((book) => (
-            <Grid.Col
-              key={book.audiobook.id}
-              span={{ base: 12, sm: 6, md: 4, lg: 3 }}
-            >
-              <LibraryCard
-                book={book.audiobook}
-                purchaseDate={book.date_purchased}
+      {session?.user ? (
+        <>
+          {loading ? (
+            <div className="flex justify-center items-center py-12">
+              <Loader size="lg" color="#1CFAC4" />
+            </div>
+          ) : sortedBooks?.length > 0 ? (
+            <Grid>
+              {sortedBooks?.map((book) => (
+                <Grid.Col
+                  key={book.audiobook.id}
+                  span={{ base: 12, sm: 6, md: 4, lg: 3 }}
+                >
+                  <LibraryCard
+                    book={book.audiobook}
+                    purchaseDate={book.date_purchased}
+                  />
+                </Grid.Col>
+              ))}
+            </Grid>
+          ) : (
+            <div className="text-center py-12">
+              <IconBooks
+                size={48}
+                className="mx-auto mb-4"
+                style={{ color: "#A9A9AA" }}
               />
-            </Grid.Col>
-          ))}
-        </Grid>
+              <Title order={3} style={{ color: "#1CFAC4" }} className="mb-2">
+                No books found
+              </Title>
+              <Text color="#A9A9AA">
+                {searchQuery
+                  ? "No books match your search criteria"
+                  : "Your library is empty"}
+              </Text>
+            </div>
+          )}{" "}
+        </>
       ) : (
         <div className="text-center py-12">
           <IconBooks
@@ -266,13 +284,9 @@ const MyLibraryPage = () => {
             style={{ color: "#A9A9AA" }}
           />
           <Title order={3} style={{ color: "#1CFAC4" }} className="mb-2">
-            No books found
+            Not Logged In
           </Title>
-          <Text color="#A9A9AA">
-            {searchQuery
-              ? "No books match your search criteria"
-              : "Your library is empty"}
-          </Text>
+          <Text color="#A9A9AA">Please sign in to view your wishlist</Text>
         </div>
       )}
     </Container>

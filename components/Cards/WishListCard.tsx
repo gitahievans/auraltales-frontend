@@ -108,7 +108,6 @@ const WishlistCard: React.FC<WishlistCardProps> = ({
     if (!access) return;
     await removeFromWishlist(
       book.id,
-      access,
       setRemoveWishLoading,
       setInWishList,
       setWishlistItems,

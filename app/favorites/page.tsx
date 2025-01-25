@@ -19,6 +19,7 @@ import {
   IconSortAscending,
   IconBooks,
   IconX,
+  IconCalendar,
 } from "@tabler/icons-react";
 import { fetchFavorites } from "@/lib/store";
 import { Audiobook } from "@/types/types";
@@ -38,6 +39,7 @@ const MyFavoritesPage = () => {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState<string>("latest");
+  const [activeTab, setActiveTab] = useState<string | null>("all");
 
   useEffect(() => {
     const loadFavorites = async () => {
@@ -178,22 +180,78 @@ const MyFavoritesPage = () => {
         </Grid.Col>
       </Grid>
 
+      <Tabs
+        value={activeTab}
+        onChange={setActiveTab}
+        mb="xl"
+        styles={{
+          list: {
+            borderBottom: "1px solid rgba(28, 250, 196, 0.2)",
+          },
+          tab: {
+            color: "#A9A9AA",
+            "&:hover": {
+              color: "#1CFAC4",
+            },
+            "&[data-active]": {
+              color: "#1CFAC4",
+              borderColor: "#1CFAC4",
+            },
+          },
+        }}
+      >
+        <Tabs.List>
+          <Tabs.Tab value="all" leftSection={<IconBooks size={20} />}>
+            All Books
+          </Tabs.Tab>
+          <Tabs.Tab value="recent" leftSection={<IconCalendar size={20} />}>
+            Recently Added
+          </Tabs.Tab>
+          <Tabs.Tab value="favorites" leftSection={<IconHeart size={20} />}>
+            Continue
+          </Tabs.Tab>
+        </Tabs.List>
+      </Tabs>
+
       {/* Content */}
-      {loading ? (
-        <div className="flex justify-center items-center py-12">
-          <Loader size="lg" color="#1CFAC4" />
-        </div>
-      ) : filteredItems?.length ? (
-        <Grid>
-          {filteredItems.map((item) => (
-            <Grid.Col key={item.id} span={{ base: 12, sm: 6, md: 4, lg: 3 }}>
-              <FavoriteCard
-                audiobook={item}
-                setFavoriteItems={setFavoriteItems}
+      {session?.user ? (
+        <>
+          {loading ? (
+            <div className="flex justify-center items-center py-12">
+              <Loader size="lg" color="#1CFAC4" />
+            </div>
+          ) : filteredItems?.length ? (
+            <Grid>
+              {filteredItems.map((item) => (
+                <Grid.Col
+                  key={item.id}
+                  span={{ base: 12, sm: 6, md: 4, lg: 3 }}
+                >
+                  <FavoriteCard
+                    audiobook={item}
+                    setFavoriteItems={setFavoriteItems}
+                  />
+                </Grid.Col>
+              ))}
+            </Grid>
+          ) : (
+            <div className="text-center py-12">
+              <IconHeart
+                size={48}
+                className="mx-auto mb-4"
+                style={{ color: "#A9A9AA" }}
               />
-            </Grid.Col>
-          ))}
-        </Grid>
+              <Title order={3} style={{ color: "#1CFAC4" }} className="mb-2">
+                No favorites found
+              </Title>
+              <Text color="#A9A9AA">
+                {searchQuery
+                  ? "No favorites match your search criteria"
+                  : "Add books to your favorites to start your collection"}
+              </Text>
+            </div>
+          )}
+        </>
       ) : (
         <div className="text-center py-12">
           <IconHeart
@@ -202,13 +260,9 @@ const MyFavoritesPage = () => {
             style={{ color: "#A9A9AA" }}
           />
           <Title order={3} style={{ color: "#1CFAC4" }} className="mb-2">
-            No favorites found
+            Not Logged In
           </Title>
-          <Text color="#A9A9AA">
-            {searchQuery
-              ? "No favorites match your search criteria"
-              : "Add books to your favorites to start your collection"}
-          </Text>
+          <Text color="#A9A9AA">Please sign in to view your favorites</Text>
         </div>
       )}
     </Container>
