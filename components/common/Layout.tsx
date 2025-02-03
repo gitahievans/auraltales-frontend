@@ -12,30 +12,19 @@ import { useEffect } from "react";
 const Layout = ({ children }: { children: React.ReactNode }) => {
   const [mobileOpened, { toggle: toggleMobile }] = useDisclosure();
   const [desktopOpened, { toggle: toggleDesktop }] = useDisclosure(false);
-  const { data: session, status } = useSession();
+  const { data: session, status, update } = useSession();
 
+  // In your Layout component (or a custom hook)
   useEffect(() => {
-    // Save session to localStorage when it changes
-    if (session) {
-      console.log("Saving session to localStorage:", session);
-      localStorage.setItem("session", JSON.stringify(session));
-    } else if (status === "unauthenticated") {
-      // Clear session from localStorage when user is not authenticated
-      console.log("Clearing session from localStorage");
-      localStorage.removeItem("session");
-    }
-  }, [session, status]);
-
-  // Optional: Load session from localStorage on initial render
-  // useEffect(() => {
-  //   const savedSession = localStorage.getItem("session");
-  //   if (savedSession && !session) {
-  //     console.log(
-  //       "Found saved session in localStorage:",
-  //       JSON.parse(savedSession)
-  //     );
-  //   }
-  // }, []);
+    const syncSession = async () => {
+      const localSession = localStorage.getItem("session");
+      if (localSession && !session) {
+        // If localStorage has session but NextAuth doesn't, trigger update
+        await update({ jwt: JSON.parse(localSession).jwt });
+      }
+    };
+    syncSession();
+  }, [session, status, update]);
 
   return (
     <SessionProvider session={session}>

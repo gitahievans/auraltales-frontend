@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useSearchParams } from "next/navigation";
-import axiosInstance from "@/lib/axiosInstance";
+import apiClient from "@/lib/apiClient";
 
 const PaymentSuccess = () => {
   const searchParams = useSearchParams();
@@ -25,7 +25,7 @@ const PaymentSuccess = () => {
       // Send request to backend to verify payment
       const verifyPayment = async () => {
         try {
-          const response = await axiosInstance.get(
+          const response = await apiClient.get(
             `/purchases/verify-payment/buy/${reference}?audiobook_id=${audiobook?.id}`
           );
 

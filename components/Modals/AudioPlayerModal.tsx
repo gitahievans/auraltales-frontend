@@ -4,7 +4,7 @@ import ChapterCard from "../Cards/ChapterCard";
 import { Modal } from "@mantine/core";
 import { Audiobook, Chapter, PurchaseStatus } from "@/types/types";
 import AudioPlayer from "../AudioPlayer";
-import axiosInstance from "@/lib/axiosInstance";
+import apiClient from "@/lib/apiClient";
 
 const AudioPlayerModal = ({
   audioBook,
@@ -29,7 +29,7 @@ const AudioPlayerModal = ({
 
   const fetchChapters = async () => {
     try {
-      const response = await axiosInstance.get(
+      const response = await apiClient.get(
         `/api/audiobooks/${audioBook?.slug}/chapters`
       );
 

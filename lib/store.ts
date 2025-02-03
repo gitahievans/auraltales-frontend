@@ -2,7 +2,7 @@ import { FavoriteItem } from "@/app/favorites/page";
 import { WishlistItem } from "@/app/wishlist/page";
 import { PurchaseStatus } from "@/types/types";
 import { notifications } from "@mantine/notifications";
-import axiosInstance from "./axiosInstance";
+import apiClient from "./apiClient";
 
 export const addToFavorites = async (
   audiobookId: number,
@@ -12,7 +12,7 @@ export const addToFavorites = async (
 ) => {
   try {
     setLoading(true);
-    const response = await axiosInstance.post(`/api/favorites/add/`, {
+    const response = await apiClient.post(`/api/favorites/add/`, {
       audiobook_id: audiobookId,
     });
 
@@ -26,7 +26,7 @@ export const addToFavorites = async (
       });
     }
   } catch (error: any) {
-    console.error("Error adding to favorites:", error);
+    console.log("Error adding to favorites:", error?.response?.data?.message);
     notifications.show({
       title: "Error",
       message: error.response?.data?.message || "Failed to add to favorites",
@@ -48,7 +48,7 @@ export const removeFromFavorites = async (
 ) => {
   try {
     setLoading(true);
-    const response = await axiosInstance.delete(
+    const response = await apiClient.delete(
       `/api/favorites/remove/${audiobookId}/`
     );
 
@@ -89,7 +89,7 @@ export const addToWishlist = async (
 ) => {
   try {
     setAddWishLoading(true);
-    const response = await axiosInstance.post("/api/wishlist/add/", {
+    const response = await apiClient.post("/api/wishlist/add/", {
       audiobook_id: audiobookId,
     });
 
@@ -110,11 +110,11 @@ export const addToWishlist = async (
       });
       return;
     }
-  } catch (err) {
-    console.error("Error adding to wishlist", err);
+  } catch (err: any) {
+    console.error("Error adding to wishlist", err.response?.data?.message);
     notifications.show({
       title: "Error",
-      message: "Failed to add audiobook to wishlist",
+      message: err?.response?.data?.message || "Failed to add to wishlist",
       color: "red",
       position: "top-right",
     });
@@ -133,7 +133,7 @@ export const removeFromWishlist = async (
   try {
     setRemoveWishLoading(true);
     // Make a DELETE request to remove the audiobook from the wishlist
-    const response = await axiosInstance.delete(
+    const response = await apiClient.delete(
       `/api/wishlist/remove/${audiobookId}/`
     );
 
@@ -178,7 +178,7 @@ export const checkAudiobookInWishlist = async (
   token: string
 ) => {
   try {
-    const response = await axiosInstance.get("/api/wishlist/");
+    const response = await apiClient.get("/api/wishlist/");
 
     if (response.status === 200) {
       const items = response.data.items || [];
@@ -200,7 +200,7 @@ export const checkAudiobookInFavorites = async (
   token: string
 ): Promise<boolean> => {
   try {
-    const response = await axiosInstance.get(`/api/favorites/`);
+    const response = await apiClient.get(`/api/favorites/`);
 
     if (response.status === 200) {
       const items = response.data.items || [];
@@ -218,7 +218,7 @@ export const fetchFavorites = async (token?: string) => {
     throw new Error("Authentication token is required to fetch favorites.");
   }
   try {
-    const response = await axiosInstance.get("/api/favorites/");
+    const response = await apiClient.get("/api/favorites/");
 
     if (response.status === 200) {
       return response.data.items;
@@ -233,7 +233,7 @@ export const fetchFavorites = async (token?: string) => {
 
 export const fetchWishlist = async () => {
   try {
-    const response = await axiosInstance.get("/api/wishlist/");
+    const response = await apiClient.get("/api/wishlist/");
 
     if (response.status === 200) {
       return response.data.items;
@@ -253,7 +253,7 @@ export const checkPurchaseStatus = async (
   console.log("Checking purchase status for audiobook:", audiobookId);
 
   try {
-    const response = await axiosInstance.get(
+    const response = await apiClient.get(
       `/purchases/check-purchase-status/${audiobookId}`
     );
 

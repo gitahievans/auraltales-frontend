@@ -1,13 +1,6 @@
 import React from "react";
-// import { books } from "@/Constants/Books";
 import BookCard from "./Cards/BookCard";
-import {
-  IconArrowNarrowRight,
-  IconArrowRight,
-  IconChevronLeft,
-  IconChevronRight,
-} from "@tabler/icons-react";
-// import Carousel from "./Carousel/Carousel";
+import { IconArrowRight } from "@tabler/icons-react";
 import { Carousel, CarouselSlide } from "@mantine/carousel";
 import { useMediaQuery } from "@mantine/hooks";
 import Link from "next/link";
@@ -26,17 +19,18 @@ const BookCarousel: React.FC<Props> = ({
   categoryNames,
   categoryObjects,
 }) => {
-  const isMobile = useMediaQuery("(max-width: 768px)");
-  const isTablet = useMediaQuery("(min-width: 769px) and (max-width: 1024px)");
+  const isMobile = useMediaQuery("(max-width: 767px)");
+  const isTablet = useMediaQuery("(min-width: 768px) and (max-width: 1023px)");
+  const isDesktop = useMediaQuery("(min-width: 1024px)");
 
   const categoryObject = categoryObjects.find(
     (category) => category.name.toLowerCase() === title.toLowerCase()
   );
 
-  const getSlideSize = () => {
-    if (isMobile) return "50%";
-    if (isTablet) return "33.333%";
-    return "16.667%";
+  const getSlidesToShow = () => {
+    if (isMobile) return 2;
+    if (isTablet) return 3;
+    return 4;
   };
 
   const getSlidesToScroll = () => {
@@ -45,8 +39,14 @@ const BookCarousel: React.FC<Props> = ({
     return 3;
   };
 
+  const getSlideSize = () => {
+    if (isMobile) return "50%";
+    if (isTablet) return "33.33%";
+    return "25%";
+  };
+
   return (
-    <div className="flex flex-col text-white p-4 gap-3">
+    <div className="flex flex-col text-white py-4 gap-3">
       <div className="flex items-center justify-between mb-4">
         <h1 className="text-lg md:text-2xl font-bold">{title}</h1>
         <Link
@@ -61,9 +61,10 @@ const BookCarousel: React.FC<Props> = ({
         withControls
         loop
         align="start"
+        slidesToShow={getSlidesToShow()}
         slidesToScroll={getSlidesToScroll()}
         slideSize={getSlideSize()}
-        slideGap="md"
+        slideGap="xs"
         controlsOffset="xs"
         controlSize={40}
         classNames={{

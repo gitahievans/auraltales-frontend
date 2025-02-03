@@ -22,7 +22,7 @@ import {
   IconX,
 } from "@tabler/icons-react";
 import LibraryCard from "@/components/Cards/LibraryCard";
-import axiosInstance from "@/lib/axiosInstance";
+import apiClient from "@/lib/apiClient";
 
 interface Author {
   name: string;
@@ -80,7 +80,7 @@ const MyLibraryPage = () => {
     const fetchLibrary = async () => {
       if (session?.jwt) {
         try {
-          const response = await axiosInstance.get("/purchases/my-library/");
+          const response = await apiClient.get("/purchases/my-library/");
           setBooks(response.data.books);
         } catch (error) {
           console.error("Error fetching library:", error);

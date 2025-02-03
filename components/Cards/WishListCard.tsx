@@ -152,7 +152,7 @@ const WishlistCard: React.FC<WishlistCardProps> = ({
         <div className="p-6 flex flex-col flex-grow">
           {/* Title and Rating */}
           <div className="mb-4">
-            <h3 className="text-xl font-bold text-[#1CFAC4] mb-2 line-clamp-2">
+            <h3 className="text-xl font-bold text-[#1CFAC4] mb-2 line-clamp-1">
               {book.title}
             </h3>
             {book?.rating && (

@@ -1,7 +1,7 @@
 import { notifications } from "@mantine/notifications";
 import { Howl } from "howler";
 import { Audiobook } from "@/types/types";
-import axiosInstance from "./axiosInstance";
+import apiClient from "./apiClient";
 
 export const buyAudiobook = async (
   bookId: number,
@@ -23,7 +23,7 @@ export const buyAudiobook = async (
   }
 
   try {
-    const response = await axiosInstance.post(url, {
+    const response = await apiClient.post(url, {
       amount: buyingPrice,
       email: userEmail,
       callback_url: callbackUrl,

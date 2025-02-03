@@ -7,12 +7,12 @@ declare module "next-auth" {
       firstName: string;
       lastName: string;
       email: string;
-      phoneNumber: string; 
+      phoneNumber: string;
       image?: string;
       name?: string;
     };
-    jwt: string; 
-    refreshToken: string; 
+    token: { jwt: string };
+    refreshToken: string;
   }
 
   interface User {

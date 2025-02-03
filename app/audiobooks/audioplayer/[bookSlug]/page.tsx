@@ -1,7 +1,7 @@
 "use client";
 
 import AudioPlayer from "@/components/AudioPlayer";
-import axiosInstance from "@/lib/axiosInstance";
+import apiClient from "@/lib/apiClient";
 import { checkPurchaseStatus } from "@/lib/store";
 import { Chapter, PurchaseStatus } from "@/types/types";
 import { useSession } from "next-auth/react";
@@ -27,7 +27,7 @@ const Page = ({ params }: { params: { bookSlug: string } }) => {
 
   const fetchChapters = async () => {
     try {
-      const response = await axiosInstance.get(
+      const response = await apiClient.get(
         `/api/audiobooks/${parsedAudiobook.slug}/chapters`
       );
 

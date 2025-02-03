@@ -2,6 +2,7 @@ import { NextAuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { notifications } from "@mantine/notifications";
+import axios from "axios";
 
 const API_URL = "http://127.0.0.1:8000";
 
@@ -137,20 +138,53 @@ export const nextAuthOptions: NextAuthOptions = {
     },
 
     async jwt({ token, user }) {
+      // Initial sign-in
       if (user) {
-        return {
-          ...token,
-          id: user.id,
-          jwt: user.jwt,
-          refreshToken: user.refresh,
-          firstName: user.first_name,
-          lastName: user.last_name,
-          email: user.email,
-          phoneNumber: user.profile?.phone_number,
-          image: user.image || "",
-          name: user.name || "",
-        };
+        token.jwt = user.jwt;
+        token.refreshToken = user.refresh;
+        token.id = user.id;
+        token.email = user.email;
+        token.name = user.name;
+        token.image = user.image;
+        token.firstName = user.first_name;
+        token.lastName = user.last_name;
+        token.phoneNumber = user.phone_number;
       }
+
+      // Check if access token is expired
+      if (token.jwt && isExpired(token.jwt)) {
+        try {
+          const response = await axios.post(
+            `${API_URL}/accounts/token/refresh/`,
+            {
+              refresh: token.refreshToken,
+            }
+          );
+          token.jwt = response.data.access;
+          token.refreshToken = response.data.refresh;
+          // Update localStorage with new tokens
+          localStorage.setItem(
+            "session",
+            JSON.stringify({
+              jwt: token.jwt,
+              refreshToken: token.refreshToken,
+              id: token.id,
+              email: token.email,
+              name: token.name,
+              image: token.image,
+              firstName: token.firstName,
+              lastName: token.lastName,
+              phoneNumber: token.phoneNumber,
+            })
+          );
+        } catch (error) {
+          // Refresh failed, clear tokens
+          token.jwt = null;
+          token.refreshToken = null;
+          localStorage.removeItem("session");
+        }
+      }
+
       return token;
     },
 
@@ -176,4 +210,14 @@ export const nextAuthOptions: NextAuthOptions = {
       return baseUrl;
     },
   },
+};
+
+// Utility function to check if JWT is expired
+const isExpired = (jwtToken: string): boolean => {
+  try {
+    const payload = JSON.parse(atob(jwtToken.split(".")[1]));
+    return payload.exp * 1000 < Date.now();
+  } catch (e) {
+    return true; // Treat invalid token as expired
+  }
 };

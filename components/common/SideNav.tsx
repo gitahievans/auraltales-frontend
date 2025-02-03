@@ -20,7 +20,7 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import { signOut, useSession } from "next-auth/react";
 import { usePathname } from "next/navigation";
-import axiosInstance from "@/lib/axiosInstance";
+import apiClient from "@/lib/apiClient";
 import { fetchWishlist } from "@/lib/store";
 import { WishlistItem } from "@/app/wishlist/page";
 
@@ -50,11 +50,10 @@ const SideNav = () => {
   const { data: session } = useSession();
 
   console.log("pathname in sidenav", pathname);
-  
 
   const fetchCollections = async () => {
     try {
-      const response = await axiosInstance.get("/api/collections/");
+      const response = await apiClient.get("/api/collections/");
 
       if (response.status === 200) {
         const filteredCollections = response.data.collections.filter(
@@ -70,7 +69,7 @@ const SideNav = () => {
 
   const fetchCategories = async () => {
     try {
-      const response = await axiosInstance.get("/api/categories/");
+      const response = await apiClient.get("/api/categories/");
 
       if (response.status === 200) {
         const filteredCategories = response.data.categories.filter(

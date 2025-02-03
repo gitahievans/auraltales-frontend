@@ -20,16 +20,15 @@ apiClient.interceptors.request.use(
     console.log("token in axios instance", token);
 
     if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+      config.headers.set("Authorization", `Bearer ${token}`);
+      config.headers.Accept = "application/json";
     }
-    if (
-      config.method === "post" &&
-      config.headers["Content-Type"] !== "multipart/form-data"
-    ) {
-      config.headers["Content-Type"] = "application/json";
-    } else if (config.headers["Content-Type"] !== "application/json") {
-      config.headers["Content-Type"] = "multipart/form-data";
+
+    if (!config.headers["Content-Type"]) {
+      config.headers["Content-Type"] =
+        config.method === "post" ? "application/json" : "multipart/form-data";
     }
+
     console.log("config returned", config);
 
     return config;
@@ -58,27 +57,30 @@ apiClient.interceptors.response.use(
         // Refresh the token
         const response = await axios.post(
           `${process.env.NEXT_PUBLIC_API_URL}/accounts/token/refresh/`,
-          {
-            refresh: refreshToken,
-          }
+          { refresh: refreshToken }
         );
 
-        const { access, refresh } = response.data;
+        const { access, refresh: newRefreshToken } = response.data;
 
-        // Update the session object in localStorage
         const updatedSession = {
           ...session,
           jwt: access,
-          refreshToken: refresh,
+          refreshToken: newRefreshToken, // Use the new refresh token
         };
         localStorage.setItem("session", JSON.stringify(updatedSession));
 
-        // Update the Authorization header and retry the original request
-        originalRequest.headers.Authorization = `Bearer ${access}`;
+        // In the response interceptor after updating tokens
+        originalRequest.headers = {
+          ...originalRequest.headers,
+          Authorization: `Bearer ${access}`,
+        };
         return apiClient(originalRequest);
       } catch (refreshError) {
         console.log("Refresh token error:", refreshError);
-        // Handle logout or session expiration logic here if needed
+        // Clear localStorage
+        localStorage.removeItem("session");
+        // Redirect to login page
+        window.location.href = "/auth/login";
         return Promise.reject(refreshError);
       }
     }

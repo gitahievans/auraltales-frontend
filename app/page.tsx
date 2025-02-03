@@ -15,7 +15,7 @@ import { IconArrowRight } from "@tabler/icons-react";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { proxy } from "valtio";
-import axiosInstance from "@/lib/axiosInstance";
+import apiClient from "@/lib/apiClient";
 
 export const boughtState = proxy({
   bought: false,
@@ -77,7 +77,7 @@ export default function Home() {
 
   const fetchAudiobooks = async () => {
     try {
-      const response = await axiosInstance("api/audiobooks/");
+      const response = await apiClient("api/audiobooks/");
 
       if (response.status !== 200) {
         throw new Error("Network response was not ok");

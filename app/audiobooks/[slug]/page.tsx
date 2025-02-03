@@ -6,7 +6,7 @@ import BoughtBookCard from "@/components/Cards/BoughtBookCard";
 import ChapterCard from "@/components/Cards/ChapterCard";
 import UnboughtBookCard from "@/components/Cards/UnboughtBookCard";
 import TabsSection from "@/components/TabsSection";
-import axiosInstance from "@/lib/axiosInstance";
+import apiClient from "@/lib/apiClient";
 import { checkPurchaseStatus } from "@/lib/store";
 import { Audiobook, PurchaseStatus } from "@/types/types";
 import { Loader, rem, Tabs } from "@mantine/core";
@@ -61,7 +61,7 @@ const Page = ({ params }: PagePropsType) => {
 
   const fetchAudioBook = async () => {
     try {
-      const response = await axiosInstance.get(`/api/audiobooks/${slug}`);
+      const response = await apiClient.get(`/api/audiobooks/${slug}`);
 
       if (response.status !== 200) {
         throw new Error("Failed to fetch Audiobook details");

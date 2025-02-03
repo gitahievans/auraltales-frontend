@@ -28,10 +28,13 @@ const Navbar = () => {
 
   const { data: session } = useSession();
 
+  console.log("session in navbar", session);
+  
+
   const handleLogout = () => {
+    signOut();
     localStorage.removeItem("access_token");
     localStorage.removeItem("refresh_token");
-    signOut();
     userState.isLoggedIn = false;
   };
 
@@ -122,8 +125,8 @@ const Navbar = () => {
                 </div>
                 <div className="flex flex-col">
                   <h3 className="text-base md:text-lg font-semibold">
-                    {`${session.user?.name}` ||
-                      `${session.user?.firstName} ${session.user?.lastName}`}
+                    {`${session.user?.name ? session.user?.name : ""}` ||
+                      `${session?.user?.firstName} ${session?.user?.lastName}`}
                   </h3>
                   <p className="text-xs md:text-sm">{session.user?.email}</p>
                 </div>

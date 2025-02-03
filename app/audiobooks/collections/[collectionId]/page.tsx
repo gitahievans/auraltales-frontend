@@ -6,7 +6,7 @@ import React, { useEffect } from "react";
 import axios from "axios";
 import Head from "next/head";
 import { Loader } from "@mantine/core";
-import axiosInstance from "@/lib/axiosInstance";
+import apiClient from "@/lib/apiClient";
 
 type CollectionPropsType = {
   params: {
@@ -30,9 +30,7 @@ const CollectionPage = ({ params }: CollectionPropsType) => {
     try {
       setLoading(true);
       setError("");
-      const response = await axiosInstance.get(
-        `/api/collections/${collectionId}`
-      );
+      const response = await apiClient.get(`/api/collections/${collectionId}`);
 
       if (response.status === 200) {
         setTitle(response.data.category);
