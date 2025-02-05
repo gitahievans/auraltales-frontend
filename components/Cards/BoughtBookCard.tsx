@@ -2,7 +2,13 @@
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import poster from "@/public/Images/soundleaf-files/posters/Gemini_Generated_Image_6g64ay6g64ay6g64.jpeg";
-import { IconPlayerPlayFilled, IconStar, IconStars } from "@tabler/icons-react";
+import {
+  IconHeadset,
+  IconPlayerPlayFilled,
+  IconStar,
+  IconStars,
+  IconUsers,
+} from "@tabler/icons-react";
 import { useMediaQuery } from "@mantine/hooks";
 import { Audiobook } from "@/types/types";
 import {
@@ -101,15 +107,17 @@ const BoughtBookCard = ({ book, open }: { book: Audiobook; open: any }) => {
             </h2>
             <div className="space-y-2 text-gray-300">
               <p>
-                <span className="font-semibold text-[#1CFAC4] mr-2">By:</span>
+                {/* <span className="font-semibold text-[#1CFAC4] mr-2">By:</span> */}
+                <IconUsers size={20} className="mr-2" />
                 {book?.authors && book?.authors?.length > 0
                   ? book?.authors.map((author: any) => author.name).join(", ")
                   : "Unknown Author"}
               </p>
               <p>
-                <span className="font-semibold text-[#1CFAC4] mr-2">
+                {/* <span className="font-semibold text-[#1CFAC4] mr-2">
                   Narrated By:
-                </span>
+                </span> */}
+                <IconHeadset size={20} className="mr-2" />
                 {book?.narrators?.length > 0
                   ? book?.narrators.map((narrator) => narrator.name).join(", ")
                   : "Unknown Narrator"}

@@ -46,6 +46,14 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
           <AppShell.Header withBorder={false}>
             <div className="flex items-center h-full bg-primary px-2 w-full">
               <div className="max-w-7xl w-full mx-auto flex items-center">
+                {/* <Burger
+                  opened={opened}
+                  onClick={toggle}
+                  hiddenFrom="sm"
+                  size="sm"
+                  color="white"
+                /> */}
+
                 <Burger
                   opened={mobileOpened}
                   onClick={toggleMobile}

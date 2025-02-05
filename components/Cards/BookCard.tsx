@@ -47,7 +47,7 @@ const BookCard: React.FC<BookCardProps> = ({ book }) => {
           />
         </div>
       </Link>
-      <div className="p-4 bg-[#041714]/80 backdrop-blur-sm">
+      <div className="p-2 bg-[#041714]/80 backdrop-blur-sm">
         <h3 className="font-bold line-clamp-1 mb-2 text-white">{book.title}</h3>
         <p className="text-sm text-gray-300 line-clamp-1">
           {book.authors.map((author) => author.name).join(", ")}

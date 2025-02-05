@@ -36,6 +36,7 @@
     "react-dom": "^18",
     "react-international-phone": "^4.3.0",
     "react-select": "^5.8.0",
+    "swiper": "^11.2.2",
     "valtio": "^2.0.0"
   },
   "devDependencies": {

@@ -4,7 +4,16 @@
 import Image from "next/image";
 import React, { use, useEffect, useRef, useState } from "react";
 import poster from "@/public/Images/soundleaf-files/posters/Gemini_Generated_Image_6g64ay6g64ay6g64.jpeg";
-import { IconListDetails, IconShoppingBag } from "@tabler/icons-react";
+import {
+  IconCalendarPlus,
+  IconHeadset,
+  IconLanguageKatakana,
+  IconListDetails,
+  IconShoppingBag,
+  IconTimeDuration30,
+  IconUsers,
+  IconUsersGroup,
+} from "@tabler/icons-react";
 import { Audiobook } from "@/types/types";
 import { useMediaQuery } from "@mantine/hooks";
 import { Howl } from "howler";
@@ -140,24 +149,42 @@ const UnboughtBookCard = ({ book }: propsType) => {
               {book?.title}
             </h2>
             <div className="space-y-2 text-gray-300">
-              <p>
-                <span className="font-semibold text-[#1CFAC4] mr-2">By:</span>
-                {book?.authors && book?.authors?.length > 0
-                  ? book?.authors.map((author: any) => author.name).join(", ")
-                  : "Unknown Author"}
-              </p>
-              <p>
-                <span className="font-semibold text-[#1CFAC4] mr-2">
-                  Narrated By:
-                </span>
-                {book?.narrators?.length > 0
-                  ? book?.narrators.map((narrator) => narrator.name).join(", ")
-                  : "Unknown Narrator"}
-              </p>
+              <div className="flex items-center">
+                <IconUsers size={20} color="#6b7280" className="mr-2" />
+                <span className="font-semibold text-gray-500  mr-2">By</span>
+                <p>
+                  {book?.authors && book?.authors?.length > 0
+                    ? book?.authors.map((author: any) => author.name).join(", ")
+                    : "Unknown Author"}
+                </p>
+              </div>
+              <div className="flex items-center">
+                <IconHeadset size={20} color="#6b7280" className="mr-2" />
+                <span className="font-semibold text-gray-500 mr-2">Narration By</span>
+                <p>
+                  {book?.narrators?.length > 0
+                    ? book?.narrators
+                        .map((narrator) => narrator.name)
+                        .join(", ")
+                    : "Unknown Narrator"}
+                </p>
+              </div>
+
               <div className="space-y-1 pt-2">
-                <p>Length: 12 Hrs, 35 Mins</p>
-                <p>Release Date: 12 May, 2024</p>
-                <p>Language: English</p>
+                <div className="flex items-center">
+                  <IconTimeDuration30 size={20} color="#6b7280" className="mr-2" />
+                  <p>12 Hrs, 35 Mins</p>
+                </div>
+
+                <div className="flex items-center">
+                  <IconCalendarPlus size={20} color="#6b7280" className="mr-2" />
+                  <p>12 May, 2024</p>
+                </div>
+
+                <div className="flex items-center">
+                  <IconLanguageKatakana size={20} color="#6b7280" className="mr-2" />
+                  <p>English</p>
+                </div>
               </div>
             </div>
           </div>
