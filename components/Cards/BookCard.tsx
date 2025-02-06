@@ -35,7 +35,7 @@ const BookCard: React.FC<BookCardProps> = ({ book }) => {
   };
 
   return (
-    <div className="bg-gradient-to-br from-[#062C2A] to-[#035c4f] rounded-md overflow-hidden shadow-2xl hover:shadow-3xl transition-all duration-300 transform hover:-translate-y-2">
+    <div className="bg-[#124e3f] rounded-md overflow-hidden shadow-2xl hover:shadow-3xl transition-all duration-300 transform hover:-translate-y-2">
       <Link href={`/audiobooks/${book.slug}`}>
         <div className="relative h-48 w-full">
           <Image

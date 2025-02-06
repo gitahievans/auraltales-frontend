@@ -128,7 +128,7 @@ const MyLibraryPage = () => {
   });
 
   return (
-    <Container size="xl" py="xl">
+    <Container size="xl">
       {/* Header Section */}
       <div className="mb-8">
         <Title order={1} style={{ color: "#1CFAC4" }} className="mb-2">

@@ -122,7 +122,7 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="mt-4">
+    <div className="flex flex-col gap-6">
       {categoryNames.length > 0
         ? categoryNames.map((cat, i) => {
             const booksInCategory = audiobooks?.filter((book) =>

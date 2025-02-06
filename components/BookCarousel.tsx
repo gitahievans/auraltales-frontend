@@ -61,8 +61,8 @@ const BookCarousel: React.FC<Props> = ({
   });
 
   return (
-    <div className="flex flex-col text-white py-4">
-      <div className="flex items-center justify-between mb-4 px-4">
+    <div className="flex flex-col text-white">
+      <div className="flex items-center justify-between mb-4">
         <h1 className="text-lg md:text-2xl font-bold">{title}</h1>
         <Link
           href={`/audiobooks/categories/${categoryObject?.id}`}

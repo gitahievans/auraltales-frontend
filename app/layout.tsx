@@ -6,6 +6,7 @@ import Layout from "@/components/common/Layout";
 import "@mantine/carousel/styles.css";
 import "@mantine/core/styles.css";
 import "@mantine/notifications/styles.css";
+import '@mantine/spotlight/styles.css';
 import { Notifications } from "@mantine/notifications";
 import SessionWrapper from "@/components/SessionWrapper";
 const inter = Inter({ subsets: ["latin"] });
