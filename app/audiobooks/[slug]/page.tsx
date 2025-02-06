@@ -1,9 +1,7 @@
 "use client";
 
-import { boughtState } from "@/app/page";
 import BookCard from "@/components/Cards/BookCard";
 import BoughtBookCard from "@/components/Cards/BoughtBookCard";
-import ChapterCard from "@/components/Cards/ChapterCard";
 import UnboughtBookCard from "@/components/Cards/UnboughtBookCard";
 import TabsSection from "@/components/TabsSection";
 import apiClient from "@/lib/apiClient";
@@ -11,18 +9,10 @@ import { checkPurchaseStatus } from "@/lib/store";
 import { Audiobook, PurchaseStatus } from "@/types/types";
 import { Loader, rem, Tabs } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
-import {
-  IconChevronLeft,
-  IconHeadphones,
-  IconPlayerPlay,
-  IconUser,
-} from "@tabler/icons-react";
-import axios from "axios";
-import { get } from "http";
+import { IconChevronLeft } from "@tabler/icons-react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
-import { useSnapshot } from "valtio";
 
 type PagePropsType = {
   params: {

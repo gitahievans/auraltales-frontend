@@ -4,6 +4,7 @@ import Link from "next/link";
 import { IconClock, IconBookmarks } from "@tabler/icons-react";
 import { Loader } from "@mantine/core";
 import defaultPoster from "@/public/Images/soundleaf-files/posters/Gemini_Generated_Image_v8c5gbv8c5gbv8c5.jpeg";
+import { useSession } from "next-auth/react";
 
 interface BookCardProps {
   book: {
@@ -19,6 +20,7 @@ interface BookCardProps {
 const BookCard: React.FC<BookCardProps> = ({ book }) => {
   const [inWishlist, setInWishlist] = useState(false);
   const [loading, setLoading] = useState(false);
+  const { data: session } = useSession();
 
   const handleAddToWishlist = () => {
     setLoading(true);
@@ -57,21 +59,23 @@ const BookCard: React.FC<BookCardProps> = ({ book }) => {
             <IconClock size={16} className="text-[#1CFAC4]" />
             <span className="text-xs">{book.length || "N/A"}</span>
           </div>
-          <button
-            className="text-gray-300 hover:text-[#1CFAC4] transition-colors transform hover:scale-110"
-            onClick={
-              inWishlist ? handleRemoveFromWishlist : handleAddToWishlist
-            }
-          >
-            {loading ? (
-              <Loader size="xs" />
-            ) : (
-              <IconBookmarks
-                size={16}
-                color={inWishlist ? "#1CFAC4" : "white"}
-              />
-            )}
-          </button>
+          {session && (
+            <button
+              className="text-gray-300 hover:text-[#1CFAC4] transition-colors transform hover:scale-110"
+              onClick={
+                inWishlist ? handleRemoveFromWishlist : handleAddToWishlist
+              }
+            >
+              {loading ? (
+                <Loader size="xs" />
+              ) : (
+                <IconBookmarks
+                  size={16}
+                  color={inWishlist ? "#1CFAC4" : "white"}
+                />
+              )}
+            </button>
+          )}
         </div>
       </div>
     </div>

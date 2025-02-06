@@ -16,7 +16,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
     const syncSession = async () => {
       const localSession = localStorage.getItem("session");
       if (localSession && !session) {
-        await update({ jwt: JSON.parse(localSession).jwt });
+        await update({ jwt: JSON.parse(localSession)?.jwt });
       }
     };
     syncSession();

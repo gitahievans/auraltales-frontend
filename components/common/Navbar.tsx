@@ -20,6 +20,9 @@ import { signOut, useSession } from "next-auth/react";
 import Image from "next/image";
 import { Menu } from "@mantine/core";
 import apiClient from "@/lib/apiClient";
+import SignupForm from "../Auth/SignupForm";
+import { useDisclosure } from "@mantine/hooks";
+import LoginForm from "../Auth/LoginForm";
 
 type Category = {
   id: number;
@@ -44,6 +47,9 @@ const Navbar = ({
   const { data: session } = useSession();
   const [categories, setCategories] = useState<Category[]>([]);
   const [collections, setCollections] = useState<Collection[]>([]);
+  const [openedSignup, { open: openSignup, close: closeSignup }] =
+    useDisclosure();
+  const [openedLogin, { open: openLogin, close: closeLogin }] = useDisclosure();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -78,6 +84,9 @@ const Navbar = ({
 
   return (
     <header className="bg-primary">
+      <SignupForm opened={openedSignup} close={closeSignup} openLogin={openLogin} />
+      <LoginForm opened={openedLogin} close={closeLogin} openSignup={openSignup} />
+
       {/* Top Section - Logo, Search, and Auth */}
       <div className="border-b border-gray-800">
         <div className="max-w-7xl mx-auto py-2">
@@ -118,18 +127,18 @@ const Navbar = ({
             <div className="flex items-center">
               {!session ? (
                 <div className="flex items-center space-x-2">
-                  <Link
-                    href="/auth/signup"
+                  <div
+                    onClick={openSignup}
                     className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-medium hidden md:block"
                   >
                     Signup
-                  </Link>
-                  <Link
-                    href="/auth/login"
+                  </div>
+                  <div
+                    onClick={openLogin}
                     className="bg-gray-800 hover:bg-gray-700 text-white px-4 py-2 rounded-lg text-sm font-medium"
                   >
                     Login
-                  </Link>
+                  </div>
                 </div>
               ) : (
                 <Menu position="bottom-end" shadow="xl" width={200}>
@@ -269,7 +278,7 @@ const Navbar = ({
 
       {/* Mobile Menu */}
       {opened && (
-        <div className="md:hidden">
+        <div className="md:hidden h-screen">
           {/* Mobile Search */}
           <div className="p-4 border-b border-gray-800">
             <div className="relative">
