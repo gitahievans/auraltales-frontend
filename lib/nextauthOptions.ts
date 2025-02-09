@@ -75,7 +75,7 @@ export const nextAuthOptions: NextAuthOptions = {
     }),
   ],
   pages: {
-    signIn: "/auth/login",
+    signIn: "/",
   },
   callbacks: {
     async signIn({ user, account, profile }) {
@@ -111,6 +111,9 @@ export const nextAuthOptions: NextAuthOptions = {
             // Add other user data if needed
             user.first_name = result.user.first_name;
             user.last_name = result.user.last_name;
+            user.is_staff = result.user.is_staff;
+            user.is_active = result.user.is_active;
+            user.date_joined = result.user.date_joined;
             return true;
           }
 
@@ -149,6 +152,9 @@ export const nextAuthOptions: NextAuthOptions = {
         token.firstName = user.first_name;
         token.lastName = user.last_name;
         token.phoneNumber = user.phone_number;
+        token.is_staff = user.is_staff;
+        token.is_active = user.is_active;
+        token.date_joined = user.date_joined;
       }
 
       // Check if access token is expired
@@ -175,6 +181,9 @@ export const nextAuthOptions: NextAuthOptions = {
               firstName: token.firstName,
               lastName: token.lastName,
               phoneNumber: token.phoneNumber,
+              is_staff: token.is_staff,
+              is_active: token.is_active,
+              date_joined: token.date_joined,
             })
           );
         } catch (error) {
@@ -197,6 +206,9 @@ export const nextAuthOptions: NextAuthOptions = {
         phoneNumber: token.phoneNumber as string,
         image: token.image as string,
         name: token.name as string,
+        is_staff: token.is_staff as boolean,
+        is_active: token.is_active as boolean,
+        date_joined: token.date_joined as string,
       };
       session.jwt = token.jwt as string;
       session.refreshToken = token.refreshToken as string;

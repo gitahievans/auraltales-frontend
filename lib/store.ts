@@ -127,8 +127,10 @@ export const removeFromWishlist = async (
   audiobookId: number,
   setRemoveWishLoading: React.Dispatch<React.SetStateAction<boolean>>,
   setInWishList: React.Dispatch<React.SetStateAction<boolean>>,
-  setWishlistItems: React.Dispatch<React.SetStateAction<WishlistItem[] | null>>,
-  from: string
+  setWishlistItems: React.Dispatch<
+    React.SetStateAction<WishlistItem[] | null>
+  > | null,
+  from: string | null
 ) => {
   try {
     setRemoveWishLoading(true);

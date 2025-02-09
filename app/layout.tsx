@@ -6,9 +6,10 @@ import Layout from "@/components/common/Layout";
 import "@mantine/carousel/styles.css";
 import "@mantine/core/styles.css";
 import "@mantine/notifications/styles.css";
-import '@mantine/spotlight/styles.css';
+import "@mantine/spotlight/styles.css";
 import { Notifications } from "@mantine/notifications";
 import SessionWrapper from "@/components/SessionWrapper";
+import { LayoutWrapper } from "@/components/LayoutWrapper";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
@@ -28,7 +29,7 @@ export default function RootLayout({
         <MantineProvider>
           <SessionWrapper>
             <Notifications />
-            <Layout>{children}</Layout>
+            <LayoutWrapper>{children}</LayoutWrapper>
           </SessionWrapper>
         </MantineProvider>
       </body>

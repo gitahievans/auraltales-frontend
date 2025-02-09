@@ -35,7 +35,8 @@ const LoginForm = ({
     });
 
     if (signInResponse && !signInResponse.error) {
-      router.push("/");
+      close();
+      window.location.reload();
     } else {
       console.log("Error:", signInResponse);
 
@@ -71,8 +72,14 @@ const LoginForm = ({
     <Modal
       opened={opened}
       onClose={close}
-      title="Sign Up"
       size="md"
+      withOverlay={true}
+      overlayProps={{
+        opacity: 0.9,
+        blur: 100,
+        backgroundOpacity: 0.9,
+      }}
+      closeOnClickOutside={false}
       styles={{
         content: {
           backgroundColor: "#041714",
@@ -86,7 +93,7 @@ const LoginForm = ({
       <section className="bg-primary flex items-center">
         <div className="flex flex-col w-full max-w-xl items-center justify-center py-3 mx-auto rounded-xl">
           <div className="w-full rounded-xl shadow md:mt-0 sm:max-w-md xl:p-0">
-            <div className="px-8 space-y-4 md:space-y-3 sm:p-8">
+            <div className="space-y-4 md:space-y-3 sm:p-8">
               <h1 className="text-xl text-center font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
                 Welcome Back, Log In.
               </h1>
@@ -176,14 +183,14 @@ const LoginForm = ({
                     Sign up
                   </div>
                 </p> */}
-                 <div className="flex items-center justify-center">
+                <div className="flex items-center justify-center">
                   <p className="text-sm font-light text-gray-500 dark:text-gray-400">
-                  Don’t have an account yet?
+                    Don’t have an account yet?
                   </p>
-                  <div
-                    onClick={handleNoAccount}
-                  >
-                    <p className="cursor-pointer text-green-500 text-sm ml-1">Sign Up</p>
+                  <div onClick={handleNoAccount}>
+                    <p className="cursor-pointer text-green-500 text-sm ml-1">
+                      Sign Up
+                    </p>
                   </div>
                 </div>
               </form>

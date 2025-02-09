@@ -15,14 +15,17 @@ import {
   IconX,
   IconChevronDown,
   IconStars,
+  IconLogout2,
 } from "@tabler/icons-react";
 import { signOut, useSession } from "next-auth/react";
 import Image from "next/image";
-import { Menu } from "@mantine/core";
+import { Loader, Menu } from "@mantine/core";
 import apiClient from "@/lib/apiClient";
 import SignupForm from "../Auth/SignupForm";
 import { useDisclosure } from "@mantine/hooks";
 import LoginForm from "../Auth/LoginForm";
+import DynamicGreeting from "../DynamicGreeting";
+import adminIcon from "../../public/icons8-admin-24.png";
 
 type Category = {
   id: number;
@@ -44,12 +47,13 @@ const Navbar = ({
   toggle: () => void;
 }) => {
   const pathname = usePathname();
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const [categories, setCategories] = useState<Category[]>([]);
   const [collections, setCollections] = useState<Collection[]>([]);
   const [openedSignup, { open: openSignup, close: closeSignup }] =
     useDisclosure();
   const [openedLogin, { open: openLogin, close: closeLogin }] = useDisclosure();
+  const isLoading = status === "loading";
 
   useEffect(() => {
     const fetchData = async () => {
@@ -84,8 +88,16 @@ const Navbar = ({
 
   return (
     <header className="bg-primary">
-      <SignupForm opened={openedSignup} close={closeSignup} openLogin={openLogin} />
-      <LoginForm opened={openedLogin} close={closeLogin} openSignup={openSignup} />
+      <SignupForm
+        opened={openedSignup}
+        close={closeSignup}
+        openLogin={openLogin}
+      />
+      <LoginForm
+        opened={openedLogin}
+        close={closeLogin}
+        openSignup={openSignup}
+      />
 
       {/* Top Section - Logo, Search, and Auth */}
       <div className="border-b border-gray-800">
@@ -125,23 +137,34 @@ const Navbar = ({
 
             {/* Auth Buttons / User Menu */}
             <div className="flex items-center">
-              {!session ? (
+              {isLoading ? (
+                <Loader color="green" size="sm" />
+              ) : !session ? (
                 <div className="flex items-center space-x-2">
                   <div
                     onClick={openSignup}
-                    className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-medium hidden md:block"
+                    className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-medium hidden md:block cursor-pointer"
                   >
                     Signup
                   </div>
                   <div
                     onClick={openLogin}
-                    className="bg-gray-800 hover:bg-gray-700 text-white px-4 py-2 rounded-lg text-sm font-medium"
+                    className="bg-gray-800 hover:bg-gray-700 text-white px-4 py-2 rounded-lg text-sm font-medium cursor-pointer"
                   >
                     Login
                   </div>
                 </div>
               ) : (
-                <Menu position="bottom-end" shadow="xl" width={200}>
+                <Menu
+                  position="bottom-end"
+                  shadow="xl"
+                  width={300}
+                  styles={{
+                    dropdown: {
+                      backgroundColor: "#041714",
+                    },
+                  }}
+                >
                   <Menu.Target>
                     <button className="flex items-center space-x-2 text-gray-300 hover:text-white">
                       <div className="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center">
@@ -159,12 +182,33 @@ const Navbar = ({
                       </div>
                     </button>
                   </Menu.Target>
-                  <Menu.Dropdown className="bg-gray-900 border border-gray-800">
-                    <Menu.Item
-                      className="text-gray-300 hover:bg-gray-800"
-                      onClick={() => signOut()}
-                    >
-                      Sign out
+                  <Menu.Dropdown>
+                    <DynamicGreeting session={session} />
+                    {session && session?.user?.is_staff && (
+                      <Menu.Item>
+                        <Link
+                          href="/admin"
+                          className="text-white flex items-center gap-2"
+                        >
+                          <Image src={adminIcon} alt="admin" />
+                          <p className="font-bold">Admin</p>
+                        </Link>
+                      </Menu.Item>
+                    )}
+                    <Menu.Item>
+                      <Link
+                        href="/profile"
+                        className="text-white flex items-center gap-2"
+                      >
+                        <IconUserCircle className="w-6 h-6" color="green" />
+                        <p>Profile</p>
+                      </Link>
+                    </Menu.Item>
+                    <Menu.Item onClick={() => signOut()}>
+                      <div className="flex items-center gap-2">
+                        <IconLogout2 className="w-6 h-6" color="green" />
+                        <p className="text-white">Sign out</p>
+                      </div>
                     </Menu.Item>
                   </Menu.Dropdown>
                 </Menu>

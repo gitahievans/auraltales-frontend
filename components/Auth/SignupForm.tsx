@@ -93,8 +93,13 @@ const SignupForm = ({
     <Modal
       opened={opened}
       onClose={close}
-      title="Sign Up"
       size="md"
+      overlayProps={{
+        opacity: 0.9,
+        blur: 100,
+        backgroundOpacity: 0.9,
+      }}
+      closeOnClickOutside={false}
       styles={{
         content: {
           backgroundColor: "#041714",
@@ -108,7 +113,7 @@ const SignupForm = ({
       <section className="bg-primary flex items-center">
         <div className="flex flex-col w-full max-w-xl items-center justify-center mx-auto rounded-xl">
           <div className="w-full rounded-xl shadow md:mt-0 sm:max-w-md xl:p-0">
-            <div className="px-8 space-y-4 md:space-y-3 sm:p-8">
+            <div className="space-y-4 md:space-y-3 sm:p-8">
               <h1 className="text-xl text-center font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
                 Create a new account
               </h1>
@@ -266,10 +271,10 @@ const SignupForm = ({
                   <p className="text-sm font-light text-gray-500 dark:text-gray-400">
                     Already have an account?{" "}
                   </p>
-                  <div
-                    onClick={handleHaveAccount}
-                  >
-                    <p className="cursor-pointer text-green-500 text-sm ml-1">Sign In</p>
+                  <div onClick={handleHaveAccount}>
+                    <p className="cursor-pointer text-green-500 text-sm ml-1">
+                      Sign In
+                    </p>
                   </div>
                 </div>
               </form>

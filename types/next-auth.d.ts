@@ -10,6 +10,9 @@ declare module "next-auth" {
       phoneNumber: string;
       image?: string;
       name?: string;
+      is_staff: boolean;
+      is_active: boolean;
+      date_joined: string;
     };
     token: { jwt: string };
     refreshToken: string;
@@ -28,5 +31,8 @@ declare module "next-auth" {
     };
     image?: string;
     name?: string;
+    is_active: boolean;
+    is_staff: boolean;
+    date_joined: string;
   }
 }

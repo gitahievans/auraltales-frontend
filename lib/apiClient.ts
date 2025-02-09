@@ -17,7 +17,7 @@ apiClient.interceptors.request.use(
     const parsedSession = getSession();
     const token = parsedSession?.jwt;
 
-    console.log("token in axios instance", token);
+    // console.log("token in axios instance", token);
 
     if (token) {
       config.headers.set("Authorization", `Bearer ${token}`);
@@ -29,7 +29,7 @@ apiClient.interceptors.request.use(
         config.method === "post" ? "application/json" : "multipart/form-data";
     }
 
-    console.log("config returned", config);
+    // console.log("config returned", config);
 
     return config;
   },
@@ -80,7 +80,7 @@ apiClient.interceptors.response.use(
         // Clear localStorage
         localStorage.removeItem("session");
         // Redirect to login page
-        window.location.href = "/auth/login";
+        window.location.href = "/";
         return Promise.reject(refreshError);
       }
     }

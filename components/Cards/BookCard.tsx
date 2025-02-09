@@ -5,6 +5,7 @@ import { IconClock, IconBookmarks } from "@tabler/icons-react";
 import { Loader } from "@mantine/core";
 import defaultPoster from "@/public/Images/soundleaf-files/posters/Gemini_Generated_Image_v8c5gbv8c5gbv8c5.jpeg";
 import { useSession } from "next-auth/react";
+import { addToWishlist, removeFromWishlist } from "@/lib/store";
 
 interface BookCardProps {
   book: {
@@ -21,18 +22,19 @@ const BookCard: React.FC<BookCardProps> = ({ book }) => {
   const [inWishlist, setInWishlist] = useState(false);
   const [loading, setLoading] = useState(false);
   const { data: session } = useSession();
+  const [inWishList, setInWishList] = useState(false);
+  const [addWishLoading, setAddWishLoading] = useState(false); 
+  const [removeWishLoading, setRemoveWishLoading] = useState(false);
 
   const handleAddToWishlist = () => {
     setLoading(true);
-    // Add book to wishlist logic
-    setInWishlist(true);
+    addToWishlist(book?.id!, setAddWishLoading, setInWishList);
     setLoading(false);
   };
 
   const handleRemoveFromWishlist = () => {
     setLoading(true);
-    // Remove book from wishlist logic
-    setInWishlist(false);
+    removeFromWishlist(book?.id!, setRemoveWishLoading, setInWishList, null, null);
     setLoading(false);
   };
 

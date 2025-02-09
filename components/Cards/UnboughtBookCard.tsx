@@ -123,7 +123,7 @@ const UnboughtBookCard = ({ book }: propsType) => {
       return;
     }
 
-    removeFromWishlist(book?.id!, setRemoveWishLoading, setInWishList, from);
+    removeFromWishlist(book?.id!, setRemoveWishLoading, setInWishList, null, from!);
   };
 
   return (
