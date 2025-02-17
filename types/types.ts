@@ -54,3 +54,22 @@ export type PurchaseStatus = {
   bought: boolean;
   rented: boolean;
 };
+
+export interface FormDataOne {
+  poster: File[];
+  audio_sample: File[];
+  title: string;
+  description: string;
+  summary: string;
+  length: string;
+  buying_price: string;
+  date_published: string;
+  categories: Category[];
+  collections: Collection[];
+  narrators: Narrator[];
+  authors: Author[];
+}
+
+export interface FormDataTwo {
+  chapters: Chapter[];
+}

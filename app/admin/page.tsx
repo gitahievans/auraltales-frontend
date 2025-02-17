@@ -10,7 +10,7 @@ import RevenueChart from "@/components/admindashboard/RevenueChart";
 import StatCard from "@/components/admindashboard/StatCard";
 import WeeklyProgress from "@/components/admindashboard/WeeklyProgress";
 import { Button, Loader } from "@mantine/core";
-import { useDisclosure } from "@mantine/hooks";
+import { useDisclosure, useMediaQuery } from "@mantine/hooks";
 import {
   IconBook,
   IconCategory2,
@@ -83,7 +83,7 @@ export default function Dashboard() {
   const [purchaseStats, setPurchaseStats] = useState<PurchaseStats | null>(
     null
   );
-  const isMobile = window.innerWidth < 768;
+  const isMobile = useMediaQuery('(max-width: 768px)');
   const [opened, { open, close }] = useDisclosure();
 
   useEffect(() => {

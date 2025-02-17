@@ -3,43 +3,21 @@
 import { useState, useEffect, ChangeEvent, DragEvent, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { IconUpload, IconPlus, IconX, IconBook } from "@tabler/icons-react";
-import { Alert, Modal } from "@mantine/core";
+import { Modal, Stepper, TextInput } from "@mantine/core";
 import Image from "next/image";
 import { useSession } from "next-auth/react";
 import { notifications } from "@mantine/notifications";
-
-interface Category {
-  id: number;
-  category_name: string;
-  description?: string;
-}
-
-interface FormDataType {
-  book_title: string;
-  author: string;
-  description: string;
-  price: string;
-  duration: string;
-  language: string;
-  categories: string[];
-  is_published: boolean;
-  cover_image: File | null;
-  audio_file: File | null;
-  sample_audio?: File | null;
-}
-
-interface Language {
-  value: string;
-  label: string;
-}
-
-const LANGUAGES: Language[] = [
-  { value: "en", label: "English" },
-  { value: "es", label: "Spanish" },
-  { value: "fr", label: "French" },
-  { value: "de", label: "German" },
-  // Add more languages as needed
-];
+import axios from "axios";
+import StepperForm from "./StepperForm";
+import {
+  Author,
+  Category,
+  Chapter,
+  Collection,
+  FormDataOne,
+  FormDataTwo,
+  Narrator,
+} from "@/types/types";
 
 const BookUploader = ({
   opened,
@@ -48,170 +26,139 @@ const BookUploader = ({
   opened: boolean;
   close: () => void;
 }) => {
-  const [uploading, setUploading] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [newCategory, setNewCategory] = useState<string>("");
-  const [showNewCategoryInput, setShowNewCategoryInput] =
-    useState<boolean>(false);
-  const [formData, setFormData] = useState<FormDataType>({
-    book_title: "",
-    author: "",
+  const [categories, setCategories] = useState<Category[] | null>(null);
+  const [collections, setCollections] = useState<Collection[] | null>(null);
+  const [authors, setAuthors] = useState<Author[] | null>(null);
+  const [narrators, setNarrators] = useState<Narrator[] | null>(null);
+  const [errorFormOne, setErrorFormOne] = useState<string | null>(null);
+  const [errorFormTwo, setErrorFormTwo] = useState<string | null>(null);
+  const [formDataOne, setFormDataOne] = useState<FormDataOne>({
+    poster: [],
+    audio_sample: [],
+    title: "",
     description: "",
-    price: "",
-    duration: "",
-    language: "",
+    summary: "",
+    length: "",
+    buying_price: "",
+    date_published: "",
     categories: [],
-    is_published: true,
-    cover_image: null,
-    audio_file: null,
-    sample_audio: null,
+    authors: [],
+    collections: [],
+    narrators: [],
+  });
+  const [formDataTwo, setFormDataTwo] = useState<FormDataTwo>({
+    chapters: [],
   });
 
-  const { data: session } = useSession();
-  const router = useRouter();
+  const fetchLibStats = async () => {
+    try {
+      const response = await axios.get(
+        "http://127.0.0.1:8000/api/library/stats/"
+      );
+
+      if (response.status !== 200) {
+        throw new Error("Lib stats not found");
+      }
+
+      // console.log(response.data);
+      const data = response.data;
+
+      setCategories(data.categories);
+      setCollections(data.collections);
+      setAuthors(data.authors);
+      setNarrators(data.narrators);
+    } catch (error) {
+      console.error("Error fetching lib stats", error);
+    }
+  };
 
   useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const response = await fetch(
-          "http://127.0.0.1:8000/api/book-categories/"
-        );
-        if (!response.ok) {
-          throw new Error("Failed to fetch categories");
-        }
-        const data: Category[] = await response.json();
-        setCategories(data.categories);
-      } catch (error) {
-        console.error("Error fetching categories:", error);
-      }
-    };
-
-    fetchCategories();
+    fetchLibStats();
   }, []);
 
-  const handleInputChange = (
-    event: ChangeEvent<
-      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >
-  ) => {
-    const { name, value, type } = event.target;
-    const checked = (event.target as HTMLInputElement).checked;
+  console.log("formDataOne", formDataOne, "formDataTwo", formDataTwo);
 
-    setFormData((prev) => ({
-      ...prev,
-      [name]: type === "checkbox" ? checked : value,
-    }));
-  };
+  // post the audiobook to the endpoint - http://127.0.0.1:8000/api/create-audiobook/
 
-  const handleFileChange = (
-    event: ChangeEvent<HTMLInputElement>,
-    fileType: "cover_image" | "audio_file" | "sample_audio"
-  ) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-
-    // Validate file type
-    if (fileType === "cover_image" && !file.type.startsWith("image/")) {
-      setError("Cover image must be an image file");
-      return;
-    }
-
-    if (
-      (fileType === "audio_file" || fileType === "sample_audio") &&
-      !file.type.startsWith("audio/")
-    ) {
-      setError("Audio files must be in a valid audio format");
-      return;
-    }
-
-    setFormData((prev) => ({
-      ...prev,
-      [fileType]: file,
-    }));
-    setError(null);
-  };
-
-  const handleCategoryChange = (categoryName: string) => {
-    setFormData((prev) => {
-      const updatedCategories = prev.categories.includes(categoryName)
-        ? prev.categories.filter((cat) => cat !== categoryName)
-        : [...prev.categories, categoryName];
-      return { ...prev, categories: updatedCategories };
-    });
-  };
-
-  const handleNewCategorySubmit = () => {
-    if (newCategory.trim()) {
-      setFormData((prev) => ({
-        ...prev,
-        categories: [...prev.categories, newCategory.trim()],
-      }));
-      setNewCategory("");
-      setShowNewCategoryInput(false);
-    }
-  };
-
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    if (!formData.cover_image || !formData.audio_file) {
-      setError("Please provide both cover image and audio file.");
-      return;
+
+    // 1. Combine form data
+    const combinedData = { ...formDataOne, ...formDataTwo };
+
+    console.log("combinedData", combinedData);
+
+    // 2. Create FormData instance
+    const formData = new FormData();
+
+    // --- FILE FIELDS (SINGLE FILE) ---
+    // Poster (ensure you have only one file in formDataOne.poster)
+    if (formDataOne.poster && formDataOne.poster.length > 0) {
+      formData.append("poster", formDataOne.poster[0]);
     }
-    setUploading(true);
-    setError(null);
+
+    // Audio Sample (ensure you have only one file in formDataOne.audio_sample)
+    if (formDataOne.audio_sample && formDataOne.audio_sample.length > 0) {
+      formData.append("audio_sample", formDataOne.audio_sample[0]);
+    }
+
+    // --- SIMPLE TEXT FIELDS ---
+    formData.append("title", formDataOne.title);
+    formData.append("description", formDataOne.description);
+    formData.append("summary", formDataOne.summary);
+    formData.append("length", formDataOne.length);
+    formData.append("buying_price", formDataOne.buying_price);
+    formData.append("date_published", formDataOne.date_published);
+
+    // --- ARRAY FIELDS THAT THE SERIALIZER EXPECTS AS JSON ---
+    formData.append("authors", JSON.stringify(formDataOne.authors));
+    formData.append("categories", JSON.stringify(formDataOne.categories));
+    formData.append("narrators", JSON.stringify(formDataOne.narrators));
+    formData.append("collections", JSON.stringify(formDataOne.collections));
+
+    // --- CHAPTERS ---
+    // If each chapter might have its own audio file, we do:
+    // 1) Append the file to formData with a unique key.
+    // 2) In the chapter object, set `audio_file` to that unique key.
+    const updatedChapters = formDataTwo.chapters.map((chapter, index) => {
+      // If you store the chapter file in `chapter.file`, for example:
+      if (chapter.audio_file) {
+        // Append the file to FormData
+        formData.append(`chapter_${index}_audio_file`, chapter.audio_file);
+        // Return the chapter object, but replace the audio_file with the key
+        return { ...chapter, audio_file: `chapter_${index}_audio_file` };
+      }
+      return chapter;
+    });
+
+    // Now append the updated chapters array as JSON
+    formData.append("chapters", JSON.stringify(updatedChapters));
+
+    // Debugging: Log FormData entries
+    for (let [key, value] of formData.entries()) {
+      console.log(key, value);
+    }
 
     try {
-      const formPayload = new FormData();
+      const response = await axios.post(
+        "http://127.0.0.1:8000/api/create-audiobook/",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
 
-      // Add book information
-      formPayload.append("book_title", formData.book_title);
-      formPayload.append("author", formData.author);
-      formPayload.append("description", formData.description);
-      formPayload.append("price", formData.price);
-      formPayload.append("duration", formData.duration);
-      formPayload.append("language", formData.language);
-      formPayload.append("is_published", String(formData.is_published));
-
-      // Add files
-      formPayload.append("cover_image", formData.cover_image);
-      formPayload.append("audio_file", formData.audio_file);
-      if (formData.sample_audio) {
-        formPayload.append("sample_audio", formData.sample_audio);
-      }
-
-      // Handle categories
-      if (formData.categories.length > 0) {
-        formPayload.append("categories", JSON.stringify(formData.categories));
-      }
-
-      const response = await fetch(`http://127.0.0.1:8000/api/books/create/`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${session?.jwt}`,
-        },
-        body: formPayload,
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || "Failed to upload book");
-      }
-
-      close();
-      router.push("/dashboard");
+      // Handle success (e.g., notify the user, clear form, etc.)
+      console.log("Upload successful", response.data);
+      notifications.show({ message: "Audiobook uploaded successfully!" });
+    } catch (error: any) {
+      console.error("Error uploading audiobook", error);
       notifications.show({
-        title: "Success",
-        message: "Book uploaded successfully",
-        color: "green",
-        autoClose: 5000,
-        position: "top-center",
+        message: "Error uploading audiobook.",
+        color: "red",
       });
-    } catch (error) {
-      console.error("Error uploading book:", error);
-      setError(error instanceof Error ? error.message : "An error occurred");
-    } finally {
-      setUploading(false);
     }
   };
 
@@ -219,7 +166,7 @@ const BookUploader = ({
     <Modal
       opened={opened}
       onClose={close}
-      size="lg"
+      size="xl"
       padding="lg"
       closeOnClickOutside={false}
       title="Add New"
@@ -233,285 +180,29 @@ const BookUploader = ({
         },
       }}
     >
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-blue-600 mb-2">
-          Add New Audiobook
-        </h1>
-        <h4 className="text-gray-600">
-          Upload a new audiobook to your collection
-        </h4>
-      </div>
-
-      <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="space-y-4">
-          <div>
-            <label className="block text-sm font-semibold text-gray-700">
-              Book Title
-            </label>
-            <input
-              type="text"
-              name="book_title"
-              value={formData.book_title}
-              onChange={handleInputChange}
-              className="w-full p-2 border rounded-md border-blue-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-              required
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-semibold text-gray-700">
-              Author
-            </label>
-            <input
-              type="text"
-              name="author"
-              value={formData.author}
-              onChange={handleInputChange}
-              className="w-full p-2 border rounded-md border-blue-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-              required
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-semibold text-gray-700">
-              Description
-            </label>
-            <textarea
-              name="description"
-              value={formData.description}
-              onChange={handleInputChange}
-              rows={4}
-              className="w-full p-2 border rounded-md border-blue-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-              required
-            />
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-semibold text-gray-700">
-                Price
-              </label>
-              <input
-                type="number"
-                name="price"
-                value={formData.price}
-                onChange={handleInputChange}
-                step="0.01"
-                className="w-full p-2 border rounded-md border-blue-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                required
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-semibold text-gray-700">
-                Duration (minutes)
-              </label>
-              <input
-                type="number"
-                name="duration"
-                value={formData.duration}
-                onChange={handleInputChange}
-                className="w-full p-2 border rounded-md border-blue-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                required
-              />
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-sm font-semibold text-gray-700">
-              Language
-            </label>
-            <select
-              name="language"
-              value={formData.language}
-              onChange={handleInputChange}
-              className="w-full p-2 border rounded-md bg-transparent border-blue-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-              required
-            >
-              <option value="">Select Language</option>
-              {LANGUAGES.map((lang) => (
-                <option key={lang.value} value={lang.value}>
-                  {lang.label}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div>
-            <label className="flex items-center space-x-2 py-2">
-              <input
-                type="checkbox"
-                name="is_published"
-                checked={formData.is_published}
-                onChange={handleInputChange}
-                className="rounded border-blue-300 text-blue-600 focus:ring-blue-500"
-              />
-              <span className="text-sm font-semibold text-gray-700">
-                Publish Immediately
-              </span>
-            </label>
-          </div>
-
-          <div>
-            <label className="block text-sm font-semibold text-gray-700">
-              Cover Image
-            </label>
-            <div className="mt-2">
-              <input
-                type="file"
-                accept="image/*"
-                onChange={(e) => handleFileChange(e, "cover_image")}
-                className="w-full p-2 border rounded-md border-blue-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                required
-              />
-            </div>
-            {formData.cover_image && (
-              <div className="mt-2">
-                <Image
-                  src={URL.createObjectURL(formData.cover_image)}
-                  alt="Cover preview"
-                  width={100}
-                  height={150}
-                  className="rounded-md"
-                />
-              </div>
-            )}
-          </div>
-
-          <div>
-            <label className="block text-sm font-semibold text-gray-700">
-              Audio File
-            </label>
-            <div className="mt-2">
-              <input
-                type="file"
-                accept="audio/*"
-                onChange={(e) => handleFileChange(e, "audio_file")}
-                className="w-full p-2 border rounded-md border-blue-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                required
-              />
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-sm font-semibold text-gray-700">
-              Sample Audio (Optional)
-            </label>
-            <div className="mt-2">
-              <input
-                type="file"
-                accept="audio/*"
-                onChange={(e) => handleFileChange(e, "sample_audio")}
-                className="w-full p-2 border rounded-md border-blue-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-              />
-            </div>
-          </div>
-
-          <div className="space-y-2">
-            <label className="block text-sm font-semibold text-gray-700">
-              Categories
-            </label>
-            <div className="flex flex-wrap gap-2">
-              {categories?.map((category) => (
-                <button
-                  key={category.id}
-                  type="button"
-                  onClick={() => handleCategoryChange(category.category_name)}
-                  className={`px-3 py-1 rounded-full text-sm 
-                  ${
-                    formData.categories.includes(category.category_name)
-                      ? "bg-blue-600 text-white"
-                      : "bg-blue-100 text-blue-700"
-                  }
-                  hover:bg-blue-400 hover:text-white transition-colors`}
-                >
-                  {category.category_name}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {showNewCategoryInput ? (
-            <div className="flex gap-2">
-              <input
-                type="text"
-                value={newCategory}
-                onChange={(e) => setNewCategory(e.target.value)}
-                placeholder="Enter new category"
-                className="flex-1 p-2 border rounded-md border-blue-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-              />
-              <button
-                type="button"
-                onClick={handleNewCategorySubmit}
-                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-              >
-                Add
-              </button>
-            </div>
-          ) : (
-            <button
-              type="button"
-              onClick={() => setShowNewCategoryInput(true)}
-              className="flex items-center gap-2 text-blue-600 hover:text-blue-700"
-            >
-              <IconPlus size={16} />
-              <span>Add New Category</span>
-            </button>
-          )}
-
-          {formData.categories.length > 0 && (
-            <div className="mt-2">
-              <p className="text-sm text-gray-600 mb-2">Selected categories:</p>
-              <div className="flex flex-wrap gap-2">
-                {formData.categories.map((cat) => (
-                  <span
-                    key={cat}
-                    className="inline-flex items-center gap-1 px-3 py-1 bg-blue-200 text-blue-700 rounded-full text-sm"
-                  >
-                    {cat}
-                    <button
-                      type="button"
-                      onClick={() => handleCategoryChange(cat)}
-                      className="text-blue-500 hover:text-blue-700"
-                    >
-                      <IconX size={14} />
-                    </button>
-                  </span>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {error && (
-            <div className="p-4 bg-red-50 border border-red-200 rounded-md">
-              <p className="text-red-600">{error}</p>
-            </div>
-          )}
-
-          <button
-            type="submit"
-            disabled={uploading}
-            className={`w-full flex items-center justify-center space-x-2 p-2 rounded-md text-white
-            ${
-              uploading
-                ? "bg-blue-400 cursor-not-allowed"
-                : "bg-blue-600 hover:bg-blue-700"
-            }
-            transition-colors`}
-          >
-            {uploading ? (
-              <>
-                <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-white" />
-                <span>Uploading...</span>
-              </>
-            ) : (
-              <>
-                <IconUpload size={20} />
-                <span>Upload Book</span>
-              </>
-            )}
-          </button>
+      <form onSubmit={handleSubmit}>
+        <div className="mb-8">
+          <h1 className="text-2xl font-bold text-blue-600 mb-2">
+            Add New Audiobook
+          </h1>
+          <h4 className="text-gray-600">
+            Upload a new audiobook to your collection
+          </h4>
         </div>
+
+        <StepperForm
+          handleSubmit={handleSubmit}
+          formDataOne={formDataOne}
+          formDataTwo={formDataTwo}
+          errorFormOne={errorFormOne}
+          errorFormTwo={errorFormTwo}
+          setFormDataOne={setFormDataOne}
+          setFormDataTwo={setFormDataTwo}
+          categories={categories}
+          collections={collections}
+          authors={authors}
+          narrators={narrators}
+        />
       </form>
     </Modal>
   );
