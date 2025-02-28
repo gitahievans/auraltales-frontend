@@ -64,7 +64,6 @@ const AudiobkAuthorAdd: React.FC<AudiobookAuthorAddProps> = ({
 
     if (trimmedAuthorName) {
       const newAuthorObj: Author = {
-        id: Math.max(...authors.map((a) => a.id), 0) + 1,
         name: trimmedAuthorName,
         email: newAuthor.email.trim(),
         phone_number: newAuthor.phone_number.trim(),
@@ -84,17 +83,17 @@ const AudiobkAuthorAdd: React.FC<AudiobookAuthorAddProps> = ({
       });
       setShowNewAuthorForm(false);
     }
-  }, [newAuthor, authors, setFormDataOne]);
+  }, [newAuthor, setFormDataOne]);
 
   const handleAuthorChange = useCallback(
     (authorToToggle: Author) => {
       setFormDataOne((prev) => {
         const isSelected = prev.authors.some(
-          (auth) => auth.id === authorToToggle.id
+          (auth: Author) => auth.id === authorToToggle.id
         );
 
         const updatedAuthors = isSelected
-          ? prev.authors.filter((auth) => auth.id !== authorToToggle.id)
+          ? prev.authors.filter((auth: Author) => auth.id !== authorToToggle.id)
           : [...prev.authors, authorToToggle];
 
         return { ...prev, authors: updatedAuthors };

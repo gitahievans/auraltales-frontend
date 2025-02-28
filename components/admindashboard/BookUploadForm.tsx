@@ -78,68 +78,34 @@ const BookUploader = ({
 
   console.log("formDataOne", formDataOne, "formDataTwo", formDataTwo);
 
-  // post the audiobook to the endpoint - http://127.0.0.1:8000/api/create-audiobook/
-
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
 
-    // 1. Combine form data
-    const combinedData = { ...formDataOne, ...formDataTwo };
-
-    console.log("combinedData", combinedData);
-
-    // 2. Create FormData instance
-    const formData = new FormData();
-
-    // --- FILE FIELDS (SINGLE FILE) ---
-    // Poster (ensure you have only one file in formDataOne.poster)
-    if (formDataOne.poster && formDataOne.poster.length > 0) {
-      formData.append("poster", formDataOne.poster[0]);
-    }
-
-    // Audio Sample (ensure you have only one file in formDataOne.audio_sample)
-    if (formDataOne.audio_sample && formDataOne.audio_sample.length > 0) {
-      formData.append("audio_sample", formDataOne.audio_sample[0]);
-    }
-
-    // --- SIMPLE TEXT FIELDS ---
-    formData.append("title", formDataOne.title);
-    formData.append("description", formDataOne.description);
-    formData.append("summary", formDataOne.summary);
-    formData.append("length", formDataOne.length);
-    formData.append("buying_price", formDataOne.buying_price);
-    formData.append("date_published", formDataOne.date_published);
-
-    // --- ARRAY FIELDS THAT THE SERIALIZER EXPECTS AS JSON ---
-    formData.append("authors", JSON.stringify(formDataOne.authors));
-    formData.append("categories", JSON.stringify(formDataOne.categories));
-    formData.append("narrators", JSON.stringify(formDataOne.narrators));
-    formData.append("collections", JSON.stringify(formDataOne.collections));
-
-    // --- CHAPTERS ---
-    // If each chapter might have its own audio file, we do:
-    // 1) Append the file to formData with a unique key.
-    // 2) In the chapter object, set `audio_file` to that unique key.
-    const updatedChapters = formDataTwo.chapters.map((chapter, index) => {
-      // If you store the chapter file in `chapter.file`, for example:
-      if (chapter.audio_file) {
-        // Append the file to FormData
-        formData.append(`chapter_${index}_audio_file`, chapter.audio_file);
-        // Return the chapter object, but replace the audio_file with the key
-        return { ...chapter, audio_file: `chapter_${index}_audio_file` };
-      }
-      return chapter;
-    });
-
-    // Now append the updated chapters array as JSON
-    formData.append("chapters", JSON.stringify(updatedChapters));
-
-    // Debugging: Log FormData entries
-    for (let [key, value] of formData.entries()) {
-      console.log(key, value);
-    }
-
     try {
+      const formData = new FormData();
+
+      formData.append("title", formDataOne.title);
+      formData.append("description", formDataOne.description);
+      formData.append("summary", formDataOne.summary);
+      formData.append("length", formDataOne.length);
+      formData.append("buying_price", formDataOne.buying_price);
+      formData.append("date_published", formDataOne.date_published);
+
+      // Add files
+      if (formDataOne.poster.length > 0) {
+        formData.append("poster", formDataOne.poster[0]);
+      }
+
+      if (formDataOne.audio_sample.length > 0) {
+        formData.append("audio_sample", formDataOne.audio_sample[0]);
+      }
+
+      // Add JSON arrays for related entities
+      formData.append("categories", JSON.stringify(formDataOne.categories));
+      formData.append("collections", JSON.stringify(formDataOne.collections));
+      formData.append("authors", JSON.stringify(formDataOne.authors));
+      formData.append("narrators", JSON.stringify(formDataOne.narrators));
+
       const response = await axios.post(
         "http://127.0.0.1:8000/api/create-audiobook/",
         formData,
@@ -150,15 +116,77 @@ const BookUploader = ({
         }
       );
 
-      // Handle success (e.g., notify the user, clear form, etc.)
-      console.log("Upload successful", response.data);
-      notifications.show({ message: "Audiobook uploaded successfully!" });
-    } catch (error: any) {
-      console.error("Error uploading audiobook", error);
       notifications.show({
-        message: "Error uploading audiobook.",
+        message: "Audiobook metadata uploaded successfully!",
+        color: "green",
+      });
+
+      if (response.status === 201) {
+        const audiobookId = response.data.id;
+        if (formDataTwo.chapters.length > 0) {
+          const chaptersFormData = new FormData();
+          chaptersFormData.append("audiobook_id", audiobookId.toString());
+
+          formDataTwo.chapters.forEach((chapter, index) => {
+            chaptersFormData.append("title", chapter.title);
+            chaptersFormData.append("order", (index + 1).toString());
+
+            if (chapter.audio_file instanceof File) {
+              chaptersFormData.append("audio_file", chapter.audio_file);
+            } else {
+              console.log("Chapter audio file is not a file");
+            }
+          });
+
+          try {
+            const chaptersResponse = await axios.post(
+              "http://127.0.0.1:8000/api/create-chapters/",
+              chaptersFormData,
+              {
+                headers: {
+                  "Content-Type": "multipart/form-data",
+                },
+              }
+            );
+
+            if (chaptersResponse.status === 201) {
+              notifications.show({
+                message: "Audiobook and chapters uploaded successfully!",
+                color: "green",
+              });
+
+              close();
+              // router.push(`/audiobooks/${audiobookId}`);
+            }
+          } catch (error: any) {
+            console.error("Error uploading chapters:", error);
+            notifications.show({
+              message: "Error uploading chapters. Please try again.",
+              color: "red",
+            });
+          }
+        } else {
+          notifications.show({
+            message: "Audiobook created without chapters.",
+            color: "yellow",
+          });
+          close();
+        }
+      }
+    } catch (error: any) {
+      console.error("Error uploading audiobook:", error);
+      notifications.show({
+        message:
+          "Error uploading audiobook. Please check your data and try again.",
         color: "red",
       });
+
+      // Set appropriate error message
+      if (error.response && error.response.data) {
+        setErrorFormOne(JSON.stringify(error.response.data));
+      } else {
+        setErrorFormOne("An unknown error occurred.");
+      }
     }
   };
 

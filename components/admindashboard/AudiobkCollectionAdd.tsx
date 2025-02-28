@@ -60,7 +60,6 @@ const AudiobkCollectionAdd: React.FC<AudiobookCollectionAddProps> = ({
 
     if (trimmedCollection) {
       const newCollectionObj: Collection = {
-        id: Math.max(...collections.map((c) => c.id)) + 1,
         name: trimmedCollection,
       };
 
@@ -72,17 +71,19 @@ const AudiobkCollectionAdd: React.FC<AudiobookCollectionAddProps> = ({
       setNewCollection("");
       setShowNewCollectionInput(false);
     }
-  }, [newCollection, collections, setFormDataOne]);
+  }, [newCollection, setFormDataOne]);
 
   const handleCollectionChange = useCallback(
     (collectionToToggle: Collection) => {
       setFormDataOne((prev) => {
         const isSelected = prev.collections.some(
-          (col) => col.id === collectionToToggle.id
+          (col: Collection) => col.id === collectionToToggle.id
         );
 
         const updatedCollections = isSelected
-          ? prev.collections.filter((col) => col.id !== collectionToToggle.id)
+          ? prev.collections.filter(
+              (col: Collection) => col.id !== collectionToToggle.id
+            )
           : [...prev.collections, collectionToToggle];
 
         return { ...prev, collections: updatedCollections };

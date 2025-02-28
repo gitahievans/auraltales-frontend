@@ -62,8 +62,8 @@ const AudiobookCategoryAdd: React.FC<AudiobookCategoryAddProps> = ({
   const handleNewCategorySubmit = useCallback(() => {
     const trimmedCategory = newCategory.trim();
     if (trimmedCategory) {
+      // For a new category, don't include an ID
       const newCategoryObj: Category = {
-        id: Math.max(...categories.map((c) => c.id)) + 1, // Temporary ID generation
         name: trimmedCategory,
       };
 
@@ -74,7 +74,7 @@ const AudiobookCategoryAdd: React.FC<AudiobookCategoryAddProps> = ({
       setNewCategory("");
       setShowNewCategoryInput(false);
     }
-  }, [newCategory, categories, setFormDataOne]);
+  }, [newCategory, setFormDataOne]);
 
   const handleCategoryChange = useCallback(
     (categoryToToggle: Category) => {
@@ -83,7 +83,9 @@ const AudiobookCategoryAdd: React.FC<AudiobookCategoryAddProps> = ({
           (cat) => cat.id === categoryToToggle.id
         );
         const updatedCategories = isSelected
-          ? prev.categories.filter((cat) => cat.id !== categoryToToggle.id)
+          ? prev.categories.filter(
+              (cat: Category) => cat.id !== categoryToToggle.id
+            )
           : [...prev.categories, categoryToToggle];
         return { ...prev, categories: updatedCategories };
       });

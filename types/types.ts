@@ -27,7 +27,7 @@ export interface Narrator {
 export interface Chapter {
   id: number;
   title: string;
-  audio_file: string;
+  audio_file: File | null;
   order: number;
 }
 

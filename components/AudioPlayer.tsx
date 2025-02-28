@@ -17,6 +17,7 @@ import {
   IconPlayerSkipForward,
   IconRewindForward10,
   IconBookmark,
+  IconVinyl,
 } from "@tabler/icons-react";
 import Image from "next/image";
 import { Audiobook, Chapter, PurchaseStatus } from "@/types/types";
@@ -144,7 +145,6 @@ const AudioPlayer = ({
     }
 
     setProgress(0);
-    setIsPlaying(true);
     setCurrentChapter(chapters[currentIndex]);
   }, [currentIndex, audioSrc, setCurrentChapter]);
 
@@ -231,14 +231,17 @@ const AudioPlayer = ({
 
         <div className="w-full flex flex-col items-center">
           <div className="w-full flex flex-col gap-1 items-center">
-            <input
-              type="range"
-              min="0"
-              max={duration || 0}
-              value={progress}
-              onChange={handleSeek}
-              className="w-full h-1 bg-gray-700 rounded-lg appearance-none cursor-pointer"
-            />
+            <div className="w-full flex gap-2 items-center">
+              <IconVinyl color="white" />
+              <input
+                type="range"
+                min="0"
+                max={duration || 0}
+                value={progress}
+                onChange={handleSeek}
+                className="w-full h-1 bg-gray-700 rounded-lg appearance-none cursor-pointer"
+              />
+            </div>
             <div className="w-full flex justify-between">
               <span className="text-gray-400 text-xs">
                 {formatTime(progress)}

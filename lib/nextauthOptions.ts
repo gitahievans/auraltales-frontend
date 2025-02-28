@@ -168,29 +168,10 @@ export const nextAuthOptions: NextAuthOptions = {
           );
           token.jwt = response.data.access;
           token.refreshToken = response.data.refresh;
-          // Update localStorage with new tokens
-          localStorage.setItem(
-            "session",
-            JSON.stringify({
-              jwt: token.jwt,
-              refreshToken: token.refreshToken,
-              id: token.id,
-              email: token.email,
-              name: token.name,
-              image: token.image,
-              firstName: token.firstName,
-              lastName: token.lastName,
-              phoneNumber: token.phoneNumber,
-              is_staff: token.is_staff,
-              is_active: token.is_active,
-              date_joined: token.date_joined,
-            })
-          );
         } catch (error) {
           // Refresh failed, clear tokens
           token.jwt = null;
           token.refreshToken = null;
-          localStorage.removeItem("session");
         }
       }
 
@@ -212,7 +193,6 @@ export const nextAuthOptions: NextAuthOptions = {
       };
       session.jwt = token.jwt as string;
       session.refreshToken = token.refreshToken as string;
-
       return session;
     },
 

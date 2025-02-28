@@ -63,7 +63,6 @@ const AudiobkNarratorAdd: React.FC<AudiobookNarratorAddProps> = ({
 
     if (trimmedNarratorName) {
       const newNarratorObj: Narrator = {
-        id: Math.max(...narrators.map((n) => n.id), 0) + 1,
         name: trimmedNarratorName,
         email: newNarrator.email.trim(),
         phone_number: newNarrator.phone_number.trim(),
@@ -83,17 +82,19 @@ const AudiobkNarratorAdd: React.FC<AudiobookNarratorAddProps> = ({
       });
       setShowNewNarratorForm(false);
     }
-  }, [newNarrator, narrators, setFormDataOne]);
+  }, [newNarrator, setFormDataOne]);
 
   const handleNarratorChange = useCallback(
     (narratorToToggle: Narrator) => {
       setFormDataOne((prev) => {
         const isSelected = prev.narrators.some(
-          (narr) => narr.id === narratorToToggle.id
+          (narr: Narrator) => narr.id === narratorToToggle.id
         );
 
         const updatedNarrators = isSelected
-          ? prev.narrators.filter((narr) => narr.id !== narratorToToggle.id)
+          ? prev.narrators.filter(
+              (narr: Narrator) => narr.id !== narratorToToggle.id
+            )
           : [...prev.narrators, narratorToToggle];
 
         return { ...prev, narrators: updatedNarrators };

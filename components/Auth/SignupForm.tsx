@@ -31,6 +31,7 @@ const SignupForm = ({
 
   const router = useRouter();
 
+  // Update your handleSubmit function
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
@@ -45,6 +46,7 @@ const SignupForm = ({
     };
 
     try {
+      // First register the user
       const response = await fetch("http://127.0.0.1:8000/accounts/register/", {
         method: "POST",
         headers: {
@@ -53,26 +55,31 @@ const SignupForm = ({
         body: JSON.stringify(userPayload),
       });
 
-      console.log("response", response);
-
       if (response.ok) {
-        console.log("registered successfully");
-
         const data = await response.json();
 
-        localStorage.setItem("access_token", data.access);
-        localStorage.setItem("refresh_token", data.refresh);
+        close();
+        const result = await signIn("credentials", {
+          email: email,
+          password: password,
+          redirect: false,
+        });
 
-        userState.isLoggedIn = true;
-        userState.user = data.user;
-
-        router.push("/");
+        if (result?.ok) {
+          console.log("Signed in successfully after registration");
+          window.location.reload();
+        } else {
+          throw new Error("Failed to sign in after registration");
+        }
+      } else {
+        const errorData = await response.json();
+        throw new Error(errorData.detail || "Registration failed");
       }
     } catch (error) {
       console.error(error);
       notifications.show({
         title: "Error Registering",
-        message: "Registration failed, please try again",
+        message: error.message || "Registration failed, please try again",
         color: "red",
         position: "top-right",
       });

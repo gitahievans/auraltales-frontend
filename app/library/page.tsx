@@ -80,7 +80,11 @@ const MyLibraryPage = () => {
     const fetchLibrary = async () => {
       if (session?.jwt) {
         try {
-          const response = await apiClient.get("/purchases/my-library/");
+          const response = await apiClient.get("/purchases/my-library/", {
+            headers: {
+              Authorization: `Bearer ${session.jwt}`,
+            },
+          });
           setBooks(response.data.books);
         } catch (error) {
           console.error("Error fetching library:", error);

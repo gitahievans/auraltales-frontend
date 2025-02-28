@@ -7,6 +7,7 @@ import Footer from "./Footer";
 import { AppShell } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { SessionProvider, useSession } from "next-auth/react";
+import AuthProvider from "../Auth/AuthProvider";
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
   const [opened, { toggle }] = useDisclosure();
@@ -24,26 +25,30 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <SessionProvider session={session}>
-      <div className="flex flex-col bg-primary font-main min-h-screen">
-        <AppShell
-          header={{ height: 60 }}
-          navbar={{
-            width: 300,
-            breakpoint: "sm",
-            collapsed: { desktop: true, mobile: !opened },
-          }}
-          padding="md"
-        >
-          <AppShell.Header withBorder={false}>
-            <Navbar opened={opened} toggle={toggle} />
-          </AppShell.Header>
+      <AuthProvider>
+        <div className="flex flex-col bg-primary font-main min-h-screen">
+          <AppShell
+            header={{ height: 60 }}
+            navbar={{
+              width: 300,
+              breakpoint: "sm",
+              collapsed: { desktop: true, mobile: !opened },
+            }}
+            padding="md"
+          >
+            <AppShell.Header withBorder={false}>
+              <Navbar opened={opened} toggle={toggle} />
+            </AppShell.Header>
 
-          <AppShell.Main>
-            <div className="max-w-7xl mx-auto w-full md:pt-14">{children}</div>
-            <Footer />
-          </AppShell.Main>
-        </AppShell>
-      </div>
+            <AppShell.Main>
+              <div className="max-w-7xl mx-auto w-full md:pt-14">
+                {children}
+              </div>
+              <Footer />
+            </AppShell.Main>
+          </AppShell>
+        </div>
+      </AuthProvider>
     </SessionProvider>
   );
 };

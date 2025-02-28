@@ -7,23 +7,21 @@ import {
   Group,
   ActionIcon,
 } from "@mantine/core";
-import {
-  IconPlus,
-  IconTrash,
-  IconFileMusic,
-  IconPhoto,
-} from "@tabler/icons-react";
+import { IconPlus, IconTrash, IconFileMusic } from "@tabler/icons-react";
 import { Chapter, FormDataTwo } from "@/types/types";
 import ChapterPosterUploader from "./ChapterPosterUploader";
 import Image from "next/image";
 
+// Define props interface
 interface AudiobookChapterUploaderProps {
   formDataTwo: FormDataTwo;
   setFormDataTwo: (data: FormDataTwo) => void;
 }
 
-// Updated Chapter type to include poster
-interface EnhancedChapter extends Chapter {
+// Enhanced Chapter type with poster and proper audio_file as File
+interface EnhancedChapter extends Omit<Chapter, "id"> {
+  id?: number; // Optional ID, assigned by backend after save
+  audio_file: File | null; // Changed from string to File | null
   poster_file: File | null;
   poster_preview?: string;
 }
@@ -36,7 +34,7 @@ const AudiobookChapterUploader: React.FC<AudiobookChapterUploaderProps> = ({
     Omit<EnhancedChapter, "id" | "order">
   >({
     title: "",
-    audio_file: "",
+    audio_file: null, // Initialize as null
     poster_file: null,
   });
   const [audioFileName, setAudioFileName] = useState<string>("");
@@ -45,11 +43,10 @@ const AudiobookChapterUploader: React.FC<AudiobookChapterUploaderProps> = ({
   const handleAddChapter = useCallback(() => {
     if (
       currentChapter.title.trim() &&
-      currentChapter.audio_file &&
-      currentChapter.poster_file
+      currentChapter.audio_file instanceof File &&
+      currentChapter.poster_file instanceof File
     ) {
       const newChapter: EnhancedChapter = {
-        id: Math.max(0, ...formDataTwo.chapters.map((ch) => ch.id)) + 1,
         title: currentChapter.title.trim(),
         audio_file: currentChapter.audio_file,
         poster_file: currentChapter.poster_file,
@@ -64,28 +61,27 @@ const AudiobookChapterUploader: React.FC<AudiobookChapterUploaderProps> = ({
       // Clear the form
       setCurrentChapter({
         title: "",
-        audio_file: "",
+        audio_file: null,
         poster_file: null,
       });
       setAudioFileName("");
       setPosterError(false);
-    } else if (!currentChapter.poster_file) {
-      setPosterError(true);
+    } else {
+      if (!currentChapter.poster_file) setPosterError(true);
+      if (!currentChapter.audio_file) console.warn("Audio file is required");
     }
   }, [currentChapter, formDataTwo.chapters, setFormDataTwo]);
 
   const handleRemoveChapter = useCallback(
-    (chapterId: number) => {
+    (index: number) => {
       setFormDataTwo((prev) => {
-        // Filter out the removed chapter
-        const filteredChapters = prev.chapters.filter(
-          (ch) => ch.id !== chapterId
-        );
+        // Filter out the chapter by index (since id might not exist yet)
+        const filteredChapters = prev.chapters.filter((_, i) => i !== index);
 
         // Re-order the remaining chapters
-        const reorderedChapters = filteredChapters.map((ch, index) => ({
+        const reorderedChapters = filteredChapters.map((ch, i) => ({
           ...ch,
-          order: index + 1,
+          order: i + 1,
         }));
 
         return {
@@ -102,13 +98,13 @@ const AudiobookChapterUploader: React.FC<AudiobookChapterUploaderProps> = ({
     if (file) {
       setCurrentChapter((prev) => ({
         ...prev,
-        audio_file: file.name, 
+        audio_file: file, // Store the File object
       }));
       setAudioFileName(file.name);
     } else {
       setCurrentChapter((prev) => ({
         ...prev,
-        audio_file: "",
+        audio_file: null,
       }));
       setAudioFileName("");
     }
@@ -119,10 +115,7 @@ const AudiobookChapterUploader: React.FC<AudiobookChapterUploaderProps> = ({
       ...prev,
       poster_file: file,
     }));
-
-    if (file) {
-      setPosterError(false);
-    }
+    if (file) setPosterError(false);
   };
 
   const handleTitleChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -210,9 +203,9 @@ const AudiobookChapterUploader: React.FC<AudiobookChapterUploaderProps> = ({
       {formDataTwo.chapters.length > 0 && (
         <div className="space-y-3">
           <h3 className="text-lg font-medium text-gray-700">Added Chapters</h3>
-          {formDataTwo.chapters.map((chapter) => (
+          {formDataTwo.chapters.map((chapter, index) => (
             <Paper
-              key={chapter.id}
+              key={index} // Use index as key since id might not exist yet
               shadow="xs"
               p="md"
               withBorder
@@ -222,13 +215,10 @@ const AudiobookChapterUploader: React.FC<AudiobookChapterUploaderProps> = ({
                 <div className="flex items-center justify-center w-8 h-8 bg-blue-100 text-blue-700 rounded-full mr-2">
                   {chapter.order}
                 </div>
-                {/* Show poster thumbnail if available */}
-                {(chapter as EnhancedChapter).poster_file && (
+                {chapter.poster_file && (
                   <div className="relative w-12 h-12 mr-2 rounded-md overflow-hidden">
                     <Image
-                      src={URL.createObjectURL(
-                        (chapter as EnhancedChapter).poster_file
-                      )}
+                      src={URL.createObjectURL(chapter.poster_file)}
                       alt={`Cover for ${chapter.title}`}
                       fill
                       className="object-cover"
@@ -243,14 +233,14 @@ const AudiobookChapterUploader: React.FC<AudiobookChapterUploaderProps> = ({
                     className="flex items-center gap-1 mt-1"
                   >
                     <IconFileMusic size={14} />
-                    {chapter.audio_file}
+                    {chapter.audio_file?.name || "No audio file"}
                   </Text>
                 </div>
               </Group>
               <ActionIcon
                 color="red"
                 variant="subtle"
-                onClick={() => handleRemoveChapter(chapter.id)}
+                onClick={() => handleRemoveChapter(index)}
                 title="Remove chapter"
               >
                 <IconTrash size={18} />

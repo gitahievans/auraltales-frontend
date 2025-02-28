@@ -47,13 +47,14 @@ const Navbar = ({
   toggle: () => void;
 }) => {
   const pathname = usePathname();
-  const { data: session, status } = useSession();
+  const { status } = useSession();
   const [categories, setCategories] = useState<Category[]>([]);
   const [collections, setCollections] = useState<Collection[]>([]);
   const [openedSignup, { open: openSignup, close: closeSignup }] =
     useDisclosure();
   const [openedLogin, { open: openLogin, close: closeLogin }] = useDisclosure();
   const isLoading = status === "loading";
+  const session = localStorage.getItem("session");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -85,6 +86,12 @@ const Navbar = ({
 
     fetchData();
   }, []);
+
+  const handleLogout = async () => {
+    await signOut();
+
+    localStorage.removeItem("session");
+  };
 
   return (
     <header className="bg-primary">
@@ -167,7 +174,7 @@ const Navbar = ({
                 >
                   <Menu.Target>
                     <button className="flex items-center space-x-2 text-gray-300 hover:text-white">
-                      <div className="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center">
+                      <div className="w-8 h-8 border border-gray-700 rounded-full flex items-center justify-center">
                         {session.user?.image ? (
                           <Image
                             src={session.user.image}
@@ -204,7 +211,7 @@ const Navbar = ({
                         <p>Profile</p>
                       </Link>
                     </Menu.Item>
-                    <Menu.Item onClick={() => signOut()}>
+                    <Menu.Item onClick={handleLogout}>
                       <div className="flex items-center gap-2">
                         <IconLogout2 className="w-6 h-6" color="green" />
                         <p className="text-white">Sign out</p>
