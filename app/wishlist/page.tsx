@@ -34,7 +34,7 @@ export type WishlistItem = {
 };
 
 const WishListPage = () => {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const [activeTab, setActiveTab] = useState<string | null>("all");
   const [sortBy, setSortBy] = useState<string | null>("latest");
   const [searchQuery, setSearchQuery] = useState("");

@@ -175,7 +175,7 @@ const Navbar = ({
                   <Menu.Target>
                     <button className="flex items-center space-x-2 text-gray-300 hover:text-white">
                       <div className="w-8 h-8 border border-gray-700 rounded-full flex items-center justify-center">
-                        {session.user?.image ? (
+                        {session && session.user?.image ? (
                           <Image
                             src={session.user.image}
                             alt="Profile"
@@ -190,7 +190,7 @@ const Navbar = ({
                     </button>
                   </Menu.Target>
                   <Menu.Dropdown>
-                    <DynamicGreeting session={session} />
+                    <DynamicGreeting />
                     {session && session?.user?.is_staff && (
                       <Menu.Item>
                         <Link

@@ -60,11 +60,10 @@ apiClient.interceptors.response.use(
         const updatedSession = {
           ...session,
           jwt: access,
-          refreshToken: newRefreshToken, // Use the new refresh token
+          refreshToken: newRefreshToken, 
         };
         localStorage.setItem("session", JSON.stringify(updatedSession));
 
-        // In the response interceptor after updating tokens
         originalRequest.headers = {
           ...originalRequest.headers,
           Authorization: `Bearer ${access}`,
