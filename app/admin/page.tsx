@@ -21,18 +21,6 @@ import {
   IconUsers,
 } from "@tabler/icons-react";
 import React, { useEffect, useState } from "react";
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  PieChart,
-  Pie,
-  Cell,
-} from "recharts";
 
 // Types that match the exact backend response structure
 interface LibraryStats {
@@ -83,7 +71,7 @@ export default function Dashboard() {
   const [purchaseStats, setPurchaseStats] = useState<PurchaseStats | null>(
     null
   );
-  const isMobile = useMediaQuery('(max-width: 768px)');
+  const isMobile = useMediaQuery("(max-width: 768px)");
   const [opened, { open, close }] = useDisclosure();
 
   useEffect(() => {
@@ -107,7 +95,7 @@ export default function Dashboard() {
         console.error("Error fetching stats:", error);
       }
     };
-
+  
     fetchStats();
   }, []);
 

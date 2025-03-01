@@ -1,5 +1,4 @@
 import React from "react";
-import { ResponsiveContainer, LineChart, CartesianGrid, XAxis } from "recharts";
 
 const AveragePurchaseCard = ({
   formatCurrency,

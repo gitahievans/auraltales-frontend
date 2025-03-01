@@ -26,25 +26,21 @@ import {
   IconChevronDown,
   IconLogout,
   IconSettings,
-  IconArrowBackUp,
+  IconArrowAutofitLeft,
+  IconArrowBack,
 } from "@tabler/icons-react";
 import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 
-export function AdminLayout({ children }: { children: React.ReactNode }) {
+export function AuthorLayout({ children }: { children: React.ReactNode }) {
   const [mobileOpened, { toggle: toggleMobile }] = useDisclosure();
   const [desktopOpened, { toggle: toggleDesktop }] = useDisclosure(false);
   const router = useRouter();
   const pathname = usePathname();
 
   const mainNavItems = [
-    { icon: IconLayoutDashboard, label: "Dashboard", href: "/admin" },
-    { icon: IconBook2, label: "Audiobooks", href: "/admin/audiobooks" },
-    { icon: IconUserCircle, label: "Authors", href: "/admin/authors" },
-    { icon: IconMicrophone, label: "Narrators", href: "/admin/narrators" },
-    { icon: IconCategory, label: "Categories", href: "/admin/categories" },
-    { icon: IconBoxMultiple, label: "Collections", href: "/admin/collections" },
-    { icon: IconUsers, label: "Users", href: "/admin/users" },
+    { icon: IconLayoutDashboard, label: "Dashboard", href: "/author" },
+    { icon: IconBook2, label: "Audiobooks", href: "/author/audiobooks" },
   ];
 
   const listNavItems = [
@@ -78,10 +74,10 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
               size="sm"
             />
             <div className="flex flex-col">
-              <Title order={2}>Soundleaf Admin</Title>{" "}
+              <Title order={2}>SoundLeaf Author</Title>
               <Link href="/">
                 <Group>
-                  <IconArrowBackUp size="1rem" />
+                  <IconArrowBack size="1rem" />
                   <Text size="xs" fw={300}>
                     Back to Main Website
                   </Text>
@@ -95,11 +91,11 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
               <UnstyledButton>
                 <Group>
                   <Avatar color="blue" radius="xl">
-                    AD
+                    A
                   </Avatar>
                   <div style={{ flex: 1 }}>
                     <Text size="sm" fw={500}>
-                      Admin User
+                      Author User
                     </Text>
                   </div>
                   <IconChevronDown size="1rem" />

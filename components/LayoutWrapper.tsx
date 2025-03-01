@@ -6,8 +6,9 @@ import Layout from "./common/Layout";
 export const LayoutWrapper = ({ children }: { children: React.ReactNode }) => {
   const pathname = usePathname();
   const isAdminRoute = pathname?.startsWith("/admin");
+  const isAuthorRoute = pathname?.startsWith("/author");
 
-  if (isAdminRoute) {
+  if (isAdminRoute || isAuthorRoute) {
     return children;
   }
 

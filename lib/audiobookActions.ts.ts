@@ -126,3 +126,77 @@ export const listenSample = (
 
   soundRef.current.play();
 };
+
+
+export const listenSample2 = (
+  book: Audiobook,
+  audiobookSounds: Map<number, Howl>,
+  playingAudiobook: number | null,
+  setPlayingAudiobook: React.Dispatch<React.SetStateAction<number | null>>,
+  setAudioSampleLoading: React.Dispatch<React.SetStateAction<boolean>>
+) => {
+  if (!book?.audio_sample) {
+    // Use your notifications logic here
+    console.error("No audio sample available for this book.");
+    return;
+  }
+
+  setAudioSampleLoading(true);
+
+  // Check if this audiobook is currently playing
+  if (playingAudiobook === book.id) {
+    // Stop the currently playing audio
+    const sound = audiobookSounds.get(book.id);
+    if (sound) {
+      sound.stop();
+      setPlayingAudiobook(null);
+    }
+    setAudioSampleLoading(false);
+    return;
+  }
+
+  // Stop any currently playing audio
+  if (playingAudiobook !== null) {
+    const currentSound = audiobookSounds.get(playingAudiobook);
+    if (currentSound) {
+      currentSound.stop();
+    }
+  }
+
+  // Check if we already have a Howl instance for this audiobook
+  let sound = audiobookSounds.get(book.id);
+
+  if (!sound) {
+    // Create a new Howl instance for this audiobook
+    sound = new Howl({
+      src: [book.audio_sample],
+      html5: true,
+      onplay: () => {
+        setPlayingAudiobook(book.id);
+        setAudioSampleLoading(false);
+      },
+      onend: () => {
+        setPlayingAudiobook(null);
+      },
+      onstop: () => {
+        setPlayingAudiobook(null);
+      },
+      onloaderror: () => {
+        setAudioSampleLoading(false);
+        console.error("Failed to load audio sample. Please try again.");
+        // Add your notifications here
+      },
+      onplayerror: () => {
+        setAudioSampleLoading(false);
+        console.error("Failed to play audio sample. Please try again.");
+        // Add your notifications here
+      },
+    });
+
+    // Store the new Howl instance in the map
+    audiobookSounds.set(book.id, sound);
+  }
+
+  // Play the audio
+  sound.play();
+};
