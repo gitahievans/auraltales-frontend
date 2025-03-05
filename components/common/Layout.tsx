@@ -15,11 +15,49 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     const syncSession = async () => {
-      const localSession = localStorage.getItem("session");
-      if (localSession && !session) {
-        await update({ jwt: JSON.parse(localSession)?.jwt });
+      const localStorageSession = localStorage.getItem("session");
+
+      // If there's a session in localStorage but no active Next-Auth session
+      if (localStorageSession && (!session || !session.jwt)) {
+        const parsedSession = JSON.parse(localStorageSession);
+
+        // Check if localStorage session already has the correct structure
+        if (!parsedSession.user) {
+          // Convert to the correct structure if needed
+          const structuredSession = {
+            user: {
+              id: parsedSession.id,
+              firstName: parsedSession.firstName,
+              lastName: parsedSession.lastName,
+              email: parsedSession.email,
+              is_staff: parsedSession.is_staff,
+              is_active: parsedSession.is_active,
+              is_author: parsedSession.is_author || false,
+              date_joined: parsedSession.date_joined,
+              // Include other user properties as needed
+            },
+            expires: new Date(
+              Date.now() + 30 * 24 * 60 * 60 * 1000
+            ).toISOString(),
+            jwt: parsedSession.jwt,
+            refreshToken: parsedSession.refreshToken,
+          };
+
+          // Save the correctly structured session to localStorage
+          localStorage.setItem("session", JSON.stringify(structuredSession));
+
+          // Update Next-Auth session
+          await update(structuredSession);
+        } else {
+          // If the structure is already correct, just update Next-Auth
+          await update(parsedSession);
+        }
+      } else if (session && session.jwt) {
+        // If Next-Auth session exists but localStorage needs updating
+        localStorage.setItem("session", JSON.stringify(session));
       }
     };
+
     syncSession();
   }, [session, status, update]);
 

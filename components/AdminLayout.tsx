@@ -30,6 +30,7 @@ import {
 } from "@tabler/icons-react";
 import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
+import { signOut } from "next-auth/react";
 
 export function AdminLayout({ children }: { children: React.ReactNode }) {
   const [mobileOpened, { toggle: toggleMobile }] = useDisclosure();
@@ -51,6 +52,13 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
     { icon: IconHeartFilled, label: "Favorites", href: "/admin/favorites" },
     { icon: IconBookmark, label: "Wishlists", href: "/admin/wishlists" },
   ];
+
+  const handleLogout = async () => {
+    await signOut({
+      callbackUrl: "/?logout=true",
+      redirect: true,
+    });
+  };
 
   return (
     <AppShell
@@ -111,7 +119,11 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
               {/* <Menu.Item leftSection={<IconSettings size="1rem" />}>
                 Settings
               </Menu.Item> */}
-              <Menu.Item leftSection={<IconLogout size="1rem" />} color="red">
+              <Menu.Item
+                leftSection={<IconLogout size="1rem" />}
+                color="red"
+                onClick={handleLogout}
+              >
                 Logout
               </Menu.Item>
             </Menu.Dropdown>

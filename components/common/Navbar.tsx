@@ -54,7 +54,9 @@ const Navbar = ({
     useDisclosure();
   const [openedLogin, { open: openLogin, close: closeLogin }] = useDisclosure();
   const isLoading = status === "loading";
-  const session = localStorage.getItem("session");
+  const { data: session } = useSession();
+
+  console.log("session in Navbar", session);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -198,7 +200,18 @@ const Navbar = ({
                           className="text-white flex items-center gap-2"
                         >
                           <Image src={adminIcon} alt="admin" />
-                          <p className="font-bold">Admin</p>
+                          <p className="font-bold">Admin Account</p>
+                        </Link>
+                      </Menu.Item>
+                    )}
+                    {session && session?.user?.is_author && (
+                      <Menu.Item>
+                        <Link
+                          href="/author"
+                          className="text-white flex items-center gap-2"
+                        >
+                          <Image src={adminIcon} alt="admin" />
+                          <p className="font-bold">Author Account</p>
                         </Link>
                       </Menu.Item>
                     )}

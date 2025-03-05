@@ -28,7 +28,7 @@ apiClient.interceptors.request.use(
 
     return config;
   },
-  (error) => {
+(error) => {
     return Promise.reject(error);
   }
 );
@@ -58,9 +58,19 @@ apiClient.interceptors.response.use(
         const { access, refresh: newRefreshToken } = response.data;
 
         const updatedSession = {
-          ...session,
+          user: {
+            id: session.id,
+            firstName: session.firstName,
+            lastName: session.lastName,
+            email: session.email,
+            is_staff: session.is_staff,
+            is_active: session.is_active,
+            is_author: session.is_author || false,
+            date_joined: session.date_joined,
+          },
+          expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
           jwt: access,
-          refreshToken: newRefreshToken, 
+          refreshToken: newRefreshToken,
         };
         localStorage.setItem("session", JSON.stringify(updatedSession));
 
