@@ -113,6 +113,7 @@ export const nextAuthOptions: NextAuthOptions = {
             user.last_name = result.user.last_name;
             user.is_staff = result.user.is_staff;
             user.is_active = result.user.is_active;
+            user.is_author = result.user.is_author;
             user.date_joined = result.user.date_joined;
             return true;
           }
@@ -154,6 +155,7 @@ export const nextAuthOptions: NextAuthOptions = {
         token.phoneNumber = user.phone_number;
         token.is_staff = user.is_staff;
         token.is_active = user.is_active;
+        token.is_author = user.is_author;
         token.date_joined = user.date_joined;
       }
 
@@ -189,6 +191,7 @@ export const nextAuthOptions: NextAuthOptions = {
         name: token.name as string,
         is_staff: token.is_staff as boolean,
         is_active: token.is_active as boolean,
+        is_author: token.is_author as boolean,
         date_joined: token.date_joined as string,
       };
       session.jwt = token.jwt as string;

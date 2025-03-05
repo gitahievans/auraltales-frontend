@@ -11,6 +11,7 @@ declare module "next-auth" {
       image?: string;
       name?: string;
       is_staff: boolean;
+      is_author: boolean;
       is_active: boolean;
       date_joined: string;
     };
@@ -32,6 +33,7 @@ declare module "next-auth" {
     image?: string;
     name?: string;
     is_active: boolean;
+    is_author: boolean;
     is_staff: boolean;
     date_joined: string;
   }
