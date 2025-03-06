@@ -22,25 +22,25 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
         const parsedSession = JSON.parse(localStorageSession);
 
         // Check if localStorage session already has the correct structure
-        if (!parsedSession.user) {
+        if (!parsedSession?.user) {
           // Convert to the correct structure if needed
           const structuredSession = {
             user: {
-              id: parsedSession.id,
-              firstName: parsedSession.firstName,
-              lastName: parsedSession.lastName,
-              email: parsedSession.email,
-              is_staff: parsedSession.is_staff,
-              is_active: parsedSession.is_active,
-              is_author: parsedSession.is_author || false,
-              date_joined: parsedSession.date_joined,
+              id: parsedSession?.id,
+              firstName: parsedSession?.firstName,
+              lastName: parsedSession?.lastName,
+              email: parsedSession?.email,
+              is_staff: parsedSession?.is_staff,
+              is_active: parsedSession?.is_active,
+              is_author: parsedSession?.is_author || false,
+              date_joined: parsedSession?.date_joined,
               // Include other user properties as needed
             },
             expires: new Date(
               Date.now() + 30 * 24 * 60 * 60 * 1000
             ).toISOString(),
-            jwt: parsedSession.jwt,
-            refreshToken: parsedSession.refreshToken,
+            jwt: parsedSession?.jwt,
+            refreshToken: parsedSession?.refreshToken,
           };
 
           // Save the correctly structured session to localStorage

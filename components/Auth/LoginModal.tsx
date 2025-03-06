@@ -36,7 +36,7 @@ const LoginForm = ({
 
     if (signInResponse && !signInResponse.error) {
       close();
-      window.location.reload();
+      window.location.assign("/");
     } else {
       console.log("Error:", signInResponse);
 
@@ -66,6 +66,11 @@ const LoginForm = ({
   const handleNoAccount = () => {
     close();
     openSignup();
+  };
+
+  const handleForgotPass = () => {
+    close();
+    router.push("/forgot-password");
   };
 
   return (
@@ -166,6 +171,12 @@ const LoginForm = ({
                     },
                   }}
                 />
+
+                <div onClick={handleForgotPass} className="cursor-pointer">
+                  <p className="text-white underline underline-offset-2 text-xs mt-2">
+                    Forgot Password?
+                  </p>
+                </div>
 
                 {/* TODO: Remember me to be added here */}
                 <button

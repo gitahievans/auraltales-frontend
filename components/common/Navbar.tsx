@@ -21,9 +21,9 @@ import { signOut, useSession } from "next-auth/react";
 import Image from "next/image";
 import { Loader, Menu } from "@mantine/core";
 import apiClient from "@/lib/apiClient";
-import SignupForm from "../Auth/SignupForm";
+import SignupForm from "../Auth/SignupModal";
 import { useDisclosure } from "@mantine/hooks";
-import LoginForm from "../Auth/LoginForm";
+import LoginForm from "../Auth/LoginModal";
 import DynamicGreeting from "../DynamicGreeting";
 import adminIcon from "../../public/icons8-admin-24.png";
 

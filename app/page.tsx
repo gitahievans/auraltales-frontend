@@ -16,6 +16,8 @@ import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { proxy } from "valtio";
 import apiClient from "@/lib/apiClient";
+import { useSearchParams } from "next/navigation";
+import { notifications } from "@mantine/notifications";
 
 export const boughtState = proxy({
   bought: false,
@@ -71,9 +73,19 @@ export default function Home() {
   const [categoryNames, setCategoryNames] = useState<string[]>([]);
   const [categoryObjects, setCategoryObjects] = useState<Category[]>([]);
 
-  const { data: session } = useSession();
+  const searchParams = useSearchParams();
+  const unauthorized = searchParams.get("unauthorized");
 
-  console.log("session", session);
+  useEffect(() => {
+    if (unauthorized) {
+      notifications.show({
+        title: "Unauthorized",
+        message: "You must be logged in to access this page.",
+        color: "red",
+        position: "top-center",
+      });
+    }
+  }, [unauthorized]);
 
   const fetchAudiobooks = async () => {
     try {

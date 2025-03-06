@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { NextRequest } from "next/server";
 import { getToken } from "next-auth/jwt";
+import { notifications } from "@mantine/notifications";
 
 export async function middleware(request: NextRequest) {
   // Check if this is a logout request/redirect
@@ -17,6 +18,13 @@ export async function middleware(request: NextRequest) {
     secret: process.env.NEXTAUTH_SECRET,
   });
 
+  // If not logged in, redirect to home page
+  if (!token) {
+    const url = new URL("/", request.url);
+    url.searchParams.set("unauthorized", "true");
+    return NextResponse.redirect(url);
+  }
+
   // Define protected routes
   const authorRoutes = ["/author"];
   const adminRoutes = ["/admin"];
@@ -30,12 +38,12 @@ export async function middleware(request: NextRequest) {
     request.nextUrl.pathname.startsWith(route)
   );
 
-  // Redirect if not authenticated or lacks required role
-  if (isAuthorRoute && (!token || !token.is_author)) {
+  // For logged-in users without proper permissions, redirect to unauthorized
+  if (isAuthorRoute && !token.is_author) {
     return NextResponse.redirect(new URL("/unauthorized", request.url));
   }
 
-  if (isAdminRoute && (!token || !token.is_staff)) {
+  if (isAdminRoute && !token.is_staff) {
     return NextResponse.redirect(new URL("/unauthorized", request.url));
   }
 

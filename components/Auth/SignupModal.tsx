@@ -75,7 +75,7 @@ const SignupForm = ({
         const errorData = await response.json();
         throw new Error(errorData.detail || "Registration failed");
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
       notifications.show({
         title: "Error Registering",
