@@ -8,13 +8,12 @@ import {
   IconSunWind,
   IconClockHour10,
 } from "@tabler/icons-react";
+import { useSession } from "next-auth/react";
 
 const DynamicGreeting = () => {
   const [greeting, setGreeting] = useState("");
   const [TimeIcon, setTimeIcon] = useState(IconSun);
-  const session = localStorage.getItem("session")
-    ? JSON.parse(localStorage.getItem("session")!)
-    : null;
+  const { data: session } = useSession();
 
   console.log("session in greeting", session);
 
@@ -67,7 +66,7 @@ const DynamicGreeting = () => {
         </motion.div>
         <div>
           <h2 className="text-white text-sm font-bold">
-            {greeting}, {session?.firstName} {session?.lastName}!
+            {greeting}, {session?.user.firstName} {session?.user?.lastName}!
           </h2>
           {/* <p className="text-green-600 text-xs">
             {new Date().toLocaleDateString('en-US', { 

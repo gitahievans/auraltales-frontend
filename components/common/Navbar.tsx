@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -26,6 +26,10 @@ import { useDisclosure } from "@mantine/hooks";
 import LoginForm from "../Auth/LoginModal";
 import DynamicGreeting from "../DynamicGreeting";
 import adminIcon from "../../public/icons8-admin-24.png";
+import Search from "../Search";
+import { useAudiobooks } from "@/hooks/useAudiobooks";
+import { Audiobook } from "@/types/types";
+import { books } from "@/Constants/Books";
 
 type Category = {
   id: number;
@@ -53,10 +57,9 @@ const Navbar = ({
   const [openedSignup, { open: openSignup, close: closeSignup }] =
     useDisclosure();
   const [openedLogin, { open: openLogin, close: closeLogin }] = useDisclosure();
+
   const isLoading = status === "loading";
   const { data: session } = useSession();
-
-  console.log("session in Navbar", session);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -132,17 +135,7 @@ const Navbar = ({
               </Link>
             </div>
 
-            {/* Search Bar */}
-            <div className="hidden md:flex flex-1 max-w-xl mx-12">
-              <div className="relative w-full">
-                <input
-                  type="text"
-                  placeholder="Search audiobooks"
-                  className="w-full bg-gray-800 text-white placeholder-gray-400 px-4 py-2 pr-10 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                />
-                <IconSearch className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-              </div>
-            </div>
+            <Search />
 
             {/* Auth Buttons / User Menu */}
             <div className="flex items-center">
