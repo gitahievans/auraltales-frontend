@@ -44,13 +44,16 @@ const ProfilePage: React.FC = () => {
 
   const fetchUserProfile = async () => {
     try {
-      const response = await fetch("http://127.0.0.1:8000/accounts/profile/", {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${session?.jwt}`,
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/accounts/profile/`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${session?.jwt}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
       if (!response.ok) {
         throw new Error("Failed to fetch profile");
@@ -77,7 +80,7 @@ const ProfilePage: React.FC = () => {
   }) => {
     try {
       const response = await fetch(
-        "http://127.0.0.1:8000/accounts/update-profile/",
+        `${process.env.NEXT_PUBLIC_API_URL}/accounts/update-profile/`,
         {
           method: "PATCH",
           headers: {
@@ -127,9 +130,9 @@ const ProfilePage: React.FC = () => {
 
   if (!session || !userProfile) {
     return (
-      <div className="flex justify-center items-center h-screen bg-primary">
+      <div className="flex justify-center items-center min-h-[60dvh] bg-primary">
         <Loader type="dots" />
-        <p>Loading profile...</p>
+        <p className="ml-2 text-white text-lg">Loading profile...</p>
       </div>
     );
   }

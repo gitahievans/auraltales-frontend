@@ -1,71 +1,11 @@
 "use client";
 
 import BookCarousel from "@/components/BookCarousel";
-import BookGrid from "@/components/BookCarousel";
-import HeroSection from "@/components/common/Hero";
-import MobileHero from "@/components/common/MobileHero";
-import HeroCarousel from "@/components/common/MobileHero";
-import AudioPlayer from "@/components/AudioPlayer";
-import SkeletonCarousel from "@/components/SkeletonCarousel";
-import { books } from "@/Constants/Books";
-import { fetchedAudiobooks } from "@/state/state";
-import { Carousel } from "@mantine/carousel";
-import { useMediaQuery } from "@mantine/hooks";
-import { IconArrowRight } from "@tabler/icons-react";
-import { useSession } from "next-auth/react";
-import { useEffect, useState } from "react";
-import { proxy } from "valtio";
-import apiClient from "@/lib/apiClient";
+import { useAudiobooks } from "@/hooks/useAudiobooks";
 import { useSearchParams } from "next/navigation";
 import { notifications } from "@mantine/notifications";
-import { useAudiobooks } from "@/hooks/useAudiobooks";
-
-export const boughtState = proxy({
-  bought: false,
-});
-
-interface Author {
-  id: number;
-  name: string;
-  email: string;
-  phone_number: string;
-  bio: string;
-}
-
-interface Category {
-  id: number;
-  name: string;
-}
-
-interface Collection {
-  id: number;
-  name: string;
-}
-
-interface Narrator {
-  id: number;
-  name: string;
-  email: string;
-  phone_number: string;
-  bio: string;
-}
-
-interface Audiobook {
-  title: string;
-  description: string;
-  summary: string;
-  length: string;
-  rental_price: number;
-  buying_price: number;
-  date_published: string;
-  slug: string;
-  poster: string;
-  audio_sample?: string | null;
-  authors: Author[];
-  categories: Category[];
-  collections: Collection[];
-  narrators: Narrator[];
-}
+import { Loader, Text } from "@mantine/core";
+import { useEffect } from "react";
 
 export default function Home() {
   const { audiobooks, loading, error, categoryNames, categoryObjects } =
@@ -86,27 +26,39 @@ export default function Home() {
   }, [unauthorized]);
 
   return (
-    <div className="flex flex-col gap-6">
-      {categoryNames.length > 0
-        ? categoryNames.map((cat, i) => {
-            const booksInCategory = audiobooks?.filter((book) =>
-              book.categories.some((category) => category.name === cat)
-            );
+    <div className="flex flex-col gap-6 min-h-[60dvh]">
+      {loading ? (
+        <div className="flex justify-center items-center">
+          <Loader size="lg" color="white" />
+        </div>
+      ) : audiobooks.length === 0 ? (
+        <div className="flex flex-col items-center justify-center">
+          <Text size="xl" weight={700} color="gray.7">
+            No audiobooks available at the moment.
+          </Text>
+          <Text size="md" color="gray.6">
+            Check back later for more content!
+          </Text>
+        </div>
+      ) : (
+        categoryNames.map((cat, i) => {
+          const booksInCategory = audiobooks.filter((book) =>
+            book.categories.some((category) => category.name === cat)
+          );
 
-            if (booksInCategory.length > 0) {
-              return (
-                <BookCarousel
-                  key={i}
-                  title={cat}
-                  categoryNames={categoryNames}
-                  categoryObjects={categoryObjects}
-                  books={booksInCategory}
-                />
-              );
-            }
-            return null; // Do not render if no audiobooks exist for the category
-          })
-        : Array.from({ length: 6 }).map((_, i) => <SkeletonCarousel key={i} />)}
+          return booksInCategory.length > 0 ? (
+            <div key={i} className="w-full">
+              <BookCarousel
+                key={i}
+                title={cat}
+                categoryNames={categoryNames}
+                categoryObjects={categoryObjects}
+                books={booksInCategory}
+              />
+            </div>
+          ) : null;
+        })
+      )}
     </div>
   );
 }

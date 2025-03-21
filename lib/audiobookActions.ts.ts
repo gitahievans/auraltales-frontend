@@ -9,7 +9,7 @@ export const buyAudiobook = async (
   userEmail: string,
   accessToken: string | undefined
 ) => {
-  const url = `http://127.0.0.1:8000/purchases/initiate-payment/buy/${bookId}/`;
+  const url = `${process.env.NEXT_PUBLIC_API_URL}/purchases/initiate-payment/buy/${bookId}/`;
   const callbackUrl = "https://7599-217-199-146-210.ngrok-free.app/success";
 
   if (!accessToken) {
@@ -126,7 +126,6 @@ export const listenSample = (
 
   soundRef.current.play();
 };
-
 
 export const listenSample2 = (
   book: Audiobook,

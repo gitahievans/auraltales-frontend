@@ -28,7 +28,7 @@ apiClient.interceptors.request.use(
 
     return config;
   },
-(error) => {
+  (error) => {
     return Promise.reject(error);
   }
 );
@@ -68,7 +68,9 @@ apiClient.interceptors.response.use(
             is_author: session.is_author || false,
             date_joined: session.date_joined,
           },
-          expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+          expires: new Date(
+            Date.now() + 30 * 24 * 60 * 60 * 1000
+          ).toISOString(),
           jwt: access,
           refreshToken: newRefreshToken,
         };

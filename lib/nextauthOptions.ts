@@ -4,7 +4,7 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import { notifications } from "@mantine/notifications";
 import axios from "axios";
 
-const API_URL = "http://127.0.0.1:8000";
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 export const nextAuthOptions: NextAuthOptions = {
   debug: true,
@@ -29,14 +29,17 @@ export const nextAuthOptions: NextAuthOptions = {
           return null;
         }
 
-        const res = await fetch(`${API_URL}/accounts/login/`, {
-          method: "POST",
-          body: JSON.stringify({
-            email: credentials?.email,
-            password: credentials?.password,
-          }),
-          headers: { "Content-Type": "application/json" },
-        });
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/accounts/login/`,
+          {
+            method: "POST",
+            body: JSON.stringify({
+              email: credentials?.email,
+              password: credentials?.password,
+            }),
+            headers: { "Content-Type": "application/json" },
+          }
+        );
 
         const user = await res.json();
 
@@ -83,7 +86,7 @@ export const nextAuthOptions: NextAuthOptions = {
 
       if (account?.provider === "google") {
         try {
-          const res = await fetch(`${API_URL}/accounts/google_signup/`, {
+          const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/accounts/google_signup/`, {
             method: "POST",
             body: JSON.stringify({
               email: user.email,
@@ -163,7 +166,7 @@ export const nextAuthOptions: NextAuthOptions = {
       if (token.jwt && isExpired(token.jwt)) {
         try {
           const response = await axios.post(
-            `${API_URL}/accounts/token/refresh/`,
+            `${process.env.NEXT_PUBLIC_API_URL}/accounts/token/refresh/`,
             {
               refresh: token.refreshToken,
             }

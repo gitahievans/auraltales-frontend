@@ -118,7 +118,7 @@ const AudiobookForm = () => {
 
     try {
       const response = await axios.post(
-        "http://127.0.0.1:8000/api/create-audiobook/",
+        `${process.env.NEXT_PUBLIC_API_URL}/api/create-audiobook/`,
         data,
         {
           headers: {

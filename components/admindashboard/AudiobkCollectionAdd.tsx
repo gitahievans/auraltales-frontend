@@ -108,9 +108,12 @@ const AudiobkCollectionAdd: React.FC<AudiobookCollectionAddProps> = ({
         </label>
 
         <div className="space-y-2">
-          <p className="text-sm text-gray-600">
-            Choose from existing collections:
-          </p>
+          {collections && collections?.length > 0 && (
+            <div className="flex flex-col gap-2 text-sm text-gray-600">
+              <p>Choose from existing collections:</p>
+              <p className="ml-2 font-semibold">OR</p>
+            </div>
+          )}
           <div className="flex flex-wrap gap-2">
             {collections?.map((collection: Collection) => (
               <CollectionButton

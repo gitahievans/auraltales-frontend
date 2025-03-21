@@ -61,6 +61,8 @@ const Navbar = ({
   const isLoading = status === "loading";
   const { data: session } = useSession();
 
+  console.log("session in navabr", session);
+
   useEffect(() => {
     const fetchData = async () => {
       try {

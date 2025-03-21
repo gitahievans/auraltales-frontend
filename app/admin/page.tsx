@@ -78,8 +78,10 @@ export default function Dashboard() {
     const fetchStats = async () => {
       try {
         const [libraryRes, purchasesRes] = await Promise.all([
-          fetch("http://127.0.0.1:8000/api/library/stats/"),
-          fetch("http://127.0.0.1:8000/purchases/purchases-stats/"),
+          fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/library/stats/`),
+          fetch(
+            `${process.env.NEXT_PUBLIC_API_URL}/purchases/purchases-stats/`
+          ),
         ]);
 
         if (!libraryRes.ok || !purchasesRes.ok) {
@@ -95,7 +97,7 @@ export default function Dashboard() {
         console.error("Error fetching stats:", error);
       }
     };
-  
+
     fetchStats();
   }, []);
 

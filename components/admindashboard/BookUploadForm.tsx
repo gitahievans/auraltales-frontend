@@ -53,7 +53,7 @@ const BookUploader = ({
   const fetchLibStats = async () => {
     try {
       const response = await axios.get(
-        "http://127.0.0.1:8000/api/library/stats/"
+        `${process.env.NEXT_PUBLIC_API_URL}/api/library/stats/`
       );
 
       if (response.status !== 200) {
@@ -107,7 +107,7 @@ const BookUploader = ({
       formData.append("narrators", JSON.stringify(formDataOne.narrators));
 
       const response = await axios.post(
-        "http://127.0.0.1:8000/api/create-audiobook/",
+        `${process.env.NEXT_PUBLIC_API_URL}/api/create-audiobook/`,
         formData,
         {
           headers: {
@@ -140,7 +140,7 @@ const BookUploader = ({
 
           try {
             const chaptersResponse = await axios.post(
-              "http://127.0.0.1:8000/api/create-chapters/",
+              `${process.env.NEXT_PUBLIC_API_URL}/api/create-chapters/`,
               chaptersFormData,
               {
                 headers: {
