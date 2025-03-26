@@ -1,18 +1,93 @@
-import React from "react";
+"use client";
+
+import React, { useEffect } from "react";
 import Navbar from "./Navbar";
 import SideNav from "./SideNav";
 import Footer from "./Footer";
+import { AppShell } from "@mantine/core";
+import { useDisclosure } from "@mantine/hooks";
+import { SessionProvider, useSession } from "next-auth/react";
+import AuthProvider from "../Auth/AuthProvider";
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
+  const [opened, { toggle }] = useDisclosure();
+  const { data: session, status, update } = useSession();
+
+  useEffect(() => {
+    const syncSession = async () => {
+      const localStorageSession = localStorage.getItem("session");
+
+      // If there's a session in localStorage but no active Next-Auth session
+      if (localStorageSession && (!session || !session.jwt)) {
+        const parsedSession = JSON.parse(localStorageSession);
+
+        // Check if localStorage session already has the correct structure
+        if (!parsedSession?.user) {
+          // Convert to the correct structure if needed
+          const structuredSession = {
+            user: {
+              id: parsedSession?.id,
+              firstName: parsedSession?.firstName,
+              lastName: parsedSession?.lastName,
+              email: parsedSession?.email,
+              is_staff: parsedSession?.is_staff,
+              is_active: parsedSession?.is_active,
+              is_author: parsedSession?.is_author || false,
+              date_joined: parsedSession?.date_joined,
+              // Include other user properties as needed
+            },
+            expires: new Date(
+              Date.now() + 30 * 24 * 60 * 60 * 1000
+            ).toISOString(),
+            jwt: parsedSession?.jwt,
+            refreshToken: parsedSession?.refreshToken,
+          };
+
+          // Save the correctly structured session to localStorage
+          localStorage.setItem("session", JSON.stringify(structuredSession));
+
+          // Update Next-Auth session
+          await update(structuredSession);
+        } else {
+          // If the structure is already correct, just update Next-Auth
+          await update(parsedSession);
+        }
+      } else if (session && session.jwt) {
+        // If Next-Auth session exists but localStorage needs updating
+        localStorage.setItem("session", JSON.stringify(session));
+      }
+    };
+
+    syncSession();
+  }, [session, status, update]);
+
   return (
-    <div className="flex flex-col bg-primary font-main px-2 max-w-[420px] md:max-w-[1440px] mx-auto">
-      <Navbar />
-      <div className="mx-auto mt-14 py-6 w-full">
-        <SideNav />
-        <main className="lg:ml-64 mx-auto">{children}</main>
-        <Footer />
-      </div>
-    </div>
+    <SessionProvider session={session}>
+      <AuthProvider>
+        <div className="flex flex-col bg-primary font-main min-h-screen">
+          <AppShell
+            header={{ height: 60 }}
+            navbar={{
+              width: 300,
+              breakpoint: "sm",
+              collapsed: { desktop: true, mobile: !opened },
+            }}
+            padding="md"
+          >
+            <AppShell.Header withBorder={false}>
+              <Navbar opened={opened} toggle={toggle} />
+            </AppShell.Header>
+
+            <AppShell.Main>
+              <div className="max-w-7xl mx-auto w-full md:pt-14">
+                {children}
+              </div>
+              <Footer />
+            </AppShell.Main>
+          </AppShell>
+        </div>
+      </AuthProvider>
+    </SessionProvider>
   );
 };
 

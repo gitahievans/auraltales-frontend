@@ -1,48 +1,122 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useSnapshot } from "valtio";
 import { sideNavState } from "@/state/state";
 import Image from "next/image";
 import avatar from "@/public/Images/soundleaf-files/posters/Gemini_Generated_Image_v8c5gbv8c5gbv8c5.jpeg";
-import { IconBooks, IconChevronDown, IconChevronUp } from "@tabler/icons-react";
+import {
+  IconBooks,
+  IconChevronDown,
+  IconChevronUp,
+  IconHomeStar,
+  IconLayoutGridAdd,
+  IconLibrary,
+  IconLogout2,
+  IconMist,
+  IconStars,
+} from "@tabler/icons-react";
 import { motion } from "framer-motion";
 import Link from "next/link";
+import { signOut, useSession } from "next-auth/react";
+import { usePathname } from "next/navigation";
+import apiClient from "@/lib/apiClient";
+import { fetchWishlist } from "@/lib/store";
+import { WishlistItem } from "@/app/wishlist/page";
+
+type Category = {
+  id: number;
+  name: string;
+  audiobooks: [];
+};
+
+type Collection = {
+  id: number;
+  name: string;
+  audiobooks: [];
+};
 
 const SideNav = () => {
+  const pathname = usePathname();
   const sideBarSnap = useSnapshot(sideNavState);
   const [isBrowseOpen, setIsBrowseOpen] = useState(false);
   const [isListsOpen, setIsListsOpen] = useState(false);
   const { open } = sideBarSnap;
+  const [categories, setCategories] = useState([]);
+  const [collections, setCollections] = useState([]);
+  const [wishlistItems, setWishlistItems] = useState<WishlistItem[] | null>(
+    null
+  );
+  const { data: session } = useSession();
 
-  const browseCategories = [
-    { name: "Fiction", path: "/audiobooks/fiction" },
-    { name: "Non-Fiction", path: "/audiobooks/non-fiction" },
-    { name: "Sci-Fi", path: "/audiobooks/sci-fi" },
-    { name: "Romance", path: "/audiobooks/romance" },
-  ];
+  console.log("pathname in sidenav", pathname);
 
-  const listCollections = [
-    { name: "New Releases", path: "new-releases" },
-    { name: "Best Sellers", path: "best-sellers" },
-    { name: "Editor's Picks", path: "editor-picks" },
-  ];
+  const fetchCollections = async () => {
+    try {
+      const response = await apiClient.get("/api/collections/");
+
+      if (response.status === 200) {
+        const filteredCollections = response.data.collections.filter(
+          (collection: Collection) =>
+            collection.audiobooks && collection.audiobooks.length > 0
+        );
+        setCollections(filteredCollections);
+      }
+    } catch (error) {
+      console.error("Error fetching collections:", error);
+    }
+  };
+
+  const fetchCategories = async () => {
+    try {
+      const response = await apiClient.get("/api/categories/");
+
+      if (response.status === 200) {
+        const filteredCategories = response.data.categories.filter(
+          (category: Category) =>
+            category.audiobooks && category.audiobooks.length > 0
+        );
+        setCategories(filteredCategories);
+      }
+    } catch (error) {
+      console.error("Error fetching categories:", error);
+    }
+  };
+
+  useEffect(() => {
+    const loadWishlist = async () => {
+      try {
+        const items = await fetchWishlist();
+        setWishlistItems(items);
+      } catch (err) {
+        console.log(err);
+      }
+    };
+
+    if (session?.jwt) {
+      loadWishlist();
+    }
+  }, [session?.jwt]);
+
+  useEffect(() => {
+    fetchCategories();
+    fetchCollections();
+  }, []);
+
+  const navItemClassName = (path: string) =>
+    `flex items-center p-2 text-white rounded-lg ${
+      pathname === path ? "bg-green-700" : "hover:bg-green-800"
+    }`;
 
   return (
-    <aside
-      id="default-sidebar"
-      className={`w-56 h-screen transition-all duration-500 bg-primary ${
-        open ? "" : "hidden"
-      } lg:block fixed z-50 h-screen`}
-      aria-label="Sidebar"
-    >
+    <div className="bg-primary h-full p-2">
       <div className="flex items-center gap-4">
         <span className="text-white hidden md:block">Good Morning, Evans!</span>
         <div className="bg-slate-400 w-10 h-10 flex items-center justify-center rounded-full">
           <Image src={avatar} alt="user" className="rounded-full" />
         </div>
       </div>
-      <nav className="h-full pl-2 lg:pl-0 overflow-y-auto">
+      <nav className="text-sm lg:text-base h-full">
         <ul className="space-y-2">
           {/* Browse Audiobooks Section */}
           <li className="pt-4 pb-2">
@@ -54,7 +128,7 @@ const SideNav = () => {
               onClick={() => setIsBrowseOpen(!isBrowseOpen)}
             >
               <span className="flex items-center">
-                <IconBooks />
+                <IconBooks className="mr-2" />
                 Browse Audiobooks
               </span>
               {isBrowseOpen ? (
@@ -70,14 +144,14 @@ const SideNav = () => {
                   height: isBrowseOpen ? "auto" : 0,
                   opacity: isBrowseOpen ? 1 : 0,
                 }}
-                exit={{ height: 0, opacity: 0 }} // Exit animation for collapsing
+                exit={{ height: 0, opacity: 0 }}
                 transition={{ duration: 0.3, ease: "linear" }}
                 className="overflow-hidden pl-8 mt-2 space-y-2"
               >
-                {browseCategories.map((category) => (
+                {categories?.map((category: Category) => (
                   <li key={category.name} className="hover:underline">
                     <Link
-                      href={`/audiobooks/categories/${category.name.toLowerCase()}`}
+                      href={`/audiobooks/categories/${category.id}`}
                       className="text-white hover:underline"
                     >
                       {category.name}
@@ -95,14 +169,7 @@ const SideNav = () => {
               onClick={() => setIsListsOpen(!isListsOpen)}
             >
               <span className="flex items-center">
-                <svg
-                  className="w-6 h-6 mr-2"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path d="M7 3a1 1 0 000 2h6a1 1 0 100-2H7zM4 7a1 1 0 011-1h10a1 1 0 110 2H5a1 1 0 01-1-1zM2 11a2 2 0 012-2h12a2 2 0 012 2v4a2 2 0 01-2 2H4a2 2 0 01-2-2v-4z"></path>
-                </svg>
+                <IconMist className="mr-2" />
                 Lists & Collections
               </span>
               {isListsOpen ? (
@@ -118,14 +185,14 @@ const SideNav = () => {
                   height: isListsOpen ? "auto" : 0,
                   opacity: isListsOpen ? 1 : 0,
                 }}
-                exit={{ height: 0, opacity: 0 }} // Exit animation for collapsing
+                exit={{ height: 0, opacity: 0 }}
                 transition={{ duration: 0.3, ease: "linear" }}
                 className="overflow-hidden pl-8 mt-2 space-y-2"
               >
-                {listCollections.map((collection) => (
-                  <li key={collection.name} className="hover:underline">
+                {collections?.map((collection: Collection) => (
+                  <li key={collection?.name} className="hover:underline">
                     <Link
-                      href={`/audiobooks/collections/${collection.path}`}
+                      href={`/audiobooks/collections/${collection.id}`}
                       className="text-white"
                     >
                       {collection.name}
@@ -139,135 +206,45 @@ const SideNav = () => {
             <span className="text-gray-400">You</span>
           </li>
           <li>
-            <Link
-              href="#"
-              className="flex items-center p-2 text-white bg-green rounded-lg"
-            >
-              <svg
-                className="w-6 h-6 mr-2"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"></path>
-              </svg>
+            <Link href="/" className={navItemClassName("/")}>
+              <IconHomeStar className="mr-2" />
               Home
             </Link>
           </li>
           <li>
-            <Link
-              href="#"
-              className="flex items-center p-2 text-white rounded-lg hover:bg-green"
-            >
-              <svg
-                className="w-6 h-6 mr-2"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path d="M7 3a1 1 0 000 2h6a1 1 0 100-2H7zM4 7a1 1 0 011-1h10a1 1 0 110 2H5a1 1 0 01-1-1zM2 11a2 2 0 012-2h12a2 2 0 012 2v4a2 2 0 01-2 2H4a2 2 0 01-2-2v-4z"></path>
-              </svg>
+            <Link href="/library" className={navItemClassName("/library")}>
+              <IconLibrary className="mr-2" />
               My Library
             </Link>
           </li>
           <li>
-            <Link
-              href="#"
-              className="flex items-center p-2 text-white rounded-lg hover:bg-green"
-            >
-              <svg
-                className="w-6 h-6 mr-2"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM14 11a1 1 0 011 1v1h1a1 1 0 110 2h-1v1a1 1 0 11-2 0v-1h-1a1 1 0 110-2h1v-1a1 1 0 011-1z"></path>
-              </svg>
+            <Link href="/wishlist" className={navItemClassName("/wishlist")}>
+              <IconLayoutGridAdd className="mr-2" />
               Wish List
             </Link>
           </li>
+
           <li>
-            <Link
-              href="#"
-              className="flex items-center p-2 text-white rounded-lg hover:bg-green"
-            >
-              <svg
-                className="w-6 h-6 mr-2"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-                xmlns="http://www.w3.org/2000/svg"
+            <Link href="/favorites" className={navItemClassName("/favorites")}>
+              <IconStars className="w-6 h-6 mr-2" />
+              Favorites
+            </Link>
+          </li>
+
+          {session && session.user && (
+            <li>
+              <div
+                onClick={() => signOut()}
+                className="flex items-center py-2 px-6 text-white bg-green rounded-lg cursor-pointer w-fit bg-red-950 hover:bg-red-800 transform transition-all duration-200 mt-6"
               >
-                <path
-                  fillRule="evenodd"
-                  d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
-                  clipRule="evenodd"
-                ></path>
-              </svg>
-              Listen History
-            </Link>
-          </li>
-          <li className="pt-4 pb-2">
-            <span className="text-gray-400">More</span>
-          </li>
-          <li>
-            <Link
-              href="#"
-              className="flex items-center p-2 text-white rounded-lg hover:bg-green"
-            >
-              How to Listen
-            </Link>
-          </li>
-          <li>
-            <Link
-              href="#"
-              className="flex items-center p-2 text-white rounded-lg hover:bg-green"
-            >
-              Need Help?
-            </Link>
-          </li>
-          <li>
-            <Link
-              href="#"
-              className="flex items-center p-2 text-white bg-green rounded-lg"
-            >
-              <svg
-                className="w-6 h-6 mr-2"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z"
-                  fillRule="evenodd"
-                  clipRule="evenodd"
-                ></path>
-              </svg>
-              Light
-            </Link>
-          </li>
-          <li>
-            <Link
-              href="#"
-              className="flex items-center p-2 text-white bg-green rounded-lg"
-            >
-              <svg
-                className="w-6 h-6 mr-2"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z"
-                  clipRule="evenodd"
-                ></path>
-              </svg>
-              Logout
-            </Link>
-          </li>
+                <IconLogout2 className="mr-2" />
+                Logout
+              </div>
+            </li>
+          )}
         </ul>
       </nav>
-    </aside>
+    </div>
   );
 };
 
