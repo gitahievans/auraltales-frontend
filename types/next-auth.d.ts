@@ -16,6 +16,7 @@ declare module "next-auth" {
       date_joined: string;
     };
     token: { jwt: string };
+    jwt: string;
     refreshToken: string;
   }
 

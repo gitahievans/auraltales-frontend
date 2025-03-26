@@ -1,6 +1,19 @@
 import React from "react";
 
-const StatCard = ({ icon: Icon, title, value, className = "" }) => {
+interface StatCardProps {
+  icon: any;
+  title: any;
+  value: any;
+  className?: string;
+  iconColor?: string;
+}
+
+const StatCard = ({
+  icon: Icon,
+  title,
+  value,
+  className = "",
+}: StatCardProps) => {
   return (
     <div
       className={`bg-white rounded-lg p-4 shadow hover:shadow-lg transition-shadow ${className}`}

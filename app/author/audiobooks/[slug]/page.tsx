@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 import { listenSample } from "@/lib/audiobookActions.ts";
 import { Howl } from "howler";
+import { AudiobookDetail } from "@/types/types";
 
 // Types from API response
 interface Author {
@@ -49,26 +50,6 @@ interface Chapter {
   title: string;
   duration: string;
   order: number;
-}
-
-export interface AudiobookDetail {
-  id: number;
-  title: string;
-  description: string;
-  summary: string;
-  length: string;
-  buying_price: number;
-  date_published: string;
-  slug: string;
-  poster: string;
-  audio_sample: string | null;
-  authors: Author[];
-  narrators: Narrator[];
-  categories: Category[];
-  collections: Collection[];
-  chapters: Chapter[];
-  total_sales?: number;
-  total_revenue?: number;
 }
 
 const AudiobookDetails = () => {
@@ -399,9 +380,9 @@ const AudiobookDetails = () => {
                             </span>
                             <span className="font-medium">{chapter.title}</span>
                           </div>
-                          <span className="text-gray-500">
+                          {/* <span className="text-gray-500">
                             {chapter.duration}
-                          </span>
+                          </span> */}
                         </div>
                       ))}
                   </div>

@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useRef, useState, useCallback } from "react";
 import {
   ActionIcon,
@@ -135,10 +136,12 @@ const AudioPlayer = ({
 
   useEffect(() => {
     if (!audioRef.current) {
-      audioRef.current = new Audio(audioSrc);
+      audioRef.current = new Audio(
+        typeof audioSrc === "string" ? audioSrc : ""
+      );
     } else {
       audioRef.current.pause();
-      audioRef.current.src = audioSrc || "";
+      audioRef.current.src = typeof audioSrc === "string" ? audioSrc : "";
       audioRef.current.currentTime = 0;
     }
 
@@ -181,7 +184,10 @@ const AudioPlayer = ({
   return (
     <div className="w-full flex flex-col items-center justify-center ">
       <div className="w-full p-6  rounded-xl shadow-2xl">
-        <audio ref={audioRef} src={audioSrc} volume={volume} />
+        <audio
+          ref={audioRef}
+          src={typeof audioSrc === "string" ? audioSrc : undefined}
+        />
         <div className="w-full flex justify-center items-center mb-4">
           <RingProgress
             size={192}
@@ -202,7 +208,7 @@ const AudioPlayer = ({
                   size={155}
                 >
                   <Image
-                    src={audiobook?.poster}
+                    src={audiobook?.poster || "/default-poster.jpg"}
                     alt="Book cover"
                     className="rounded-full object-cover border-2 border-gray-700"
                     width={500}
@@ -300,7 +306,7 @@ const AudioPlayer = ({
       </div>
 
       <div className="w-full  flex justify-between items-center">
-        <ChaptersMenu chapters={chapters} audiobook={audiobook} />
+        <ChaptersMenu chapters={chapters} audiobook={audiobook as Audiobook} />
         <div className="flex flex-col items-center">
           <IconBookmark size={24} color="white" />
           <span className="text-white">Bookmark</span>
@@ -317,7 +323,7 @@ const AudioPlayer = ({
             <h1 className="text-xl font-bold text-[#1CFAC4]">Chapters</h1>
             <div className="text-gray-400">
               {audiobook?.chapters?.length || 0} Chapters •{" "}
-              {audiobook?.total_duration}
+              {/* {audiobook?.total_duration} */}
             </div>
           </div>
           <div className="grid grid-cols-1 gap-6">

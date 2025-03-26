@@ -1,7 +1,7 @@
 // pages/reset-password/[uid]/[token].js
 "use client";
 
-import { useState } from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 
@@ -18,7 +18,7 @@ export default function ResetPassword({
   const { uid, token } = params;
   const router = useRouter();
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoading(true);
     setError("");
@@ -113,7 +113,7 @@ export default function ResetPassword({
                 placeholder="New password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                minLength="8"
+                minLength={8}
               />
             </div>
             <div>
@@ -130,7 +130,7 @@ export default function ResetPassword({
                 placeholder="Confirm new password"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
-                minLength="8"
+                minLength={8}
               />
             </div>
           </div>

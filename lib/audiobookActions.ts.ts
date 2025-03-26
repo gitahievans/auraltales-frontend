@@ -1,6 +1,6 @@
 import { notifications } from "@mantine/notifications";
 import { Howl } from "howler";
-import { Audiobook } from "@/types/types";
+import { Audiobook, AudiobookDetail } from "@/types/types";
 import apiClient from "./apiClient";
 
 export const buyAudiobook = async (
@@ -62,7 +62,7 @@ export const buyAudiobook = async (
 };
 
 export const listenSample = (
-  book: Audiobook,
+  book: AudiobookDetail | Audiobook | null,
   soundRef: React.MutableRefObject<Howl | null>,
   isPlaying: boolean,
   setIsPlaying: React.Dispatch<React.SetStateAction<boolean>>,

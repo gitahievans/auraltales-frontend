@@ -12,7 +12,7 @@ import { useSession } from "next-auth/react";
 
 const DynamicGreeting = () => {
   const [greeting, setGreeting] = useState("");
-  const [TimeIcon, setTimeIcon] = useState(IconSun);
+  const [TimeIcon, setTimeIcon] = useState<React.ComponentType<any>>(IconSun);
   const { data: session } = useSession();
 
   console.log("session in greeting", session);

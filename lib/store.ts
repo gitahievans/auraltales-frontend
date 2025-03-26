@@ -141,7 +141,7 @@ export const removeFromWishlist = async (
 
     if (response.status === 200 || response.status === 204) {
       setInWishList(false);
-      if (from === "wishlist") {
+      if (from === "wishlist" && setWishlistItems) {
         setWishlistItems(
           (prev) =>
             prev?.filter((item) => item.audiobook.id !== audiobookId) || null

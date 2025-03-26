@@ -40,7 +40,7 @@ const WishlistCard: React.FC<WishlistCardProps> = ({
   const [inWishList, setInWishList] = useState(false);
   const [addWishLoading, setAddWishLoading] = useState(false);
   const [removeWishLoading, setRemoveWishLoading] = useState(false);
-  const [isPurchased, setPurchaseStatus] = useState<boolean>(null);
+  const [isPurchased, setPurchaseStatus] = useState<boolean>(false);
   const soundRef = useRef<Howl | null>(null);
 
   const book = audiobook.audiobook;
@@ -158,7 +158,7 @@ const WishlistCard: React.FC<WishlistCardProps> = ({
             <h3 className="text-xl font-bold text-[#1CFAC4] mb-2 line-clamp-1">
               {book.title}
             </h3>
-            {book?.rating && (
+            {/* {book?.rating && (
               <div className="flex items-center gap-1">
                 {[...Array(5)].map((_, index) => (
                   <IconStarFilled
@@ -170,7 +170,7 @@ const WishlistCard: React.FC<WishlistCardProps> = ({
                   />
                 ))}
               </div>
-            )}
+            )} */}
           </div>
 
           {/* Book Details */}

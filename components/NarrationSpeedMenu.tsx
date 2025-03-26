@@ -2,7 +2,13 @@ import React from "react";
 import { Menu, Button } from "@mantine/core";
 import { IconGauge, IconCheck } from "@tabler/icons-react";
 
-const NarrationSpeedMenu = ({ currentSpeed, onSpeedChange }) => {
+const NarrationSpeedMenu = ({
+  currentSpeed,
+  onSpeedChange,
+}: {
+  currentSpeed: number;
+  onSpeedChange: (speed: number) => void;
+}) => {
   const speeds = [0.5, 0.75, 1, 1.25, 1.5, 1.75, 2];
 
   return (

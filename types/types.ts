@@ -37,7 +37,6 @@ export interface Audiobook {
   description: string;
   summary: string;
   length: string;
-  rental_price: number;
   buying_price: number;
   date_published: string;
   slug: string;
@@ -49,6 +48,27 @@ export interface Audiobook {
   narrators: Narrator[];
   chapters: Chapter[];
 }
+
+export interface AudiobookDetail {
+  id: number;
+  title: string;
+  description: string;
+  summary: string;
+  length: string;
+  buying_price: number;
+  date_published: string;
+  slug: string;
+  poster: string;
+  audio_sample: string | null;
+  authors: Author[];
+  narrators: Narrator[];
+  categories: Category[];
+  collections: Collection[];
+  chapters: Chapter[];
+  total_sales?: number;
+  total_revenue?: number;
+}
+
 
 export type PurchaseStatus = {
   bought: boolean;

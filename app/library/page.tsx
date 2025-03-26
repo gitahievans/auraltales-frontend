@@ -3,7 +3,6 @@
 import React, { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import {
-  Tabs,
   TextInput,
   Select,
   Loader,
@@ -16,31 +15,15 @@ import {
 import {
   IconSearch,
   IconBooks,
-  IconHistory,
-  IconBookmark,
   IconSortAscending,
   IconX,
 } from "@tabler/icons-react";
 import LibraryCard from "@/components/Cards/LibraryCard";
 import apiClient from "@/lib/apiClient";
+import { AudiobookDetail } from "@/types/types";
 
 interface Author {
-  name: string;
-}
-
-interface Category {
-  name: string;
-}
-
-interface Chapter {
-  title: string;
-}
-
-interface Collection {
-  name: string;
-}
-
-interface Narrator {
+  id: number;
   name: string;
 }
 
@@ -48,34 +31,25 @@ interface Audiobook {
   id: number;
   title: string;
   authors: Author[];
-  categories: Category[];
-  chapters: Chapter[];
-  collections: Collection[];
-  narrators: Narrator[];
   audio_sample: string;
   buying_price: number;
-  rental_price: number;
   date_published: string;
-  description: string;
-  length: string;
   poster: string;
   slug: string;
-  summary: string;
 }
 
 interface LibraryBook {
   audiobook: Audiobook;
-  amount: string;
   date_purchased: string;
 }
 
 const MyLibraryPage = () => {
   const { data: session } = useSession();
-  const [activeTab, setActiveTab] = useState<string | null>("all");
   const [sortBy, setSortBy] = useState<string | null>("recent");
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(true);
   const [books, setBooks] = useState<LibraryBook[]>([]);
+
   useEffect(() => {
     const fetchLibrary = async () => {
       if (session?.jwt) {
@@ -97,23 +71,13 @@ const MyLibraryPage = () => {
     fetchLibrary();
   }, [session]);
 
-  const filteredBooks = books?.filter((book) => {
-    const matchesSearch =
+  const filteredBooks = books?.filter(
+    (book) =>
       book.audiobook.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       book.audiobook.authors.some((author) =>
         author.name.toLowerCase().includes(searchQuery.toLowerCase())
-      );
-
-    // Assuming progress is stored somewhere in the audiobook object
-    // You might need to adjust this based on where progress is actually stored
-    const progress = book.audiobook.progress || 0;
-
-    if (activeTab === "all") return matchesSearch;
-    if (activeTab === "in-progress")
-      return matchesSearch && progress > 0 && progress < 100;
-    if (activeTab === "completed") return matchesSearch && progress === 100;
-    return matchesSearch;
-  });
+      )
+  );
 
   const sortedBooks = [...filteredBooks].sort((a, b) => {
     switch (sortBy) {
@@ -124,8 +88,6 @@ const MyLibraryPage = () => {
         );
       case "title":
         return a.audiobook.title.localeCompare(b.audiobook.title);
-      case "progress":
-        return (b.audiobook?.progress || 0) - (a.audiobook.progress || 0);
       default:
         return 0;
     }
@@ -175,7 +137,6 @@ const MyLibraryPage = () => {
             data={[
               { value: "recent", label: "Recently Purchased" },
               { value: "title", label: "Title" },
-              { value: "progress", label: "Progress" },
             ]}
             leftSection={<IconSortAscending size={20} />}
             styles={{
@@ -187,77 +148,28 @@ const MyLibraryPage = () => {
                   borderColor: "#1CFAC4",
                 },
               },
-              dropdown: {
-                backgroundColor: "#041714",
-                borderColor: "rgba(28, 250, 196, 0.2)",
-                color: "white",
-              },
-              option: {
-                "&[data-selected]": {
-                  backgroundColor: "#1F8505",
-                },
-                "&[data-hovered]": {
-                  backgroundColor: "#21440F",
-                },
-              },
             }}
           />
         </Grid.Col>
       </Grid>
 
-      {/* Tabs */}
-      <Tabs
-        value={activeTab}
-        onChange={setActiveTab}
-        mb="xl"
-        styles={{
-          list: {
-            borderBottom: "1px solid rgba(28, 250, 196, 0.2)",
-          },
-          tab: {
-            color: "#A9A9AA",
-            "&:hover": {
-              color: "#1CFAC4",
-            },
-            "&[data-active]": {
-              color: "#1CFAC4",
-              borderColor: "#1CFAC4",
-            },
-          },
-        }}
-      >
-        <Tabs.List>
-          <Tabs.Tab value="all" leftSection={<IconBooks size={20} />}>
-            All Books
-          </Tabs.Tab>
-          <Tabs.Tab
-            value="in-progress"
-            leftSection={<IconBookmark size={20} />}
-          >
-            In Progress
-          </Tabs.Tab>
-          <Tabs.Tab value="completed" leftSection={<IconHistory size={20} />}>
-            Completed
-          </Tabs.Tab>
-        </Tabs.List>
-      </Tabs>
-
+      {/* Library Display */}
       {session?.user ? (
         <>
           {loading ? (
             <div className="flex justify-center items-center py-12">
               <Loader size="lg" color="#1CFAC4" />
             </div>
-          ) : sortedBooks?.length > 0 ? (
+          ) : sortedBooks.length > 0 ? (
             <Grid>
-              {sortedBooks?.map((book) => (
+              {sortedBooks.map((book) => (
                 <Grid.Col
                   key={book.audiobook.id}
                   span={{ base: 12, sm: 6, md: 4, lg: 3 }}
                 >
                   <LibraryCard
-                    book={book.audiobook}
-                    purchaseDate={book.date_purchased}
+                    book={book.audiobook as AudiobookDetail}
+                    // purchaseDate={book.date_purchased}
                   />
                 </Grid.Col>
               ))}
@@ -278,7 +190,7 @@ const MyLibraryPage = () => {
                   : "Your library is empty"}
               </Text>
             </div>
-          )}{" "}
+          )}
         </>
       ) : (
         <div className="text-center py-12">
@@ -290,7 +202,7 @@ const MyLibraryPage = () => {
           <Title order={3} style={{ color: "#1CFAC4" }} className="mb-2">
             Not Logged In
           </Title>
-          <Text color="#A9A9AA">Please sign in to view your wishlist</Text>
+          <Text color="#A9A9AA">Please sign in to view your library</Text>
         </div>
       )}
     </Container>

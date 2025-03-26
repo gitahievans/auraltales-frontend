@@ -51,18 +51,18 @@ const ChapterCard: React.FC<{
         {/* Chapter Details */}
         <div className="flex-grow space-y-1 md:text-left">
           <h2 className="font-bold text-[#1CFAC4] text-[10px] md:text-xs uppercase">
-            Chapter {chapter?.chapter_number}
+            Chapter {chapter?.order}
           </h2>
-          <p className="text-[10px] md:text-xs text-gray-300 line-clamp-2">
+          {/* <p className="text-[10px] md:text-xs text-gray-300 line-clamp-2">
             {chapter?.description || "No chapter description available"}
-          </p>
+          </p> */}
 
           <div className="flex items-center md:justify-start space-x-4 text-gray-400">
             <div className="flex space-x-2">
               <IconClockHour4 size={16} />
-              <span className="text-[10px] md:text-xs">
+              {/* <span className="text-[10px] md:text-xs">
                 {chapter?.duration || "50 mins"}
-              </span>
+              </span> */}
             </div>
           </div>
         </div>

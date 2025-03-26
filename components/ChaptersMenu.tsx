@@ -1,7 +1,7 @@
 import React from "react";
 import { Menu, Button } from "@mantine/core";
 import { IconChevronDown, IconList } from "@tabler/icons-react";
-import { Audiobook } from "@/types/types";
+import { Audiobook, Chapter } from "@/types/types";
 
 const ChaptersMenu = ({
   chapters,
@@ -59,11 +59,11 @@ const ChaptersMenu = ({
               >
                 Chapter {index + 1}
               </span>
-              <span
+              {/* <span
                 className={`${index === 0 ? "text-white" : "text-gray-400"}`}
               >
                 {chapter.duration}
-              </span>
+              </span> */}
             </div>
           </Menu.Item>
         ))}

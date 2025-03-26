@@ -4,8 +4,6 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import { notifications } from "@mantine/notifications";
 import axios from "axios";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
-
 export const nextAuthOptions: NextAuthOptions = {
   debug: true,
   providers: [
@@ -66,13 +64,22 @@ export const nextAuthOptions: NextAuthOptions = {
           response_type: "code",
         },
       },
-      profile(profile) {
-        console.log("Google profile", profile);
+      profile(profile, tokens) {
+        console.log("Google profile", profile, tokens);
         return {
           id: profile.sub,
           name: profile.given_name,
           email: profile.email,
           image: profile.picture,
+          first_name: profile.given_name,
+          last_name: profile.family_name || "",
+          phone_number: "",
+          jwt: tokens?.access_token || "",
+          refresh: tokens?.refresh_token || "",
+          is_staff: false,
+          is_active: true,
+          is_author: false,
+          date_joined: new Date().toISOString(),
         };
       },
     }),
@@ -86,18 +93,21 @@ export const nextAuthOptions: NextAuthOptions = {
 
       if (account?.provider === "google") {
         try {
-          const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/accounts/google_signup/`, {
-            method: "POST",
-            body: JSON.stringify({
-              email: user.email,
-              first_name: user.name?.split(" ")[0],
-              last_name: user.name?.split(" ")[1],
-              avatar: user.image,
-            }),
-            headers: {
-              "Content-Type": "application/json",
-            },
-          });
+          const res = await fetch(
+            `${process.env.NEXT_PUBLIC_API_URL}/accounts/google_signup/`,
+            {
+              method: "POST",
+              body: JSON.stringify({
+                email: user.email,
+                first_name: user.name?.split(" ")[0],
+                last_name: user.name?.split(" ")[1],
+                avatar: user.image,
+              }),
+              headers: {
+                "Content-Type": "application/json",
+              },
+            }
+          );
 
           if (!res.ok) {
             console.error("Server response not ok:", await res.text());
@@ -163,7 +173,7 @@ export const nextAuthOptions: NextAuthOptions = {
       }
 
       // Check if access token is expired
-      if (token.jwt && isExpired(token.jwt)) {
+      if (token.jwt && isExpired(token.jwt as string)) {
         try {
           const response = await axios.post(
             `${process.env.NEXT_PUBLIC_API_URL}/accounts/token/refresh/`,

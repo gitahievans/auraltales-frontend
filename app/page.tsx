@@ -33,7 +33,7 @@ export default function Home() {
         </div>
       ) : audiobooks.length === 0 ? (
         <div className="flex flex-col items-center justify-center">
-          <Text size="xl" weight={700} color="gray.7">
+          <Text size="xl" fw={700} color="gray.7">
             No audiobooks available at the moment.
           </Text>
           <Text size="md" color="gray.6">

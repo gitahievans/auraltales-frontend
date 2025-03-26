@@ -197,13 +197,21 @@ const AuthorDashboard = () => {
         <StatCard
           icon={IconCreditCard}
           title="Total Revenue"
-          value={authorSalesStats?.total_revenue ? formatCurrency(authorSalesStats?.total_revenue) : "0"}
+          value={
+            authorSalesStats?.total_revenue
+              ? formatCurrency(authorSalesStats?.total_revenue)
+              : "0"
+          }
           iconColor="#1F8505"
         />
         <StatCard
           icon={IconShoppingCart}
           title="Total Sales"
-          value={authorSalesStats?.total_sales ? authorSalesStats?.total_sales?.toString() : "0"}
+          value={
+            authorSalesStats?.total_sales
+              ? authorSalesStats?.total_sales?.toString()
+              : "0"
+          }
           iconColor="#1CFAC4"
         />
         <StatCard
@@ -215,7 +223,11 @@ const AuthorDashboard = () => {
         <StatCard
           icon={IconTrendingUp}
           title="Avg. Purchase Value"
-          value={authorSalesStats?.avg_purchase_value ? formatCurrency(authorSalesStats?.avg_purchase_value) : "0"}
+          value={
+            authorSalesStats?.avg_purchase_value
+              ? formatCurrency(authorSalesStats?.avg_purchase_value)
+              : "0"
+          }
           iconColor="#21440F"
         />
       </div>
@@ -308,7 +320,9 @@ const AuthorDashboard = () => {
             <p className="text-sm text-gray-500">Recent Week Purchases</p>
             <div className="flex items-end space-x-2 mt-2">
               <span className="text-2xl font-bold">
-                {authorSalesStats?.recent_week_purchases ? authorSalesStats?.recent_week_purchases : 0}
+                {authorSalesStats?.recent_week_purchases
+                  ? authorSalesStats?.recent_week_purchases
+                  : 0}
               </span>
               <span className="text-sm text-green-500">Sales</span>
             </div>
@@ -319,7 +333,7 @@ const AuthorDashboard = () => {
                   width: `${Math.min(
                     (authorSalesStats?.recent_week_purchases /
                       (authorSalesStats?.total_sales / 52)) *
-                    100,
+                      100,
                     100
                   )}%`,
                 }}
@@ -333,10 +347,13 @@ const AuthorDashboard = () => {
             <p className="text-sm text-gray-500">Weekly Revenue</p>
             <div className="flex items-end space-x-2 mt-2">
               <span className="text-2xl font-bold">
-                {authorSalesStats?.recent_week_purchases && authorSalesStats?.avg_purchase_value ? formatCurrency(
-                  authorSalesStats?.recent_week_purchases *
-                  authorSalesStats?.avg_purchase_value
-                ) : "0"}
+                {authorSalesStats?.recent_week_purchases &&
+                authorSalesStats?.avg_purchase_value
+                  ? formatCurrency(
+                      authorSalesStats?.recent_week_purchases *
+                        authorSalesStats?.avg_purchase_value
+                    )
+                  : "0"}
               </span>
             </div>
             <div className="mt-4 h-2 bg-gray-200 rounded">
@@ -347,7 +364,7 @@ const AuthorDashboard = () => {
                     ((authorSalesStats?.recent_week_purchases *
                       authorSalesStats?.avg_purchase_value) /
                       (authorSalesStats?.total_revenue / 52)) *
-                    100,
+                      100,
                     100
                   )}%`,
                 }}

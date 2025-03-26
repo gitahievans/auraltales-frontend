@@ -9,7 +9,7 @@ const AudiobookForm = () => {
     audio_sample: null,
     audio_file: null,
   });
-  const [chapterFiles, setChapterFiles] = useState({});
+  const [chapterFiles, setChapterFiles] = useState<Record<number, File>>({});
 
   const handleChapterFileChange = (e: any, chapterOrder: number) => {
     const { files } = e.target;
@@ -51,12 +51,14 @@ const AudiobookForm = () => {
     ],
   };
 
-  const handleFileChange = (e) => {
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, files } = e.target;
-    setFormData({ ...formData, [name]: files[0] });
+    if (files && files.length > 0) {
+      setFormData({ ...formData, [name]: files[0] });
+    }
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     const missingAudioFiles = payload.chapters.some(
@@ -82,7 +84,7 @@ const AudiobookForm = () => {
 
     simpleFields.forEach((field) => {
       if (field in payload) {
-        data.append(field, payload[field]);
+        data.append(field, payload[field as keyof typeof payload].toString());
       }
     });
 
@@ -96,7 +98,10 @@ const AudiobookForm = () => {
     const jsonFields = ["authors", "categories", "narrators", "collections"];
     jsonFields.forEach((field) => {
       if (field in payload) {
-        data.append(field, JSON.stringify(payload[field]));
+        data.append(
+          field,
+          JSON.stringify(payload[field as keyof typeof payload])
+        );
       }
     });
 
@@ -128,7 +133,7 @@ const AudiobookForm = () => {
       );
       console.log("Success:", response.data);
       alert("Audiobook created successfully!");
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error response:", error.response?.data);
       alert(
         `Error: ${JSON.stringify(

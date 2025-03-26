@@ -24,7 +24,7 @@ const StatCard: React.FC<StatCardProps> = ({
           className="rounded-md p-2 mr-3"
           style={{ backgroundColor: `${iconColor}15` }} // Use color with low opacity
         >
-          <Icon size={20} stroke={1.5} style={{ color: iconColor }} />
+          <Icon width={20} height={20} strokeWidth={1.5} style={{ color: iconColor }} />
         </div>
         <div>
           <p className="text-sm text-gray-500 mb-1">{title}</p>

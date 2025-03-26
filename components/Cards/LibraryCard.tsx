@@ -14,9 +14,9 @@ import {
   IconProgress,
 } from "@tabler/icons-react";
 import { listenSample } from "@/lib/audiobookActions.ts";
-import { Audiobook } from "@/types/types";
+import { AudiobookDetail } from "@/types/types";
 
-const LibraryCard = ({ book }: { book: Audiobook }) => {
+const LibraryCard = ({ book }: { book: AudiobookDetail }) => {
   const isMobile = useMediaQuery("(max-width: 767px)");
   const [isPlaying, setIsPlaying] = useState(false);
   const [audioSampleLoading, setAudioSampleLoading] = useState(false);
@@ -56,14 +56,14 @@ const LibraryCard = ({ book }: { book: Audiobook }) => {
           />
           <div className="absolute inset-0 bg-gradient-to-t from-[#041714] to-transparent opacity-90">
             {/* Progress Bar */}
-            {book.progress && book.progress > 0 && (
+            {/* {book.progress && book.progress > 0 && (
               <div className="absolute bottom-0 left-0 right-0 h-1 bg-[#1F8505]/30">
                 <div
                   className="h-full bg-[#1CFAC4] transition-all duration-300"
                   style={{ width: `${book.progress}%` }}
                 />
               </div>
-            )}
+            )} */}
           </div>
 
           {/* Quick Actions Overlay */}
@@ -92,7 +92,7 @@ const LibraryCard = ({ book }: { book: Audiobook }) => {
             <h3 className="text-xl font-bold text-[#1CFAC4] mb-2 line-clamp-1">
               {book.title}
             </h3>
-            {book.rating && (
+            {/* {book.rating && (
               <div className="flex items-center gap-1">
                 {[...Array(5)].map((_, index) => (
                   <IconStarFilled
@@ -104,7 +104,7 @@ const LibraryCard = ({ book }: { book: Audiobook }) => {
                   />
                 ))}
               </div>
-            )}
+            )} */}
           </div>
 
           {/* Book Details */}
@@ -122,20 +122,20 @@ const LibraryCard = ({ book }: { book: Audiobook }) => {
               <IconClock size={16} className="text-[#1CFAC4]" />
               <span>{book.length}</span>
             </div>
-            {book.progress !== undefined && (
+            {/* {book.progress !== undefined && (
               <div className="flex items-center gap-2">
                 <IconProgress size={16} className="text-[#1CFAC4]" />
                 <span>{book.progress}% complete</span>
               </div>
-            )}
-            {book.lastListened && (
+            )} */}
+            {/* {book.lastListened && (
               <div className="flex items-center gap-2">
                 <IconHeadphones size={16} className="text-[#1CFAC4]" />
                 <span>
                   Last listened: {formatLastListened(book.lastListened)}
                 </span>
               </div>
-            )}
+            )} */}
           </div>
 
           {/* Action Button */}
