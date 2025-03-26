@@ -48,6 +48,7 @@ interface LibraryStats {
   narrators: Array<{
     name: string;
     count: number;
+    bio: string;
   }>;
 }
 

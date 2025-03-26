@@ -4,7 +4,7 @@
 export interface AudiobookCategoryAddProps {
   formDataOne: FormDataOne;
   categories: Category[] | null;
-  setFormDataOne: (data: FormDataOne) => void;
+  setFormDataOne: React.Dispatch<React.SetStateAction<FormDataOne>>;
 }
 
 // components/AudiobookCategoryAdd/CategoryButton.tsx
@@ -118,7 +118,7 @@ const AudiobookCategoryAdd: React.FC<AudiobookCategoryAddProps> = ({
             {categories?.map((category: Category) => (
               <CategoryButton
                 key={category.id}
-                isSelected={isCategorySelected(category.id)}
+                isSelected={isCategorySelected(category.id as number)}
                 onClick={() => handleCategoryChange(category)}
               >
                 {category.name}

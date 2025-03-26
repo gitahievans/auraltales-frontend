@@ -4,8 +4,17 @@ import Image from "next/image";
 import { useDropzone } from "react-dropzone";
 import { FormDataOne } from "@/types/types";
 
-const BookPoster = ({ errorFormOne, formDataOne, setFormDataOne }) => {
-  // Separate state for preview URL
+interface BookPosterProps {
+  errorFormOne: string | null;
+  formDataOne: FormDataOne;
+  setFormDataOne: React.Dispatch<React.SetStateAction<FormDataOne>>;
+}
+
+const BookPoster = ({
+  errorFormOne,
+  formDataOne,
+  setFormDataOne,
+}: BookPosterProps) => {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
   const onDrop = useCallback(

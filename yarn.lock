@@ -1589,6 +1589,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/google-libphonenumber@npm:^7.4.30":
+  version: 7.4.30
+  resolution: "@types/google-libphonenumber@npm:7.4.30"
+  checksum: 09270ed030076a0e69965ad5bad564e672a110e1e83c9092f6d264c3e0355921631521cb9afd022018a51cddfd19ba52d0421f4682d7b68b836dbb52537320de
+  languageName: node
+  linkType: hard
+
 "@types/howler@npm:^2.2.12":
   version: 2.2.12
   resolution: "@types/howler@npm:2.2.12"
@@ -4841,7 +4848,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"google-libphonenumber@npm:^3.2.38":
+"google-libphonenumber@npm:^3.2.40":
   version: 3.2.40
   resolution: "google-libphonenumber@npm:3.2.40"
   checksum: 420237d8df0bbf4bb4e440c4db16511860adf6e9020dcf92b68a36cebde2cabd5a9f026bd4307525ae3cf4d90bde953cc1c2e896dc5dee4968adb9cd88d340ac
@@ -7825,6 +7832,7 @@ __metadata:
     "@mantine/notifications": ^7.12.2
     "@mantine/spotlight": ^7.16.2
     "@tabler/icons-react": ^3.12.0
+    "@types/google-libphonenumber": ^7.4.30
     "@types/howler": ^2.2.12
     "@types/node": ^20
     "@types/react": ^18
@@ -7838,7 +7846,7 @@ __metadata:
     eslint-config-next: 14.2.5
     eslint-plugin-next-on-pages: ^1.13.10
     framer-motion: ^11.5.4
-    google-libphonenumber: ^3.2.38
+    google-libphonenumber: ^3.2.40
     howler: ^2.2.4
     lucide-react: ^0.475.0
     next: 14.2.5

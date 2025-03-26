@@ -30,13 +30,18 @@ const BoughtBookCard = ({ book, open }: { book: Audiobook; open: any }) => {
 
   const handleAddToFavorites = async () => {
     if (!access) return;
-    await addToFavorites(book.id, access, setIsLoading, setInFavorites);
+    await addToFavorites(
+      book.id as number,
+      access,
+      setIsLoading,
+      setInFavorites
+    );
   };
 
   const handleRemoveFromFavorites = async () => {
     if (!access) return;
     await removeFromFavorites(
-      book.id,
+      book.id as number,
       access,
       setIsLoading,
       setInFavorites,
@@ -47,7 +52,10 @@ const BoughtBookCard = ({ book, open }: { book: Audiobook; open: any }) => {
 
   const checkFavoritesStatus = async () => {
     if (access) {
-      const isInFavorites = await checkAudiobookInFavorites(book?.id, access);
+      const isInFavorites = await checkAudiobookInFavorites(
+        book?.id as number,
+        access
+      );
       setInFavorites(isInFavorites);
     }
   };

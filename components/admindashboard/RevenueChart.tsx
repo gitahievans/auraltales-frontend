@@ -9,7 +9,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
-const RevenueChart = ({ data }) => {
+const RevenueChart = ({ data }: { data: any[] }) => {
   // Transform "year_month" into a more readable format
   const formattedData = data.map((item) => {
     const [year, month] = item.year_month.split("-");

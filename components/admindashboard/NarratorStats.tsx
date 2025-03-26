@@ -1,4 +1,9 @@
-const NarratorStats = ({ narrators }) => (
+interface NarratorStat {
+  name: string;
+  count: number;
+  bio: string;
+}
+const NarratorStats = ({ narrators }: { narrators: NarratorStat[] }) => (
   <div className="bg-white p-4 rounded-lg shadow">
     <h3 className="text-lg font-semibold mb-4">Top Narrators</h3>
     <div className="space-y-4">

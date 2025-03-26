@@ -1,5 +1,5 @@
 export interface Author {
-  id: number;
+  id?: number;
   name: string;
   email: string;
   phone_number: string;
@@ -7,17 +7,17 @@ export interface Author {
 }
 
 export interface Category {
-  id: number;
+  id?: number;
   name: string;
 }
 
 export interface Collection {
-  id: number;
+  id?: number;
   name: string;
 }
 
 export interface Narrator {
-  id: number;
+  id?: number;
   name: string;
   email: string;
   phone_number: string;
@@ -25,14 +25,15 @@ export interface Narrator {
 }
 
 export interface Chapter {
-  id: number;
+  id?: number;
   title: string;
   audio_file: File | null;
+  poster_file: File | null;
   order: number;
 }
 
 export interface Audiobook {
-  id: number;
+  id?: number;
   title: string;
   description: string;
   summary: string;
@@ -50,7 +51,7 @@ export interface Audiobook {
 }
 
 export interface AudiobookDetail {
-  id: number;
+  id?: number;
   title: string;
   description: string;
   summary: string;
@@ -68,7 +69,6 @@ export interface AudiobookDetail {
   total_sales?: number;
   total_revenue?: number;
 }
-
 
 export type PurchaseStatus = {
   bought: boolean;

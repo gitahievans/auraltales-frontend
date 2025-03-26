@@ -1,3 +1,5 @@
+'use client'
+
 import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
@@ -9,7 +11,7 @@ import { addToWishlist, removeFromWishlist } from "@/lib/store";
 
 interface BookCardProps {
   book: {
-    id: number;
+    id?: number;
     title: string;
     poster: string;
     length: string;

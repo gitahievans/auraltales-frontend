@@ -5,7 +5,7 @@ import { FormDataTwo } from "@/types/types";
 interface FormTwoProps {
   formDataTwo: FormDataTwo;
   errorFormTwo: string | null;
-  setFormDataTwo: (data: FormDataTwo) => void;
+  setFormDataTwo: React.Dispatch<React.SetStateAction<FormDataTwo>>;
 }
 
 const FormTwo = ({ formDataTwo, setFormDataTwo }: FormTwoProps) => {

@@ -27,9 +27,6 @@ import LoginForm from "../Auth/LoginModal";
 import DynamicGreeting from "../DynamicGreeting";
 import adminIcon from "../../public/icons8-admin-24.png";
 import Search from "../Search";
-import { useAudiobooks } from "@/hooks/useAudiobooks";
-import { Audiobook } from "@/types/types";
-import { books } from "@/Constants/Books";
 
 type Category = {
   id: number;

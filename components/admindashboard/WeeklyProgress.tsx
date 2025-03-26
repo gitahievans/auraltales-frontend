@@ -1,4 +1,10 @@
-const WeeklyProgress = ({ total, weekly }) => {
+const WeeklyProgress = ({
+  total,
+  weekly,
+}: {
+  total: number;
+  weekly: number;
+}) => {
   const percentage = total ? Math.round((weekly / total) * 100) : 0;
 
   return (

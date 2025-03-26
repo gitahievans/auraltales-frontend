@@ -1,3 +1,4 @@
+// app/success/PaymentSuccessClient.jsx
 "use client";
 
 import { useEffect } from "react";
@@ -5,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { useSearchParams } from "next/navigation";
 import apiClient from "@/lib/apiClient";
 
-const PaymentSuccess = () => {
+const PaymentSuccessClient = () => {
   const searchParams = useSearchParams();
   const reference = searchParams.get("reference");
   const session = localStorage.getItem("session");
@@ -15,14 +16,13 @@ const PaymentSuccess = () => {
 
   const access = session ? JSON.parse(session).jwt : null;
 
-  const router = useRouter(); // Initialize the router
+  const router = useRouter();
 
   console.log("session", session);
   console.log("reference", reference);
 
   useEffect(() => {
     if (reference) {
-      // Send request to backend to verify payment
       const verifyPayment = async () => {
         try {
           const response = await apiClient.get(
@@ -52,4 +52,4 @@ const PaymentSuccess = () => {
   );
 };
 
-export default PaymentSuccess;
+export default PaymentSuccessClient;

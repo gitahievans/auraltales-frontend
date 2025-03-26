@@ -6,7 +6,7 @@ import React, { useCallback, useState } from "react";
 export interface AudiobookAuthorAddProps {
   formDataOne: FormDataOne;
   authors: Author[] | null;
-  setFormDataOne: (data: FormDataOne) => void;
+  setFormDataOne: React.Dispatch<React.SetStateAction<FormDataOne>>;
 }
 
 interface AuthorButtonProps {
@@ -70,10 +70,10 @@ const AudiobkAuthorAdd: React.FC<AudiobookAuthorAddProps> = ({
         bio: newAuthor.bio.trim(),
       };
 
-      setFormDataOne((prev) => ({
-        ...prev,
-        authors: [...prev.authors, newAuthorObj],
-      }));
+      setFormDataOne({
+        ...formDataOne,
+        authors: [...formDataOne.authors, newAuthorObj as Author],
+      });
 
       setNewAuthor({
         name: "",
@@ -83,7 +83,7 @@ const AudiobkAuthorAdd: React.FC<AudiobookAuthorAddProps> = ({
       });
       setShowNewAuthorForm(false);
     }
-  }, [newAuthor, setFormDataOne]);
+  }, [newAuthor, setFormDataOne, formDataOne]);
 
   const handleAuthorChange = useCallback(
     (authorToToggle: Author) => {
@@ -127,7 +127,7 @@ const AudiobkAuthorAdd: React.FC<AudiobookAuthorAddProps> = ({
             {authors?.map((author: Author) => (
               <AuthorButton
                 key={author.id}
-                isSelected={isAuthorSelected(author?.id)}
+                isSelected={isAuthorSelected(author?.id as number)}
                 onClick={() => handleAuthorChange(author)}
               >
                 {author.name}

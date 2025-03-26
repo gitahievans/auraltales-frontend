@@ -6,7 +6,7 @@ import React, { useCallback, useState } from "react";
 export interface AudiobookNarratorAddProps {
   formDataOne: FormDataOne;
   narrators: Narrator[] | null;
-  setFormDataOne: (data: FormDataOne) => void;
+  setFormDataOne: React.Dispatch<React.SetStateAction<FormDataOne>>;
 }
 
 interface NarratorButtonProps {
@@ -128,7 +128,7 @@ const AudiobkNarratorAdd: React.FC<AudiobookNarratorAddProps> = ({
             {narrators?.map((narrator: Narrator) => (
               <NarratorButton
                 key={narrator.id}
-                isSelected={isNarratorSelected(narrator?.id)}
+                isSelected={isNarratorSelected(narrator?.id as number)}
                 onClick={() => handleNarratorChange(narrator)}
               >
                 {narrator.name}

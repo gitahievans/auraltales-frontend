@@ -1,8 +1,11 @@
-import PaymentSuccess from "@/components/PaymentSuccess";
-import React from "react";
+// app/success/page.jsx
+import PaymentSuccessClient from "@/components/PaymentSuccess";
+import { Suspense } from "react";
 
-const page = () => {
-  return <PaymentSuccess />;
-};
-
-export default page;
+export default function PaymentSuccessPage() {
+  return (
+    <Suspense fallback={<div>Loading payment verification...</div>}>
+      <PaymentSuccessClient />
+    </Suspense>
+  );
+}

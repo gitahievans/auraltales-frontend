@@ -15,9 +15,8 @@ import Image from "next/image";
 // Define props interface
 interface AudiobookChapterUploaderProps {
   formDataTwo: FormDataTwo;
-  setFormDataTwo: (data: FormDataTwo) => void;
+  setFormDataTwo: React.Dispatch<React.SetStateAction<FormDataTwo>>;
 }
-
 // Enhanced Chapter type with poster and proper audio_file as File
 interface EnhancedChapter extends Omit<Chapter, "id"> {
   id?: number; // Optional ID, assigned by backend after save
@@ -226,7 +225,7 @@ const AudiobookChapterUploader: React.FC<AudiobookChapterUploaderProps> = ({
                   </div>
                 )}
                 <div>
-                  <Text weight={500}>{chapter.title}</Text>
+                  <Text fw={500}>{chapter.title}</Text>
                   <Text
                     size="xs"
                     color="dimmed"

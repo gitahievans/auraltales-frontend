@@ -49,7 +49,7 @@ const WishlistCard: React.FC<WishlistCardProps> = ({
 
   const checkWishlistStatus = async () => {
     if (access) {
-      const isInWishlist = await checkAudiobookInWishlist(book.id, access);
+      const isInWishlist = await checkAudiobookInWishlist(book.id as number, access);
       if (isInWishlist) setInWishList(isInWishlist);
     }
   };
@@ -96,7 +96,7 @@ const WishlistCard: React.FC<WishlistCardProps> = ({
     const userEmail = session?.user?.email;
 
     if (access && userEmail) {
-      buyAudiobook(book.id, +book.buying_price, userEmail, access);
+      buyAudiobook(book.id as number, +book.buying_price, userEmail, access);
     } else {
       notifications.show({
         title: "Error",
@@ -110,7 +110,7 @@ const WishlistCard: React.FC<WishlistCardProps> = ({
   const handleRemoveFromWishList = async () => {
     if (!access) return;
     await removeFromWishlist(
-      book.id,
+      book.id as number,
       setRemoveWishLoading,
       setInWishList,
       setWishlistItems,

@@ -36,7 +36,7 @@ const FavoriteCard = ({
   const handleRemoveFromFavorites = async () => {
     if (!session?.jwt) return;
     await removeFromFavorites(
-      favBook.id,
+      favBook.id as number,
       session.jwt,
       setIsLoading,
       () => {},

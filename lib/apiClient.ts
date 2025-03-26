@@ -1,3 +1,4 @@
+// lib/apiClient.ts
 import axios from "axios";
 
 // Create an instance of Axios with default configuration
@@ -5,8 +6,12 @@ const apiClient = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL,
 });
 
-// Function to get the session object from localStorage
+// Function to get the session object from localStorage (only in browser)
 const getSession = () => {
+  // Check if running in a browser environment
+  if (typeof window === "undefined") {
+    return null; // Return null if on the server
+  }
   const session = localStorage.getItem("session");
   return session ? JSON.parse(session) : null;
 };
@@ -74,7 +79,11 @@ apiClient.interceptors.response.use(
           jwt: access,
           refreshToken: newRefreshToken,
         };
-        localStorage.setItem("session", JSON.stringify(updatedSession));
+
+        // Only set localStorage if in the browser
+        if (typeof window !== "undefined") {
+          localStorage.setItem("session", JSON.stringify(updatedSession));
+        }
 
         originalRequest.headers = {
           ...originalRequest.headers,
@@ -83,8 +92,11 @@ apiClient.interceptors.response.use(
         return apiClient(originalRequest);
       } catch (refreshError) {
         console.log("Refresh token error:", refreshError);
-        localStorage.removeItem("session");
-        window.location.href = "/";
+        // Only access localStorage if in the browser
+        if (typeof window !== "undefined") {
+          localStorage.removeItem("session");
+          window.location.href = "/";
+        }
         return Promise.reject(refreshError);
       }
     }

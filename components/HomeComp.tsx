@@ -1,4 +1,3 @@
-// app/page.tsx
 "use client";
 
 import BookCarousel from "@/components/BookCarousel";
@@ -7,12 +6,12 @@ import { useAudiobooks } from "@/hooks/useAudiobooks";
 import { Loader, Text } from "@mantine/core";
 import { Suspense } from "react";
 
-export default function Home() {
-  const { audiobooks, loading, error, categoryNames, categoryObjects } =
+export default function AudiobookDisplay() {
+  const { audiobooks, loading, categoryNames, categoryObjects } =
     useAudiobooks();
 
   return (
-    <div className="flex flex-col gap-6 min-h-[60dvh]">
+    <div className="flex flex-col gap-6">
       <Suspense fallback={null}>
         <UnauthorizedNotification />
       </Suspense>

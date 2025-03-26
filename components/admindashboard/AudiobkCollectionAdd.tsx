@@ -6,7 +6,7 @@ import React, { useCallback, useState } from "react";
 export interface AudiobookCollectionAddProps {
   formDataOne: FormDataOne;
   collections: Collection[] | null;
-  setFormDataOne: (data: FormDataOne) => void;
+  setFormDataOne: React.Dispatch<React.SetStateAction<FormDataOne>>;
 }
 
 interface CollectionButtonProps {
@@ -118,7 +118,7 @@ const AudiobkCollectionAdd: React.FC<AudiobookCollectionAddProps> = ({
             {collections?.map((collection: Collection) => (
               <CollectionButton
                 key={collection.id}
-                isSelected={isCollectionSelected(collection?.id)}
+                isSelected={isCollectionSelected(collection?.id as number)}
                 onClick={() => handleCollectionChange(collection)}
               >
                 {collection.name}

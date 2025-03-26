@@ -1,4 +1,6 @@
-const CollectionOverview = ({ collections }) => (
+import { Collection } from "@/types/types";
+
+const CollectionOverview = ({ collections }: { collections: Collection[] }) => (
   <div className="bg-white p-4 rounded-lg shadow">
     <h3 className="text-lg font-semibold mb-4">Collections</h3>
     <div className="grid grid-cols-2 gap-3">

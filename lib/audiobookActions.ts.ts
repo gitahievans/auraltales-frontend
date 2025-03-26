@@ -163,7 +163,7 @@ export const listenSample2 = (
   }
 
   // Check if we already have a Howl instance for this audiobook
-  let sound = audiobookSounds.get(book.id);
+  let sound = audiobookSounds.get(book.id as number);
 
   if (!sound) {
     // Create a new Howl instance for this audiobook
@@ -171,7 +171,7 @@ export const listenSample2 = (
       src: [book.audio_sample],
       html5: true,
       onplay: () => {
-        setPlayingAudiobook(book.id);
+        setPlayingAudiobook(book.id as number);
         setAudioSampleLoading(false);
       },
       onend: () => {
@@ -193,7 +193,7 @@ export const listenSample2 = (
     });
 
     // Store the new Howl instance in the map
-    audiobookSounds.set(book.id, sound);
+    audiobookSounds.set(book.id as number, sound);
   }
 
   // Play the audio

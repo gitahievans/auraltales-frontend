@@ -18,7 +18,7 @@ import { IconFileMusic } from "@tabler/icons-react";
 interface FormOneProps {
   formDataOne: FormDataOne;
   errorFormOne: string | null;
-  setFormDataOne: (data: FormDataOne) => void;
+  setFormDataOne: React.Dispatch<React.SetStateAction<FormDataOne>>;
   collections: Category[] | null;
   categories: Collection[] | null;
   authors: Author[] | null;
@@ -37,7 +37,7 @@ const FormOne: React.FC<FormOneProps> = ({
   const [audioFileName, setAudioFileName] = React.useState<string>("");
   const handleInputChange =
     (field: keyof FormDataOne) =>
-    (event: React.ChangeEvent<HTMLInputElement>) => {
+    (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
       setFormDataOne({ ...formDataOne, [field]: event.target.value });
     };
 

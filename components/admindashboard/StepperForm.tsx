@@ -30,9 +30,9 @@ const StepperForm = ({
   formDataOne: FormDataOne;
   formDataTwo: FormDataTwo;
   errorFormTwo: string | null;
-  setFormDataTwo: (data: FormDataTwo) => void;
+  setFormDataTwo: React.Dispatch<React.SetStateAction<FormDataTwo>>;
   errorFormOne: string | null;
-  setFormDataOne: (data: FormDataOne) => void;
+  setFormDataOne: React.Dispatch<React.SetStateAction<FormDataOne>>;
   categories: Category[] | null;
   collections: Collection[] | null;
   authors: Author[] | null;

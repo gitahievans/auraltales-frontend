@@ -1,4 +1,8 @@
-const RecentBooks = ({ books }) => (
+interface RecentAudiobook {
+  title: string;
+  date_published: string;
+}
+const RecentBooks = ({ books }: { books: RecentAudiobook[] }) => (
   <div className="bg-white p-4 rounded-lg shadow">
     <h3 className="text-lg font-semibold mb-4">Recently Added Books</h3>
     <div className="space-y-3">

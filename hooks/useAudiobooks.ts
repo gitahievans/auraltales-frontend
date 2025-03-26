@@ -1,3 +1,5 @@
+'use client';
+
 // hooks/useAudiobooks.ts
 import { useState, useEffect } from "react";
 import apiClient from "@/lib/apiClient";

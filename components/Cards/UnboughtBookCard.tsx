@@ -49,7 +49,7 @@ const UnboughtBookCard = ({ book }: propsType) => {
 
   const checkWishlistStatus = async () => {
     if (access) {
-      const isInWishlist = await checkAudiobookInWishlist(book.id, access);
+      const isInWishlist = await checkAudiobookInWishlist(book.id as number, access);
       setInWishList(isInWishlist);
     }
   };
@@ -85,7 +85,7 @@ const UnboughtBookCard = ({ book }: propsType) => {
     const buyingPrice = +book.buying_price;
 
     if (accessToken && userEmail) {
-      buyAudiobook(bookId, buyingPrice, userEmail, accessToken);
+      buyAudiobook(bookId as number, buyingPrice, userEmail, accessToken);
     } else {
       notifications.show({
         title: "Error",
