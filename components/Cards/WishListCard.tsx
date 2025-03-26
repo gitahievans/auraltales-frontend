@@ -69,10 +69,13 @@ const WishlistCard: React.FC<WishlistCardProps> = ({
 
     getPurchaseStatus();
 
+    // Store the current sound instance in a variable
+    const soundInstance = soundRef.current;
+
     return () => {
-      if (soundRef.current) {
-        soundRef.current.stop();
-        soundRef.current.unload();
+      if (soundInstance) {
+        soundInstance.stop();
+        soundInstance.unload();
       }
     };
   }, [book, session, access, audiobook]);

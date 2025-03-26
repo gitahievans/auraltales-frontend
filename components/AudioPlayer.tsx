@@ -60,13 +60,11 @@ const AudioPlayer = ({
   const duration = audioRef?.current?.duration || 0;
   const currentPercentage = duration ? (progress / duration) * 100 : 0;
 
-  const handleNext = () => {
-    if (currentIndex < chapters.length - 1) {
-      setCurrentIndex(currentIndex + 1);
-    } else {
-      setCurrentIndex(0);
-    }
-  };
+  const handleNext = useCallback(() => {
+    setCurrentIndex((prevIndex) =>
+      prevIndex < chapters.length - 1 ? prevIndex + 1 : 0
+    );
+  }, [chapters.length]);
 
   const handlePrevious = () => {
     if (currentIndex - 1 < 0) {

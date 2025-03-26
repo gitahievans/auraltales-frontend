@@ -11,7 +11,7 @@ const AudiobookForm = () => {
   });
   const [chapterFiles, setChapterFiles] = useState({});
 
-  const handleChapterFileChange = (e, chapterOrder) => {
+  const handleChapterFileChange = (e: any, chapterOrder: number) => {
     const { files } = e.target;
 
     setChapterFiles((prev) => ({

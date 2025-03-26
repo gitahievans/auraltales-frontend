@@ -152,7 +152,7 @@ const LoginPage = () => {
                 </button>
                 <div className="flex items-center justify-center">
                   <p className="text-sm font-light text-gray-500 dark:text-gray-400">
-                    Don't have an account yet?
+                    Don&apos;t have an account yet?
                   </p>
                   <div onClick={handleSignUp}>
                     <p className="cursor-pointer text-green-500 text-sm ml-1">
