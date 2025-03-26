@@ -8,6 +8,8 @@ import Head from "next/head";
 import { Loader } from "@mantine/core";
 import apiClient from "@/lib/apiClient";
 
+export const runtime = "edge";
+
 type CollectionPropsType = {
   params: {
     collectionId: number;

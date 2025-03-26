@@ -2,6 +2,8 @@
 import { Suspense } from "react";
 import AudioPlayerClient from "@/components/AudioPlayerClient";
 
+export const runtime = "edge";
+
 export default function Page({ params }: { params: { bookSlug: string } }) {
   const { bookSlug } = params;
 

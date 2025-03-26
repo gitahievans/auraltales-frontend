@@ -24,6 +24,8 @@ import { listenSample } from "@/lib/audiobookActions.ts";
 import { Howl } from "howler";
 import { AudiobookDetail } from "@/types/types";
 
+export const runtime = "edge";
+
 // Types from API response
 interface Author {
   id: number;

@@ -14,6 +14,7 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 
+export const runtime = "edge";
 type PagePropsType = {
   params: {
     slug: String;
@@ -73,7 +74,10 @@ const Page = ({ params }: PagePropsType) => {
         return;
       }
 
-      const status = await checkPurchaseStatus(audioBook.id as number, session.jwt);
+      const status = await checkPurchaseStatus(
+        audioBook.id as number,
+        session.jwt
+      );
       console.log("Purchase status for audiobook:", status?.bought);
 
       setPurchaseStatus(status);
