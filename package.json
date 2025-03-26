@@ -12,6 +12,8 @@
     "deploy": "npm run pages:build && wrangler pages deploy"
   },
   "dependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/server": "^11.11.0",
     "@mantine/carousel": "^7.12.2",
     "@mantine/code-highlight": "^7.12.0",
     "@mantine/core": "^7.12.2",
@@ -43,7 +45,8 @@
     "react-select": "^5.8.0",
     "recharts": "^2.15.1",
     "swiper": "^11.2.2",
-    "valtio": "^2.0.0"
+    "valtio": "^2.0.0",
+    "vercel": "^41.4.1"
   },
   "devDependencies": {
     "@cloudflare/next-on-pages": "^1.13.10",
