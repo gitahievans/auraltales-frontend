@@ -57,7 +57,7 @@ const LoginForm = ({
         redirect: true,
       });
 
-      console.log("Sign-in result:", result); // Debug log
+      console.log("Sign-in result:", result);
     } catch (error) {
       console.error("Error signing in:", error);
     }

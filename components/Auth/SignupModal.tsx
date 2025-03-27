@@ -70,7 +70,7 @@ const SignupForm = ({
 
         if (result?.ok) {
           console.log("Signed in successfully after registration");
-          window.location.reload();
+          // window.location.reload();
         } else {
           throw new Error("Failed to sign in after registration");
         }

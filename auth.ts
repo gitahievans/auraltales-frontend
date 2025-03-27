@@ -100,35 +100,42 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
   },
   callbacks: {
     async signIn({ user, account, profile }) {
-      console.log("Signin Callback", { user, account, profile });
+      console.log("Signin Callback - Start", { user, account, profile });
 
       if (account?.provider === "google") {
         try {
-          const res = await fetch(
-            `${process.env.NEXT_PUBLIC_API_URL}/accounts/google_signup/`,
-            {
-              method: "POST",
-              body: JSON.stringify({
-                email: user.email,
-                first_name: user.name?.split(" ")[0],
-                last_name: user.name?.split(" ")[1] || "",
-                avatar: user.image,
-              }),
-              headers: {
-                "Content-Type": "application/json",
-              },
-            }
-          );
+          const apiUrl =
+            process.env.NEXT_PUBLIC_API_URL || "https://api.auratales.com";
+          const res = await fetch(`${apiUrl}/accounts/google_signup/`, {
+            method: "POST",
+            body: JSON.stringify({
+              email: user.email,
+              first_name: user.name?.split(" ")[0],
+              last_name: user.name?.split(" ")[1] || "",
+              avatar: user.image,
+            }),
+            headers: {
+              "Content-Type": "application/json",
+            },
+          });
 
           if (!res.ok) {
-            console.error("Server response not ok:", await res.text());
+            const errorText = await res.text();
+            console.error("Server response not ok:", errorText);
             return false;
           }
 
           const result = await res.json();
           console.log("Backend response:", result);
 
-          if (result?.exists || result.user_created) {
+          // Check for an error in the response (e.g., {"detail": "Invalid data"})
+          if (result?.detail) {
+            console.error("Backend error:", result.detail);
+            return false;
+          }
+
+          // Check if the response indicates a successful account creation or existing account
+          if (result?.access && result?.refresh && result?.user) {
             user.jwt = result.access;
             user.refresh = result.refresh;
             user.first_name = result.user.first_name;
@@ -137,10 +144,14 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
             user.is_active = result.user.is_active;
             user.is_author = result.user.is_author;
             user.date_joined = result.user.date_joined;
+            console.log("Signin Callback - Success", { user });
             return true;
           }
 
-          console.error("Failed to create or verify user account");
+          console.error(
+            "Failed to create or verify user account: Invalid response structure",
+            result
+          );
           return false;
         } catch (error: any) {
           console.error("Error creating user", error);
@@ -148,6 +159,7 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
         }
       }
 
+      console.log("Signin Callback - End", { user });
       return true;
     },
 
