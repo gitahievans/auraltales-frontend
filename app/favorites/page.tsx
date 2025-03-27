@@ -107,7 +107,7 @@ const MyFavoritesPage = () => {
     <Container size="xl">
       {/* Header Section */}
       <div className="mb-8">
-        <Title order={1} style={{ color: "#1CFAC4" }} className="mb-2">
+        <Title order={1} style={{ color: "white" }} className="mb-2">
           My Favorites
         </Title>
         <Text color="#A9A9AA">Your collection of favorite audiobooks</Text>
@@ -134,7 +134,7 @@ const MyFavoritesPage = () => {
                 borderColor: "rgba(28, 250, 196, 0.2)",
                 color: "white",
                 "&:focus": {
-                  borderColor: "#1CFAC4",
+                  borderColor: "white",
                 },
               },
             }}
@@ -159,7 +159,7 @@ const MyFavoritesPage = () => {
                 borderColor: "rgba(28, 250, 196, 0.2)",
                 color: "white",
                 "&:focus": {
-                  borderColor: "#1CFAC4",
+                  borderColor: "white",
                 },
               },
               dropdown: {
@@ -191,11 +191,11 @@ const MyFavoritesPage = () => {
           tab: {
             color: "#A9A9AA",
             "&:hover": {
-              color: "#1CFAC4",
+              color: "white",
             },
             "&[data-active]": {
-              color: "#1CFAC4",
-              borderColor: "#1CFAC4",
+              color: "white",
+              borderColor: "white",
             },
           },
         }}
@@ -218,7 +218,7 @@ const MyFavoritesPage = () => {
         <>
           {loading ? (
             <div className="flex justify-center items-center py-12">
-              <Loader size="lg" color="#1CFAC4" />
+              <Loader size="lg" color="white" />
             </div>
           ) : filteredItems?.length ? (
             <Grid>
@@ -241,7 +241,7 @@ const MyFavoritesPage = () => {
                 className="mx-auto mb-4"
                 style={{ color: "#A9A9AA" }}
               />
-              <Title order={3} style={{ color: "#1CFAC4" }} className="mb-2">
+              <Title order={3} style={{ color: "white" }} className="mb-2">
                 No favorites found
               </Title>
               <Text color="#A9A9AA">
@@ -259,7 +259,7 @@ const MyFavoritesPage = () => {
             className="mx-auto mb-4"
             style={{ color: "#A9A9AA" }}
           />
-          <Title order={3} style={{ color: "#1CFAC4" }} className="mb-2">
+          <Title order={3} style={{ color: "white" }} className="mb-2">
             Not Logged In
           </Title>
           <Text color="#A9A9AA">Please sign in to view your favorites</Text>

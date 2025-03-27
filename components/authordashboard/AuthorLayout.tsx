@@ -82,7 +82,7 @@ export function AuthorLayout({ children }: { children: React.ReactNode }) {
               size="sm"
             />
             <div className="flex flex-col">
-              <Title order={2}>SoundLeaf Author</Title>
+              <Title order={2}>AuralTales Author</Title>
               <Link href="/">
                 <Group>
                   <IconArrowBack size="1rem" />

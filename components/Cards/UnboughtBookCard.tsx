@@ -49,7 +49,10 @@ const UnboughtBookCard = ({ book }: propsType) => {
 
   const checkWishlistStatus = async () => {
     if (access) {
-      const isInWishlist = await checkAudiobookInWishlist(book.id as number, access);
+      const isInWishlist = await checkAudiobookInWishlist(
+        book.id as number,
+        access
+      );
       setInWishList(isInWishlist);
     }
   };
@@ -123,7 +126,13 @@ const UnboughtBookCard = ({ book }: propsType) => {
       return;
     }
 
-    removeFromWishlist(book?.id!, setRemoveWishLoading, setInWishList, null, from!);
+    removeFromWishlist(
+      book?.id!,
+      setRemoveWishLoading,
+      setInWishList,
+      null,
+      from!
+    );
   };
 
   return (
@@ -145,7 +154,7 @@ const UnboughtBookCard = ({ book }: propsType) => {
         {/* Book Details Section */}
         <div className="flex flex-col gap-4 w-full justify-start">
           <div className="text-center md:text-left">
-            <h2 className="text-xl font-bold text-[#1CFAC4] uppercase mb-2">
+            <h2 className="text-xl font-bold text-[white] uppercase mb-2">
               {book?.title}
             </h2>
             <div className="space-y-2 text-gray-300">
@@ -160,7 +169,9 @@ const UnboughtBookCard = ({ book }: propsType) => {
               </div>
               <div className="flex items-center">
                 <IconHeadset size={20} color="#6b7280" className="mr-2" />
-                <span className="font-semibold text-gray-500 mr-2">Narration By</span>
+                <span className="font-semibold text-gray-500 mr-2">
+                  Narration By
+                </span>
                 <p>
                   {book?.narrators?.length > 0
                     ? book?.narrators
@@ -172,17 +183,29 @@ const UnboughtBookCard = ({ book }: propsType) => {
 
               <div className="space-y-1 pt-2">
                 <div className="flex items-center">
-                  <IconTimeDuration30 size={20} color="#6b7280" className="mr-2" />
+                  <IconTimeDuration30
+                    size={20}
+                    color="#6b7280"
+                    className="mr-2"
+                  />
                   <p>12 Hrs, 35 Mins</p>
                 </div>
 
                 <div className="flex items-center">
-                  <IconCalendarPlus size={20} color="#6b7280" className="mr-2" />
+                  <IconCalendarPlus
+                    size={20}
+                    color="#6b7280"
+                    className="mr-2"
+                  />
                   <p>12 May, 2024</p>
                 </div>
 
                 <div className="flex items-center">
-                  <IconLanguageKatakana size={20} color="#6b7280" className="mr-2" />
+                  <IconLanguageKatakana
+                    size={20}
+                    color="#6b7280"
+                    className="mr-2"
+                  />
                   <p>English</p>
                 </div>
               </div>
@@ -202,7 +225,7 @@ const UnboughtBookCard = ({ book }: propsType) => {
         <div className="flex flex-col gap-4 w-full lg:w-1/3 justify-center">
           <button
             onClick={handleBuyAudiobook}
-            className="w-full py-3 bg-[#1CFAC4] text-black font-bold rounded-xl 
+            className="w-full py-3 bg-[white] text-black font-bold rounded-xl 
         hover:bg-[#15D8A7] transition-colors duration-300 
         flex items-center justify-center space-x-2 
         transform hover:scale-105 active:scale-95"
@@ -214,8 +237,8 @@ const UnboughtBookCard = ({ book }: propsType) => {
           {!inWishList ? (
             <button
               onClick={handleAddToWishlist}
-              className="w-full py-3 border-2 border-[#1CFAC4] text-[#1CFAC4] 
-          font-bold rounded-xl hover:bg-[#1CFAC4]/10 
+              className="w-full py-3 border-2 border-[white] text-[white] 
+          font-bold rounded-xl hover:bg-[white]/10 
           transition-all duration-300 
           flex items-center justify-center space-x-2
           transform hover:scale-105 active:scale-95"

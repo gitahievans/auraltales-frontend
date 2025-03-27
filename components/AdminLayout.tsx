@@ -86,7 +86,7 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
               size="sm"
             />
             <div className="flex flex-col">
-              <Title order={2}>Soundleaf Admin</Title>{" "}
+              <Title order={2}>AuralTales Admin</Title>{" "}
               <Link href="/">
                 <Group>
                   <IconArrowBackUp size="1rem" />

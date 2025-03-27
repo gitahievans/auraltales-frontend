@@ -97,7 +97,7 @@ const MyLibraryPage = () => {
     <Container size="xl">
       {/* Header Section */}
       <div className="mb-8">
-        <Title order={1} style={{ color: "#1CFAC4" }} className="mb-2">
+        <Title order={1} style={{ color: "white" }} className="mb-2">
           My Library
         </Title>
         <Text color="#A9A9AA">Your personal collection of audiobooks</Text>
@@ -124,7 +124,7 @@ const MyLibraryPage = () => {
                 borderColor: "rgba(28, 250, 196, 0.2)",
                 color: "white",
                 "&:focus": {
-                  borderColor: "#1CFAC4",
+                  borderColor: "white",
                 },
               },
             }}
@@ -145,7 +145,7 @@ const MyLibraryPage = () => {
                 borderColor: "rgba(28, 250, 196, 0.2)",
                 color: "white",
                 "&:focus": {
-                  borderColor: "#1CFAC4",
+                  borderColor: "white",
                 },
               },
             }}
@@ -158,7 +158,7 @@ const MyLibraryPage = () => {
         <>
           {loading ? (
             <div className="flex justify-center items-center py-12">
-              <Loader size="lg" color="#1CFAC4" />
+              <Loader size="lg" color="white" />
             </div>
           ) : sortedBooks.length > 0 ? (
             <Grid>
@@ -181,7 +181,7 @@ const MyLibraryPage = () => {
                 className="mx-auto mb-4"
                 style={{ color: "#A9A9AA" }}
               />
-              <Title order={3} style={{ color: "#1CFAC4" }} className="mb-2">
+              <Title order={3} style={{ color: "white" }} className="mb-2">
                 No books found
               </Title>
               <Text color="#A9A9AA">
@@ -199,7 +199,7 @@ const MyLibraryPage = () => {
             className="mx-auto mb-4"
             style={{ color: "#A9A9AA" }}
           />
-          <Title order={3} style={{ color: "#1CFAC4" }} className="mb-2">
+          <Title order={3} style={{ color: "white" }} className="mb-2">
             Not Logged In
           </Title>
           <Text color="#A9A9AA">Please sign in to view your library</Text>

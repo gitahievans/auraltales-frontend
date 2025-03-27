@@ -59,7 +59,7 @@ const LibraryCard = ({ book }: { book: AudiobookDetail }) => {
             {/* {book.progress && book.progress > 0 && (
               <div className="absolute bottom-0 left-0 right-0 h-1 bg-[#1F8505]/30">
                 <div
-                  className="h-full bg-[#1CFAC4] transition-all duration-300"
+                  className="h-full bg-[white] transition-all duration-300"
                   style={{ width: `${book.progress}%` }}
                 />
               </div>
@@ -74,7 +74,7 @@ const LibraryCard = ({ book }: { book: AudiobookDetail }) => {
                 className="p-4 rounded-full bg-[#1F8505] hover:bg-[#21440F] transition-all duration-300"
               >
                 {audioSampleLoading ? (
-                  <Loader size="sm" color="#1CFAC4" />
+                  <Loader size="sm" color="white" />
                 ) : isPlaying ? (
                   <IconPlayerPause className="w-8 h-8 text-white" />
                 ) : (
@@ -89,7 +89,7 @@ const LibraryCard = ({ book }: { book: AudiobookDetail }) => {
         <div className="p-6 flex flex-col flex-grow">
           {/* Title and Rating */}
           <div className="mb-4">
-            <h3 className="text-xl font-bold text-[#1CFAC4] mb-2 line-clamp-1">
+            <h3 className="text-xl font-bold text-[white] mb-2 line-clamp-1">
               {book.title}
             </h3>
             {/* {book.rating && (
@@ -119,18 +119,18 @@ const LibraryCard = ({ book }: { book: AudiobookDetail }) => {
               ))}
             </p>
             <div className="flex items-center gap-2">
-              <IconClock size={16} className="text-[#1CFAC4]" />
+              <IconClock size={16} className="text-[white]" />
               <span>{book.length}</span>
             </div>
             {/* {book.progress !== undefined && (
               <div className="flex items-center gap-2">
-                <IconProgress size={16} className="text-[#1CFAC4]" />
+                <IconProgress size={16} className="text-[white]" />
                 <span>{book.progress}% complete</span>
               </div>
             )} */}
             {/* {book.lastListened && (
               <div className="flex items-center gap-2">
-                <IconHeadphones size={16} className="text-[#1CFAC4]" />
+                <IconHeadphones size={16} className="text-[white]" />
                 <span>
                   Last listened: {formatLastListened(book.lastListened)}
                 </span>

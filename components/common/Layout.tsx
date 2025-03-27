@@ -82,9 +82,9 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
               <Navbar opened={opened} toggle={toggle} />
             </AppShell.Header>
 
-            <AppShell.Navbar>
+            {/* <AppShell.Navbar>
               <SideNav />
-            </AppShell.Navbar>
+            </AppShell.Navbar> */}
 
             <AppShell.Main>
               <div className="max-w-7xl mx-auto w-full md:pt-14">

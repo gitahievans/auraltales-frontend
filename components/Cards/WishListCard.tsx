@@ -49,7 +49,10 @@ const WishlistCard: React.FC<WishlistCardProps> = ({
 
   const checkWishlistStatus = async () => {
     if (access) {
-      const isInWishlist = await checkAudiobookInWishlist(book.id as number, access);
+      const isInWishlist = await checkAudiobookInWishlist(
+        book.id as number,
+        access
+      );
       if (isInWishlist) setInWishList(isInWishlist);
     }
   };
@@ -140,7 +143,7 @@ const WishlistCard: React.FC<WishlistCardProps> = ({
                 className="p-4 rounded-full bg-[#1F8505] hover:bg-[#21440F] transition-all duration-300"
               >
                 {audioSampleLoading ? (
-                  <Loader size="sm" color="#1CFAC4" />
+                  <Loader size="sm" color="white" />
                 ) : isPlaying ? (
                   <IconPlayerPause className="w-8 h-8 text-white" />
                 ) : (
@@ -155,7 +158,7 @@ const WishlistCard: React.FC<WishlistCardProps> = ({
         <div className="p-6 flex flex-col flex-grow">
           {/* Title and Rating */}
           <div className="mb-4">
-            <h3 className="text-xl font-bold text-[#1CFAC4] mb-2 line-clamp-1">
+            <h3 className="text-xl font-bold text-[white] mb-2 line-clamp-1">
               {book.title}
             </h3>
             {/* {book?.rating && (
@@ -185,7 +188,7 @@ const WishlistCard: React.FC<WishlistCardProps> = ({
               ))}
             </p>
             <div className="flex items-center gap-2">
-              <IconClock size={16} className="text-[#1CFAC4]" />
+              <IconClock size={16} className="text-[white]" />
               <span>{book.length}</span>
             </div>
           </div>
@@ -211,7 +214,7 @@ const WishlistCard: React.FC<WishlistCardProps> = ({
                 transform hover:scale-105 active:scale-95"
             >
               {removeWishLoading ? (
-                <Loader size="sm" color="#1CFAC4" />
+                <Loader size="sm" color="white" />
               ) : (
                 <>
                   <IconListDetails size={16} className="mr-2" />

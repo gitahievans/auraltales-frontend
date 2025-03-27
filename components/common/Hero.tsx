@@ -9,7 +9,7 @@ const HeroSection = () => {
 
     //   <div className="flex flex-col w-2/3 md:w-1/2  min-h-full gap-4 md:gap-8 md:px-4 justify-center">
     //     <h1 className="md:text-4xl xl:text-5xl font-bold">
-    //       Welcome to <span className="text-[#F4F4F4]">SoundLeaf</span>, your Audiobooks destination
+    //       Welcome to <span className="text-[#F4F4F4]">AuralTales</span>, your Audiobooks destination
     //     </h1>
     //     <p className="text-xs md:text-lg">
     //       Explore our vast collection, listen on the go, and immerse yourself in the world of audio literature.
@@ -39,7 +39,7 @@ const HeroSection = () => {
 
       <div className="relative z-10 max-w-6xl text-center">
         <h1 className="text-3xl md:text-4xl xl:text-6xl font-bold mb-6">
-          Welcome to <span className="text-green-500">SoundLeaf</span>, your
+          Welcome to <span className="text-green-500">AuralTales</span>, your
           Audiobooks destination
         </h1>
         <p className="md:text-lg mb-6">

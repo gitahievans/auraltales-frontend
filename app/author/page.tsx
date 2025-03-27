@@ -148,7 +148,7 @@ const AuthorDashboard = () => {
   const totalBooks = authorAudiobooks?.audiobooks?.length || 0;
 
   // Colors for charts
-  const COLORS = ["#041714", "#1F8505", "#21440F", "#1CFAC4"];
+  const COLORS = ["#041714", "#1F8505", "#21440F", "white"];
 
   // Prepare data for pie chart
   const prepareBookSalesData = () => {
@@ -212,7 +212,7 @@ const AuthorDashboard = () => {
               ? authorSalesStats?.total_sales?.toString()
               : "0"
           }
-          iconColor="#1CFAC4"
+          iconColor="white"
         />
         <StatCard
           icon={IconBook}

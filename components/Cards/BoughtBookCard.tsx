@@ -117,19 +117,19 @@ const BoughtBookCard = ({ book, open }: { book: Audiobook; open: any }) => {
         {/* Book Details Section */}
         <div className="flex flex-col gap-4 w-full justify-start">
           <div className="text-center md:text-left">
-            <h2 className="text-xl font-bold text-[#1CFAC4] uppercase mb-2">
+            <h2 className="text-xl font-bold text-[white] uppercase mb-2">
               {book?.title}
             </h2>
             <div className="space-y-2 text-gray-300">
               <p>
-                {/* <span className="font-semibold text-[#1CFAC4] mr-2">By:</span> */}
+                {/* <span className="font-semibold text-[white] mr-2">By:</span> */}
                 <IconUsers size={20} className="mr-2" />
                 {book?.authors && book?.authors?.length > 0
                   ? book?.authors.map((author: any) => author.name).join(", ")
                   : "Unknown Author"}
               </p>
               <p>
-                {/* <span className="font-semibold text-[#1CFAC4] mr-2">
+                {/* <span className="font-semibold text-[white] mr-2">
                   Narrated By:
                 </span> */}
                 <IconHeadset size={20} className="mr-2" />
@@ -162,8 +162,8 @@ const BoughtBookCard = ({ book, open }: { book: Audiobook; open: any }) => {
           {!inFavorites ? (
             <button
               onClick={handleAddToFavorites}
-              className="w-full py-3 border-2 border-[#1CFAC4] text-[#1CFAC4] 
-            font-bold rounded-xl hover:bg-[#1CFAC4]/10 
+              className="w-full py-3 border-2 border-[white] text-[white] 
+            font-bold rounded-xl hover:bg-[white]/10 
             transition-all duration-300 
             flex items-center justify-center space-x-2
             transform hover:scale-105 active:scale-95"

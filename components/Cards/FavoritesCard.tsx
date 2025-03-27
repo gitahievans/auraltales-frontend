@@ -86,7 +86,7 @@ const FavoriteCard = ({
                 className="p-4 rounded-full bg-[#1F8505] hover:bg-[#21440F] transition-all duration-300"
               >
                 {audioSampleLoading ? (
-                  <Loader size="sm" color="#1CFAC4" />
+                  <Loader size="sm" color="white" />
                 ) : isPlaying ? (
                   <IconPlayerPause className="w-8 h-8 text-white" />
                 ) : (
@@ -101,7 +101,7 @@ const FavoriteCard = ({
         <div className="p-6 flex flex-col flex-grow">
           {/* Title and Rating */}
           <div className="mb-4">
-            <h3 className="text-xl font-bold text-[#1CFAC4] mb-2 line-clamp-1">
+            <h3 className="text-xl font-bold text-[white] mb-2 line-clamp-1">
               {favBook.title}
             </h3>
             <div className="flex items-center gap-1">
@@ -127,11 +127,11 @@ const FavoriteCard = ({
               ))}
             </p>
             <div className="flex items-center gap-2">
-              <IconClock size={16} className="text-[#1CFAC4]" />
+              <IconClock size={16} className="text-[white]" />
               <span>{favBook.length}</span>
             </div>
             <div className="flex items-center gap-2">
-              <IconHeadphones size={16} className="text-[#1CFAC4]" />
+              <IconHeadphones size={16} className="text-[white]" />
               <span>Added: {formatAddedDate(audiobook.added_at)}</span>
             </div>
           </div>
@@ -148,9 +148,9 @@ const FavoriteCard = ({
             <button
               onClick={handleRemoveFromFavorites}
               disabled={isLoading}
-              className="flex items-center gap-2 justify-center w-full px-2 py-3 text-sm text-[#1CFAC4] font-semibold rounded-xl border border-[#1CFAC4] hover:bg-[#152D09] transition-all duration-300"
+              className="flex items-center gap-2 justify-center w-full px-2 py-3 text-sm text-[white] font-semibold rounded-xl border border-[white] hover:bg-[#152D09] transition-all duration-300"
             >
-              <IconHeart size={20} className="fill-[#1CFAC4]" />
+              <IconHeart size={20} className="fill-[white]" />
               {isLoading ? "Removing..." : "Remove from Favorites"}
             </button>
           </div>

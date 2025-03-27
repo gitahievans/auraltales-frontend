@@ -15,7 +15,7 @@ const MobileHero = () => {
 
       <div className="relative z-10 max-w-md text-center">
         <h1 className="text-3xl md:text-4xl xl:text-6xl font-bold mb-4">
-          Welcome to <span className="text-green-500">SoundLeaf</span>, your Audiobooks destination
+          Welcome to <span className="text-green-500">AuralTales</span>, your Audiobooks destination
         </h1>
         <p className="md:text-lg mb-6">
           Explore our vast collection, listen on the go, and immerse yourself in the world of audio literature.

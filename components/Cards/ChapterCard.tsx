@@ -28,9 +28,9 @@ const ChapterCard: React.FC<{
       }  
       rounded-2xl overflow-hidden shadow-lg 
       transition-all duration-300 hover:shadow-xl 
-      border border-green-950 p-2 hover:border-[#1CFAC4]/20`}
+      border border-green-950 p-2 hover:border-[white]/20`}
     >
-      <div className="absolute inset-0 bg-[#1CFAC4]/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+      <div className="absolute inset-0 bg-[white]/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
 
       <div className="relative z-10 flex flex-row gap-4 items-center">
         {/* Book Cover */}
@@ -50,7 +50,7 @@ const ChapterCard: React.FC<{
 
         {/* Chapter Details */}
         <div className="flex-grow space-y-1 md:text-left">
-          <h2 className="font-bold text-[#1CFAC4] text-[10px] md:text-xs uppercase">
+          <h2 className="font-bold text-[white] text-[10px] md:text-xs uppercase">
             Chapter {chapter?.order}
           </h2>
           {/* <p className="text-[10px] md:text-xs text-gray-300 line-clamp-2">

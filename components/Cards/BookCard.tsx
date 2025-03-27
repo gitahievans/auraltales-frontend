@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import React, { useState } from "react";
 import Image from "next/image";
@@ -25,7 +25,7 @@ const BookCard: React.FC<BookCardProps> = ({ book }) => {
   const [loading, setLoading] = useState(false);
   const { data: session } = useSession();
   const [inWishList, setInWishList] = useState(false);
-  const [addWishLoading, setAddWishLoading] = useState(false); 
+  const [addWishLoading, setAddWishLoading] = useState(false);
   const [removeWishLoading, setRemoveWishLoading] = useState(false);
 
   const handleAddToWishlist = () => {
@@ -36,7 +36,13 @@ const BookCard: React.FC<BookCardProps> = ({ book }) => {
 
   const handleRemoveFromWishlist = () => {
     setLoading(true);
-    removeFromWishlist(book?.id!, setRemoveWishLoading, setInWishList, null, null);
+    removeFromWishlist(
+      book?.id!,
+      setRemoveWishLoading,
+      setInWishList,
+      null,
+      null
+    );
     setLoading(false);
   };
 
@@ -60,12 +66,12 @@ const BookCard: React.FC<BookCardProps> = ({ book }) => {
         </p>
         <div className="flex items-center justify-between text-white mt-4">
           <div className="flex items-center space-x-3">
-            <IconClock size={16} className="text-[#1CFAC4]" />
+            <IconClock size={16} className="text-[white]" />
             <span className="text-xs">{book.length || "N/A"}</span>
           </div>
           {session && (
             <button
-              className="text-gray-300 hover:text-[#1CFAC4] transition-colors transform hover:scale-110"
+              className="text-gray-300 hover:text-[white] transition-colors transform hover:scale-110"
               onClick={
                 inWishlist ? handleRemoveFromWishlist : handleAddToWishlist
               }
@@ -75,7 +81,7 @@ const BookCard: React.FC<BookCardProps> = ({ book }) => {
               ) : (
                 <IconBookmarks
                   size={16}
-                  color={inWishlist ? "#1CFAC4" : "white"}
+                  color={inWishlist ? "white" : "white"}
                 />
               )}
             </button>

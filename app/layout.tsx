@@ -14,7 +14,7 @@ import { LayoutWrapper } from "@/components/LayoutWrapper";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "SoundLeaf",
+  title: "AuralTales",
   description: "Feel the Voice in every Leaf",
 };
 

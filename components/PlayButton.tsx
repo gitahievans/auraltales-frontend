@@ -15,8 +15,8 @@ const PlayButton: React.FC<PlayButtonProps> = ({
   return (
     <button
       onClick={onClick}
-      className="w-full py-3 border-2 border-[#1CFAC4] text-[#1CFAC4] 
-      font-bold rounded-xl hover:bg-[#1CFAC4]/10 
+      className="w-full py-3 border-2 border-[white] text-[white] 
+      font-bold rounded-xl hover:bg-[white]/10 
       transition-all duration-300 
       flex items-center justify-center space-x-2
       transform hover:scale-105 active:scale-95"

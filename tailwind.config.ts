@@ -9,14 +9,14 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        primary: "#041714" ,
+        primary: "#041714",
         secondary: "#1F8505",
         tertiary: "#21440F",
         base: "#FFFFFF",
         textPrimary: "#FFFFFF",
         textSecondary: "#A9A9AA",
-        color: "#1CFAC4",
-        darkerGreen: "#152D09"
+        color: "white",
+        darkerGreen: "#152D09",
       },
       fontFamily: {
         main: ["Josefin Sans", "sans-serif"],

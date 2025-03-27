@@ -118,7 +118,7 @@ const Page = ({ params }: PagePropsType) => {
       <div className="container max-w-6xl mx-auto px-4 py-8 space-y-8">
         {!audioBook ? (
           <div className="flex justify-center items-center h-full">
-            <Loader color="#1CFAC4" size="xl" />
+            <Loader color="white" size="xl" />
           </div>
         ) : (
           <>
@@ -134,7 +134,7 @@ const Page = ({ params }: PagePropsType) => {
 
             {/* Related Books Section */}
             <div className="space-y-6">
-              <h1 className="text-2xl font-bold text-[#1CFAC4]">
+              <h1 className="text-2xl font-bold text-[white]">
                 More Like This One
               </h1>
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">

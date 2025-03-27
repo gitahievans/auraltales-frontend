@@ -228,7 +228,7 @@ const AudioPlayer = ({
             </h2>
           ) : (
             <div className="w-full items-center flex justify-center">
-              <Loader type="bars" size="xs" color="#1CFAC4" />
+              <Loader type="bars" size="xs" color="white" />
             </div>
           )}
         </div>
@@ -320,7 +320,7 @@ const AudioPlayer = ({
       {purchaseStatus?.bought ? (
         <div className="w-full px-4 py-12">
           <div className="flex items-center justify-between mb-8">
-            <h1 className="text-xl font-bold text-[#1CFAC4]">Chapters</h1>
+            <h1 className="text-xl font-bold text-[white]">Chapters</h1>
             <div className="text-gray-400">
               {audiobook?.chapters?.length || 0} Chapters •{" "}
               {/* {audiobook?.total_duration} */}

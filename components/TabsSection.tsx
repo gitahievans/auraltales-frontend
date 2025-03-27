@@ -14,7 +14,7 @@ const TabsSection = ({ audioBook }: { audioBook: Audiobook }) => {
         color="green"
         classNames={{
           list: "bg-[#041714]/50 p-2 rounded-xl",
-          tab: "data-[active=true]:bg-[#1CFAC4] data-[active=true]:text-black",
+          tab: "data-[active=true]:bg-[white] data-[active=true]:text-black",
         }}
       >
         <Tabs.List className="justify-center mb-4">

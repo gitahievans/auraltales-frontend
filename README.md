@@ -1,4 +1,4 @@
-# Soundleaf
+# AuralTales
 
 This is a full-stack audiobook app built with Next.js, React, and Django as the backend API. The app allows users to browse and purchase audiobooks, manage their library, and listen to audiobooks.
 
