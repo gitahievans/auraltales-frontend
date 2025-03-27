@@ -1,10 +1,21 @@
-import { NextAuthOptions } from "next-auth";
+// auth.ts
+import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
-import { notifications } from "@mantine/notifications";
-import axios from "axios";
 
-export const nextAuthOptions: NextAuthOptions = {
+// Utility function to check if JWT is expired
+const isExpired = (jwtToken: string): boolean => {
+  try {
+    const payload = JSON.parse(atob(jwtToken.split(".")[1]));
+    return payload.exp * 1000 < Date.now();
+  } catch (e) {
+    return true; // Treat invalid token as expired
+  }
+};
+
+// Export the auth methods
+export const { auth, handlers, signIn, signOut } = NextAuth({
+  secret: process.env.AUTH_SECRET,
   debug: true,
   providers: [
     CredentialsProvider({
@@ -55,8 +66,8 @@ export const nextAuthOptions: NextAuthOptions = {
     }),
 
     GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID as string,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
+      clientId: process.env.AUTH_GOOGLE_ID as string,
+      clientSecret: process.env.AUTH_GOOGLE_SECRET as string,
       authorization: {
         params: {
           prompt: "consent",
@@ -100,7 +111,7 @@ export const nextAuthOptions: NextAuthOptions = {
               body: JSON.stringify({
                 email: user.email,
                 first_name: user.name?.split(" ")[0],
-                last_name: user.name?.split(" ")[1],
+                last_name: user.name?.split(" ")[1] || "",
                 avatar: user.image,
               }),
               headers: {
@@ -118,10 +129,8 @@ export const nextAuthOptions: NextAuthOptions = {
           console.log("Backend response:", result);
 
           if (result?.exists || result.user_created) {
-            // Add JWT tokens to the user object
             user.jwt = result.access;
             user.refresh = result.refresh;
-            // Add other user data if needed
             user.first_name = result.user.first_name;
             user.last_name = result.user.last_name;
             user.is_staff = result.user.is_staff;
@@ -131,22 +140,10 @@ export const nextAuthOptions: NextAuthOptions = {
             return true;
           }
 
-          notifications.show({
-            title: "Error",
-            message: "Failed to create or verify user account",
-            color: "red",
-            position: "top-center",
-          });
-
+          console.error("Failed to create or verify user account");
           return false;
         } catch (error: any) {
           console.error("Error creating user", error);
-          notifications.show({
-            title: "Error",
-            message: error.message || "Failed to Authenticate with Google",
-            color: "red",
-            position: "top-right",
-          });
           return false;
         }
       }
@@ -155,7 +152,6 @@ export const nextAuthOptions: NextAuthOptions = {
     },
 
     async jwt({ token, user }) {
-      // Initial sign-in
       if (user) {
         token.jwt = user.jwt;
         token.refreshToken = user.refresh;
@@ -172,19 +168,25 @@ export const nextAuthOptions: NextAuthOptions = {
         token.date_joined = user.date_joined;
       }
 
-      // Check if access token is expired
       if (token.jwt && isExpired(token.jwt as string)) {
         try {
-          const response = await axios.post(
+          const response = await fetch(
             `${process.env.NEXT_PUBLIC_API_URL}/accounts/token/refresh/`,
             {
-              refresh: token.refreshToken,
+              method: "POST",
+              body: JSON.stringify({
+                refresh: token.refreshToken,
+              }),
+              headers: {
+                "Content-Type": "application/json",
+              },
             }
           );
-          token.jwt = response.data.access;
-          token.refreshToken = response.data.refresh;
+
+          const data = await response.json();
+          token.jwt = data.access;
+          token.refreshToken = data.refresh;
         } catch (error) {
-          // Refresh failed, clear tokens
           token.jwt = null;
           token.refreshToken = null;
         }
@@ -200,12 +202,18 @@ export const nextAuthOptions: NextAuthOptions = {
         lastName: token.lastName as string,
         email: token.email as string,
         phoneNumber: token.phoneNumber as string,
-        image: token.image as string,
-        name: token.name as string,
+        image: token.image ? (token.image as string) : undefined, // Handle optional image
+        name: token.name ? (token.name as string) : undefined, // Handle optional name
         is_staff: token.is_staff as boolean,
         is_active: token.is_active as boolean,
         is_author: token.is_author as boolean,
         date_joined: token.date_joined as string,
+        emailVerified: null, // Satisfy AdapterUser
+        first_name: token.firstName as string, // Map to firstName
+        last_name: token.lastName as string, // Map to lastName
+        phone_number: token.phoneNumber as string, // Map to phoneNumber
+        jwt: token.jwt as string, // Add jwt to satisfy AdapterUser
+        refresh: token.refreshToken as string, // Add refresh to satisfy AdapterUser
       };
       session.jwt = token.jwt as string;
       session.refreshToken = token.refreshToken as string;
@@ -218,14 +226,4 @@ export const nextAuthOptions: NextAuthOptions = {
       return baseUrl;
     },
   },
-};
-
-// Utility function to check if JWT is expired
-const isExpired = (jwtToken: string): boolean => {
-  try {
-    const payload = JSON.parse(atob(jwtToken.split(".")[1]));
-    return payload.exp * 1000 < Date.now();
-  } catch (e) {
-    return true; // Treat invalid token as expired
-  }
-};
+});

@@ -15,7 +15,7 @@ export async function middleware(request: NextRequest) {
   // Get the token using next-auth's getToken helper
   const token = await getToken({
     req: request,
-    secret: process.env.NEXTAUTH_SECRET,
+    secret: process.env.AUTH_SECRET,
   });
 
   // If not logged in, redirect to home page
