@@ -130,9 +130,16 @@ const Navbar = ({
             {/* Logo */}
             <div className="flex items-center">
               <Link href="/" className="flex items-center flex-shrink-0">
-                <span className="text-2xl md:text-3xl font-bold text-white">
+                {/* <span className="text-2xl md:text-3xl font-bold text-white">
                   AuralTales
-                </span>
+                </span> */}
+                <Image
+                  src="https://pub-1bc4ec60c9894c6899d3421ac4d29fe9.r2.dev/Aural.png"
+                  alt="AuralTales"
+                  width={1000}
+                  height={1000}
+                  className="h-auto w-24"
+                />
               </Link>
             </div>
 

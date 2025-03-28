@@ -2,9 +2,11 @@ import { setupDevPlatform } from "@cloudflare/next-on-pages/next-dev";
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  reactStrictMode: true,
   images: {
-    domains: ["80b4ea6aaa8ed2b91c16beb44843b4ed.r2.cloudflarestorage.com"],
+    domains: [
+      "80b4ea6aaa8ed2b91c16beb44843b4ed.r2.cloudflarestorage.com",
+      "pub-1bc4ec60c9894c6899d3421ac4d29fe9.r2.dev",
+    ],
     remotePatterns: [
       {
         protocol: "https",
