@@ -111,7 +111,7 @@ const ProfilePage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-[80dvh] bg-primary py-10 px-4 flex items-center justify-center">
+    <div className="min-h-[80dvh] bg-gray-900 py-8 px-4 flex items-center justify-center">
       <EditProfileModal
         opened={opened}
         onClose={close}
@@ -123,67 +123,77 @@ const ProfilePage: React.FC = () => {
         }}
         onSubmit={handleProfileUpdate}
       />
-      <div className="w-full max-w-xl">
-        <div className="bg-primary shadow-2xl rounded-2xl overflow-hidden transform transition-all duration-300 hover:scale-[1.02]">
-          <div className="bg-gradient-to-r from-green-400 to-green-600 p-6 text-white">
-            <div className="flex items-center space-x-6">
+      <div className="w-full max-w-3xl">
+        <div className="bg-white shadow-2xl rounded-2xl overflow-hidden transform transition-all duration-300 hover:shadow-3xl">
+          {/* Header Section */}
+          <div className="bg-gradient-to-r from-green-500 to-green-700 p-6 text-white">
+            <div className="flex flex-col sm:flex-row items-center sm:items-start space-y-4 sm:space-y-0 sm:space-x-6">
               <div className="relative">
                 <Image
                   src={session.user?.image || "/default-avatar.png"}
                   alt="Profile"
-                  className="w-24 h-24 rounded-full border-4 border-white object-cover shadow-lg"
+                  className="w-20 h-20 sm:w-24 sm:h-24 rounded-full border-4 border-white object-cover shadow-lg"
                   width={96}
                   height={96}
                 />
-                <span className="absolute bottom-0 right-0 block h-6 w-6 rounded-full bg-green-500 ring-2 ring-white"></span>
+                <span className="absolute bottom-0 right-0 block h-6 w-6 rounded-full bg-green-400 ring-2 ring-white"></span>
               </div>
-              <div>
-                <h2 className="text-2xl font-bold">
+              <div className="text-center sm:text-left">
+                <h2 className="text-xl sm:text-2xl font-bold">
                   {userProfile?.first_name} {userProfile?.last_name}
                 </h2>
-                <p className="text-green-100 opacity-90">
+                <p className="text-green-100 opacity-90 text-sm sm:text-base">
                   {userProfile?.email}
                 </p>
               </div>
             </div>
           </div>
 
-          <div className="p-6 space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div className="bg-gray-100 p-4 rounded-lg flex items-center space-x-4">
-                <IconUser className="text-green-500" size={28} />
+          {/* Details Section */}
+          <div className="p-6 space-y-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="bg-gray-50 p-4 rounded-lg flex items-center space-x-4 hover:bg-gray-100 transition-colors">
+                <IconUser className="text-green-600" size={24} />
                 <div>
-                  <p className="text-xs text-gray-500 uppercase">Full Name</p>
-                  <p className="font-semibold">
+                  <p className="text-xs text-gray-500 uppercase font-medium">
+                    Full Name
+                  </p>
+                  <p className="font-semibold text-gray-800">
                     {userProfile?.first_name} {userProfile?.last_name}
                   </p>
                 </div>
               </div>
 
-              <div className="bg-gray-100 p-4 rounded-lg flex items-center space-x-4">
-                <IconMail className="text-green-500" size={28} />
+              <div className="bg-gray-50 p-4 rounded-lg flex items-center space-x-4 hover:bg-gray-100 transition-colors">
+                <IconMail className="text-green-600" size={24} />
                 <div>
-                  <p className="text-xs text-gray-500 uppercase">Email</p>
-                  <p className="font-semibold">{userProfile?.email}</p>
+                  <p className="text-xs text-gray-500 uppercase font-medium">
+                    Email
+                  </p>
+                  <p className="font-semibold text-gray-800">
+                    {userProfile?.email}
+                  </p>
                 </div>
               </div>
 
-              <div className="bg-gray-100 p-4 rounded-lg flex items-center space-x-4">
-                <IconPhone className="text-green-500" size={28} />
+              <div className="bg-gray-50 p-4 rounded-lg flex items-center space-x-4 hover:bg-gray-100 transition-colors">
+                <IconPhone className="text-green-600" size={24} />
                 <div>
-                  <p className="text-xs text-gray-500 uppercase">Phone</p>
-                  <p className="font-semibold">
+                  <p className="text-xs text-gray-500 uppercase font-medium">
+                    Phone
+                  </p>
+                  <p className="font-semibold text-gray-800">
                     {userProfile?.phone || "Not Provided"}
                   </p>
                 </div>
               </div>
             </div>
 
-            <div className="mt-6 bg-green-50 border-l-4 border-green-500 p-4">
+            <div className="bg-green-50 border-l-4 border-green-500 p-4 rounded-r-lg">
               <div className="flex items-center space-x-4">
-                <IconBadge className="text-green-600" size={28} />
+                <IconBadge className="text-green-600" size={24} />
                 <div>
-                  <p className="text-xs text-gray-500 uppercase">
+                  <p className="text-xs text-gray-500 uppercase font-medium">
                     Account Status
                   </p>
                   <span
@@ -200,10 +210,11 @@ const ProfilePage: React.FC = () => {
             </div>
           </div>
 
-          <div className="p-6 border-t border-gray-200 flex justify-between items-center">
+          {/* Footer Section */}
+          <div className="p-6 border-t border-gray-200 flex justify-center">
             <button
               onClick={open}
-              className="bg-green-500 flex items-center text-white px-4 py-2 rounded-lg hover:bg-green-600 transition-colors"
+              className="bg-green-500 flex items-center text-white px-6 py-2 rounded-lg hover:bg-green-600 transition-colors shadow-md"
             >
               <IconEdit size={20} className="mr-2" />
               Edit Profile
