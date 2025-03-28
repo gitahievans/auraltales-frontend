@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { Modal } from '@mantine/core';
+import React, { useState, useEffect } from "react";
+import { Modal, TextInput, Button, Group } from "@mantine/core";
+import { User, Mail, Phone, X } from "lucide-react";
 
 interface EditProfileModalProps {
   opened: boolean;
@@ -9,14 +10,12 @@ interface EditProfileModalProps {
     lastName: string;
     email: string;
     phoneNumber: string;
-    businessPhone: string;
   };
   onSubmit: (updatedUser: {
     firstName: string;
     lastName: string;
     email: string;
     phoneNumber: string;
-    businessPhone: string;
   }) => void;
 }
 
@@ -24,7 +23,7 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
   opened,
   onClose,
   initialUserData,
-  onSubmit
+  onSubmit,
 }) => {
   const [editedUser, setEditedUser] = useState(initialUserData);
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -38,39 +37,38 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
 
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
-    
+
     if (!editedUser.firstName.trim()) {
-      newErrors.firstName = 'First name is required';
+      newErrors.firstName = "First name is required";
     }
-    
+
     if (!editedUser.lastName.trim()) {
-      newErrors.lastName = 'Last name is required';
+      newErrors.lastName = "Last name is required";
     }
-    
+
     if (!editedUser.email.trim()) {
-      newErrors.email = 'Email is required';
+      newErrors.email = "Email is required";
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(editedUser.email)) {
-      newErrors.email = 'Invalid email format';
+      newErrors.email = "Invalid email format";
     }
-    
+
     if (!editedUser.phoneNumber.trim()) {
-      newErrors.phoneNumber = 'Phone number is required';
+      newErrors.phoneNumber = "Phone number is required";
     }
-    
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const handleInputChange = (field: string, value: string) => {
-    setEditedUser(prev => ({
+    setEditedUser((prev) => ({
       ...prev,
-      [field]: value
+      [field]: value,
     }));
-    // Clear error when user starts typing
     if (errors[field]) {
-      setErrors(prev => ({
+      setErrors((prev) => ({
         ...prev,
-        [field]: ''
+        [field]: "",
       }));
     }
   };
@@ -82,117 +80,110 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
   };
 
   return (
-    <Modal 
-      opened={opened} 
-      onClose={onClose} 
-      title="Edit Profile" 
+    <Modal
+      opened={opened}
+      onClose={onClose}
+      title={
+        <div className="flex items-center gap-2">
+          <User className="h-5 w-5 text-green-600" />
+          <span className="text-lg font-semibold text-gray-800">
+            Edit Profile
+          </span>
+        </div>
+      }
       centered
       size="lg"
+      classNames={{
+        root: "rounded-xl shadow-lg p-6 bg-white",
+        title: "text-lg font-semibold",
+        close: "text-gray-500 hover:text-gray-700",
+      }}
     >
-      <div className="space-y-4">
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700">
-              First Name
-            </label>
-            <input
-              type="text"
-              value={editedUser.firstName}
-              onChange={(e) => handleInputChange('firstName', e.target.value)}
-              className={`mt-1 block w-full rounded-md border ${
-                errors.firstName ? 'border-red-500' : 'border-gray-300'
-              } shadow-sm focus:border-green-500 focus:ring focus:ring-green-200`}
-              placeholder="Enter first name"
-            />
-            {errors.firstName && (
-              <p className="mt-1 text-sm text-red-500">{errors.firstName}</p>
-            )}
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700">
-              Last Name
-            </label>
-            <input
-              type="text"
-              value={editedUser.lastName}
-              onChange={(e) => handleInputChange('lastName', e.target.value)}
-              className={`mt-1 block w-full rounded-md border ${
-                errors.lastName ? 'border-red-500' : 'border-gray-300'
-              } shadow-sm focus:border-green-500 focus:ring focus:ring-green-200`}
-              placeholder="Enter last name"
-            />
-            {errors.lastName && (
-              <p className="mt-1 text-sm text-red-500">{errors.lastName}</p>
-            )}
-          </div>
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700">
-            Email Address
-          </label>
-          <input
-            type="email"
-            value={editedUser.email}
-            onChange={(e) => handleInputChange('email', e.target.value)}
-            className={`mt-1 block w-full rounded-md border ${
-              errors.email ? 'border-red-500' : 'border-gray-300'
-            } shadow-sm focus:border-green-500 focus:ring focus:ring-green-200`}
-            placeholder="Enter email address"
+      <div className="space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <TextInput
+            label="First Name"
+            placeholder="Enter first name"
+            value={editedUser.firstName}
+            onChange={(e) => handleInputChange("firstName", e.target.value)}
+            error={errors.firstName}
+            leftSection={<User className="h-5 w-5 text-gray-500" />}
+            classNames={{
+              input:
+                "border-gray-300 focus:border-green-500 focus:ring focus:ring-green-200 rounded-lg",
+              label: "text-sm font-medium text-gray-700 mb-1",
+              error: "text-sm text-red-500 mt-1",
+            }}
+            withAsterisk
           />
-          {errors.email && (
-            <p className="mt-1 text-sm text-red-500">{errors.email}</p>
-          )}
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700">
-            Phone Number
-          </label>
-          <input
-            type="tel"
-            value={editedUser.phoneNumber}
-            onChange={(e) => handleInputChange('phoneNumber', e.target.value)}
-            className={`mt-1 block w-full rounded-md border ${
-              errors.phoneNumber ? 'border-red-500' : 'border-gray-300'
-            } shadow-sm focus:border-green-500 focus:ring focus:ring-green-200`}
-            placeholder="Enter phone number"
-          />
-          {errors.phoneNumber && (
-            <p className="mt-1 text-sm text-red-500">{errors.phoneNumber}</p>
-          )}
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700">
-            Business Phone (Optional)
-          </label>
-          <input
-            type="tel"
-            value={editedUser.businessPhone}
-            onChange={(e) => handleInputChange('businessPhone', e.target.value)}
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm 
-              focus:border-green-500 focus:ring focus:ring-green-200"
-            placeholder="Enter business phone number"
+          <TextInput
+            label="Last Name"
+            placeholder="Enter last name"
+            value={editedUser.lastName}
+            onChange={(e) => handleInputChange("lastName", e.target.value)}
+            error={errors.lastName}
+            leftSection={<User className="h-5 w-5 text-gray-500" />}
+            classNames={{
+              input:
+                "border-gray-300 focus:border-green-500 focus:ring focus:ring-green-200 rounded-lg",
+              label: "text-sm font-medium text-gray-700 mb-1",
+              error: "text-sm text-red-500 mt-1",
+            }}
+            withAsterisk
           />
         </div>
 
-        <div className="flex space-x-4 mt-6">
-          <button 
+        <TextInput
+          label="Email Address"
+          placeholder="Enter email address"
+          value={editedUser.email}
+          onChange={(e) => handleInputChange("email", e.target.value)}
+          error={errors.email}
+          leftSection={<Mail className="h-5 w-5 text-gray-500" />}
+          classNames={{
+            input:
+              "border-gray-300 focus:border-green-500 focus:ring focus:ring-green-200 rounded-lg",
+            label: "text-sm font-medium text-gray-700 mb-1",
+            error: "text-sm text-red-500 mt-1",
+          }}
+          withAsterisk
+        />
+
+        <TextInput
+          label="Phone Number"
+          placeholder="Enter phone number"
+          value={editedUser.phoneNumber}
+          onChange={(e) => handleInputChange("phoneNumber", e.target.value)}
+          error={errors.phoneNumber}
+          leftSection={<Phone className="h-5 w-5 text-gray-500" />}
+          classNames={{
+            input:
+              "border-gray-300 focus:border-green-500 focus:ring focus:ring-green-200 rounded-lg",
+            label: "text-sm font-medium text-gray-700 mb-1",
+            error: "text-sm text-red-500 mt-1",
+          }}
+          withAsterisk
+        />
+
+        <Group className="mt-6" grow>
+          <Button
             onClick={onClose}
-            className="flex-1 border border-gray-300 text-gray-700 py-2 rounded-lg 
-              hover:bg-gray-100 transition-colors"
+            variant="outline"
+            color="gray"
+            className="rounded-lg border-gray-300 text-gray-700 hover:bg-gray-100 transition-colors"
+            leftSection={<X className="h-5 w-5" />}
           >
             Cancel
-          </button>
-          <button 
+          </Button>
+          <Button
             onClick={handleSubmit}
-            className="flex-1 bg-green-500 text-white py-2 rounded-lg 
-              hover:bg-green-600 transition-colors"
+            color="green"
+            className="rounded-lg bg-green-500 text-white hover:bg-green-600 transition-colors"
+            leftSection={<User className="h-5 w-5" />}
           >
             Save Changes
-          </button>
-        </div>
+          </Button>
+        </Group>
       </div>
     </Modal>
   );

@@ -15,8 +15,6 @@ const DynamicGreeting = () => {
   const [TimeIcon, setTimeIcon] = useState<React.ComponentType<any>>(IconSun);
   const { data: session } = useSession();
 
-  console.log("session in greeting", session);
-
   useEffect(() => {
     const currentHour = new Date().getHours();
     let newGreeting = "";

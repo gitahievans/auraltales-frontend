@@ -16,7 +16,7 @@ const SignupPage = () => {
   const [isPhoneValid, setIsPhoneValid] = useState(true);
   const { data: session } = useSession();
 
-  console.log("session", session);
+  // console.log("session", session);
 
   const router = useRouter();
 

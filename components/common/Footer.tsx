@@ -27,8 +27,8 @@ export default function Footer() {
                 { name: "Wishlist", link: "/wishlist" },
                 { name: "My Library", link: "/library" },
                 { name: "Favourites", link: "/favorites" },
-              ].map((item) => (
-                <li key={item.name}>
+              ].map((item, index) => (
+                <li key={index}>
                   <Link
                     href={item.link}
                     className="text-gray-300 font-light hover:text-white transition-colors duration-200 ease-in-out block"
