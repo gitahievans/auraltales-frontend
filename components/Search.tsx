@@ -37,8 +37,6 @@ const Search = () => {
     setShowDropdown(true);
   };
 
-  console.log("results", searchResults);
-
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (

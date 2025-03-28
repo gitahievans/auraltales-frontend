@@ -92,8 +92,10 @@ const Navbar = ({
   }, []);
 
   const handleLogout = async () => {
-    await signOut();
-
+    await signOut({
+      callbackUrl: "/?logout=true",
+      redirect: true,
+    });
     localStorage.removeItem("session");
   };
 
@@ -129,7 +131,7 @@ const Navbar = ({
             <div className="flex items-center">
               <Link href="/" className="flex items-center flex-shrink-0">
                 <span className="text-2xl md:text-3xl font-bold text-white">
-                AuralTales
+                  AuralTales
                 </span>
               </Link>
             </div>
