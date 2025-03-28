@@ -20,5 +20,5 @@ export default function UnauthorizedNotification() {
     }
   }, [unauthorized]);
 
-  return null; // This component only handles side effects, no UI
+  return null; 
 }
