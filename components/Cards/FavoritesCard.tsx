@@ -17,6 +17,7 @@ import { useSession } from "next-auth/react";
 import { removeFromFavorites } from "@/lib/store";
 import { FavoriteItem } from "@/app/favorites/page";
 import { listenSample } from "@/lib/audiobookActions.ts";
+import { useValidSession } from "@/hooks/useValidSession";
 
 const FavoriteCard = ({
   audiobook,
@@ -30,7 +31,7 @@ const FavoriteCard = ({
   const [audioSampleLoading, setAudioSampleLoading] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const soundRef = useRef<Howl | null>(null);
-  const { data: session } = useSession();
+  const { isAuthenticated, session, status } = useValidSession();
   const favBook = audiobook.audiobook;
 
   const handleRemoveFromFavorites = async () => {

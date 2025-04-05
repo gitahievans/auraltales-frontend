@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { signIn, useSession } from "next-auth/react";
 import PhoneInputComponent from "@/components/Auth/PhoneInput";
+import { useValidSession } from "@/hooks/useValidSession";
 
 const SignupPage = () => {
   const [firstName, setFirstName] = useState("");
@@ -14,7 +15,7 @@ const SignupPage = () => {
   const [password, setPassword] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [isPhoneValid, setIsPhoneValid] = useState(true);
-  const { data: session } = useSession();
+  const { isAuthenticated, session, status } = useValidSession();
 
   // console.log("session", session);
 

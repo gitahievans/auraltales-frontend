@@ -96,16 +96,16 @@ export const addToWishlist = async (
     if (response.status === 200 || response.status === 201) {
       setInWishList(true);
       notifications.show({
-        title: "Added",
+        title: "Added ✅",
         message: "Audiobook added to wishlist",
         color: "green",
         position: "top-right",
       });
     } else {
       notifications.show({
-        title: "Error",
+        title: "Sorry!",
         message: "Failed to add audiobook to wishlist",
-        color: "red",
+        color: "yellow",
         position: "top-right",
       });
       return;
@@ -115,7 +115,7 @@ export const addToWishlist = async (
     notifications.show({
       title: "Error",
       message: err?.response?.data?.message || "Failed to add to wishlist",
-      color: "red",
+      color: "yellow",
       position: "top-right",
     });
   } finally {
@@ -148,7 +148,7 @@ export const removeFromWishlist = async (
         );
       }
       notifications.show({
-        title: "Removed",
+        title: "Removed!",
         message: "Audiobook removed from wishlist",
         color: "green",
         position: "top-right",

@@ -4,6 +4,7 @@ import BookCard from "@/components/Cards/BookCard";
 import BoughtBookCard from "@/components/Cards/BoughtBookCard";
 import UnboughtBookCard from "@/components/Cards/UnboughtBookCard";
 import TabsSection from "@/components/TabsSection";
+import { useValidSession } from "@/hooks/useValidSession";
 import apiClient from "@/lib/apiClient";
 import { checkPurchaseStatus } from "@/lib/store";
 import { Audiobook, PurchaseStatus } from "@/types/types";
@@ -46,7 +47,7 @@ const Page = ({ params }: PagePropsType) => {
   console.log("audioBook", audioBook);
   console.log("purchaseStatus", purchaseStatus);
 
-  const { data: session } = useSession();
+  const { isAuthenticated, session, status } = useValidSession();
 
   console.log("audiobooks in details", audiobooks.length);
 

@@ -181,6 +181,13 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
       }
 
       if (token.jwt && isExpired(token.jwt as string)) {
+        console.log("jwt is expired, attempting to refresh");
+
+        if (!token.refreshToken) {
+          console.log("No refresh token available, clearing session");
+          return {};
+        }
+
         try {
           const response = await fetch(
             `${process.env.NEXT_PUBLIC_API_URL}/accounts/token/refresh/`,
@@ -195,12 +202,20 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
             }
           );
 
+          if (!response.ok) {
+            console.log("Token refresh failed with status:", response.status);
+            return {};
+          }
+
           const data = await response.json();
+          console.log("Token refreshed successfully");
+
           token.jwt = data.access;
           token.refreshToken = data.refresh;
         } catch (error) {
-          token.jwt = null;
-          token.refreshToken = null;
+          console.error("Error refreshing token:", error);
+
+          return {};
         }
       }
 

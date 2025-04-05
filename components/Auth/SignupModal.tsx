@@ -9,6 +9,7 @@ import React, { useState } from "react";
 import PhoneInputComponent from "./PhoneInput";
 import { userState } from "@/state/state";
 import { signIn, useSession } from "next-auth/react";
+import { useValidSession } from "@/hooks/useValidSession";
 
 const SignupForm = ({
   opened,
@@ -25,8 +26,7 @@ const SignupForm = ({
   const [password, setPassword] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [isPhoneValid, setIsPhoneValid] = useState(true);
-  const { data: session } = useSession();
-
+  const { isAuthenticated, session, status } = useValidSession();
 
   const router = useRouter();
 

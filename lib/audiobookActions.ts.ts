@@ -13,12 +13,6 @@ export const buyAudiobook = async (
   const callbackUrl = "https://7599-217-199-146-210.ngrok-free.app/success";
 
   if (!accessToken) {
-    notifications.show({
-      title: "Error",
-      message: "Authorization token is missing.",
-      color: "red",
-      position: "top-right",
-    });
     return;
   }
 
@@ -70,7 +64,7 @@ export const listenSample = (
 ) => {
   if (!book?.audio_sample) {
     notifications.show({
-      title: "Error",
+      title: "Sorry",
       message: "No audio sample available for this book.",
       color: "red",
       position: "top-right",
@@ -107,7 +101,7 @@ export const listenSample = (
     onloaderror: () => {
       setAudioSampleLoading(false);
       notifications.show({
-        title: "Error",
+        title: "Sorry",
         message: "Failed to load audio sample. Please try again.",
         color: "red",
         position: "top-right",
@@ -116,7 +110,7 @@ export const listenSample = (
     onplayerror: () => {
       setAudioSampleLoading(false);
       notifications.show({
-        title: "Error",
+        title: "Sorry",
         message: "Failed to play audio sample. Please try again.",
         color: "red",
         position: "top-right",

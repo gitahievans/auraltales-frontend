@@ -23,6 +23,7 @@ import { usePathname } from "next/navigation";
 import apiClient from "@/lib/apiClient";
 import { fetchWishlist } from "@/lib/store";
 import { WishlistItem } from "@/app/wishlist/page";
+import { useValidSession } from "@/hooks/useValidSession";
 
 type Category = {
   id: number;
@@ -47,7 +48,7 @@ const SideNav = () => {
   const [wishlistItems, setWishlistItems] = useState<WishlistItem[] | null>(
     null
   );
-  const { data: session } = useSession();
+  const { isAuthenticated, session, status } = useValidSession();
 
   console.log("pathname in sidenav", pathname);
 

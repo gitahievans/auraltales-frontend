@@ -9,11 +9,12 @@ import {
   IconClockHour10,
 } from "@tabler/icons-react";
 import { useSession } from "next-auth/react";
+import { useValidSession } from "@/hooks/useValidSession";
 
 const DynamicGreeting = () => {
   const [greeting, setGreeting] = useState("");
   const [TimeIcon, setTimeIcon] = useState<React.ComponentType<any>>(IconSun);
-  const { data: session } = useSession();
+  const { isAuthenticated, session, status } = useValidSession();
 
   useEffect(() => {
     const currentHour = new Date().getHours();

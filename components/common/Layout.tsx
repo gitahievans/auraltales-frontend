@@ -9,6 +9,7 @@ import { AppShell } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { SessionProvider, useSession } from "next-auth/react";
 import AuthProvider from "../Auth/AuthProvider";
+import { useValidSession } from "@/hooks/useValidSession";
 
 // Utility function to check if token is expired
 const isExpired = (jwtToken: string) => {
@@ -29,46 +30,69 @@ const isExpired = (jwtToken: string) => {
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
   const [opened, { toggle }] = useDisclosure();
-  const { data: session, status, update } = useSession();
+  const { isAuthenticated, session, status, update } = useValidSession();
 
   useEffect(() => {
     const syncSession = async () => {
-      const localStorageSession = localStorage.getItem("session");
-      console.log("Syncing session - Current NextAuth session:", {
-        jwt: session?.jwt,
-        status,
-      });
-      console.log(
-        "LocalStorage session:",
-        localStorageSession ? JSON.parse(localStorageSession) : null
-      );
+      try {
+        const localStorageSession = localStorage.getItem("session");
 
-      if (
-        localStorageSession &&
-        (!session || !session.jwt || isExpired(session.jwt))
-      ) {
-        const parsedSession = JSON.parse(localStorageSession);
-        console.log("Parsed localStorage session:", {
-          jwt: parsedSession.jwt,
-          refreshToken: parsedSession.refreshToken,
-        });
+        if (
+          status === "authenticated" &&
+          session?.jwt &&
+          isExpired(session?.jwt)
+        ) {
+          console.log("Session token expired, attempting to refresh...");
 
-        if (!isExpired(parsedSession.jwt)) {
-          console.log(
-            "Updating NextAuth session with valid localStorage token..."
-          );
-          await update(parsedSession);
-          console.log("NextAuth session updated successfully.");
-        } else {
-          console.log("LocalStorage token is expired, skipping update.");
+          if (session.refreshToken) {
+            try {
+              const response = await fetch(
+                `${process.env.NEXT_PUBLIC_URL}/accounts/token/refresh`,
+                {
+                  method: "POST",
+                  body: JSON.stringify({
+                    refresh: session.refreshToken,
+                  }),
+                  headers: {
+                    "Content-Type": "application/json",
+                  },
+                }
+              );
+
+              if (response.ok) {
+                const data = await response.json();
+                console.log("Token refreshed successfully", data);
+
+                await update({
+                  ...session,
+                  jwt: data.access,
+                  refreshToken: data.refresh,
+                });
+              } else {
+                console.log("Token refresh failed, signing out");
+                localStorage.removeItem("session");
+                window.location.href = "/";
+              }
+            } catch (error) {
+              console.log("Error refreshing token:", error);
+              localStorage.removeItem("session");
+              window.location.href = "/";
+            }
+          }
+        } else if (status === "unauthenticated" && localStorageSession) {
+          console.log("Remove stale localStorage session");
+          localStorage.removeItem("session");
         }
-      } else {
-        console.log(
-          "No sync needed: NextAuth session is valid or localStorage is empty."
-        );
+      } catch (error) {
+        console.error("Session sync error:", error);
       }
     };
+
     syncSession();
+
+    const intervalId = setInterval(syncSession, 60000);
+
+    return () => clearInterval(intervalId);
   }, [session, status, update]);
 
   return (

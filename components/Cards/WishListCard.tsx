@@ -23,6 +23,7 @@ import {
 import { WishlistItem } from "@/app/wishlist/page";
 import { PurchaseStatus } from "@/types/types";
 import { buyAudiobook, listenSample } from "@/lib/audiobookActions.ts";
+import { useValidSession } from "@/hooks/useValidSession";
 
 interface WishlistCardProps {
   audiobook: WishlistItem;
@@ -33,7 +34,7 @@ const WishlistCard: React.FC<WishlistCardProps> = ({
   audiobook,
   setWishlistItems,
 }) => {
-  const { data: session } = useSession();
+  const { isAuthenticated, session, status } = useValidSession();
   const isMobile = useMediaQuery("(max-width: 767px)");
   const [isPlaying, setIsPlaying] = useState(false);
   const [audioSampleLoading, setAudioSampleLoading] = useState(false);

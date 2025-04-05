@@ -27,6 +27,7 @@ import LoginForm from "../Auth/LoginModal";
 import DynamicGreeting from "../DynamicGreeting";
 import adminIcon from "../../public/icons8-admin-24.png";
 import Search from "../Search";
+import { useValidSession } from "@/hooks/useValidSession";
 
 type Category = {
   id: number;
@@ -48,17 +49,16 @@ const Navbar = ({
   toggle: () => void;
 }) => {
   const pathname = usePathname();
-  const { status } = useSession();
   const [categories, setCategories] = useState<Category[]>([]);
   const [collections, setCollections] = useState<Collection[]>([]);
   const [openedSignup, { open: openSignup, close: closeSignup }] =
     useDisclosure();
   const [openedLogin, { open: openLogin, close: closeLogin }] = useDisclosure();
 
+  const { isAuthenticated, session, status } = useValidSession();
   const isLoading = status === "loading";
-  const { data: session } = useSession();
 
-  console.log("session in navabr", session);
+  console.log("session in navbar", session, "isAuthenticated", isAuthenticated);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -149,7 +149,7 @@ const Navbar = ({
             <div className="flex items-center">
               {isLoading ? (
                 <Loader color="green" size="sm" />
-              ) : !session ? (
+              ) : !isAuthenticated ? (
                 <div className="flex items-center space-x-2">
                   <div
                     onClick={openSignup}
