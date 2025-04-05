@@ -8,6 +8,7 @@ import { Loader } from "@mantine/core";
 import defaultPoster from "@/public/Images/soundleaf-files/posters/Gemini_Generated_Image_v8c5gbv8c5gbv8c5.jpeg";
 import { useSession } from "next-auth/react";
 import { addToWishlist, removeFromWishlist } from "@/lib/store";
+import { useValidSession } from "@/hooks/useValidSession";
 
 interface BookCardProps {
   book: {
@@ -23,7 +24,7 @@ interface BookCardProps {
 const BookCard: React.FC<BookCardProps> = ({ book }) => {
   const [inWishlist, setInWishlist] = useState(false);
   const [loading, setLoading] = useState(false);
-  const { data: session } = useSession();
+  const { isAuthenticated, session, status } = useValidSession();
   const [inWishList, setInWishList] = useState(false);
   const [addWishLoading, setAddWishLoading] = useState(false);
   const [removeWishLoading, setRemoveWishLoading] = useState(false);
@@ -81,7 +82,7 @@ const BookCard: React.FC<BookCardProps> = ({ book }) => {
               ) : (
                 <IconBookmarks
                   size={16}
-                  color={inWishlist ? "white" : "white"}
+                  color={inWishlist ? "white" : "cyan"}
                 />
               )}
             </button>

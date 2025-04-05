@@ -35,7 +35,7 @@ const CollectionPage = ({ params }: CollectionPropsType) => {
       const response = await apiClient.get(`/api/collections/${collectionId}`);
 
       if (response.status === 200) {
-        setTitle(response.data.category);
+        setTitle(response.data.collection);
         setAudiobooks(response.data.audiobooks);
       }
     } catch (error) {
@@ -61,7 +61,7 @@ const CollectionPage = ({ params }: CollectionPropsType) => {
           <p className="text-red-500">{error}</p>
         ) : audiobooks.length === 0 ? (
           <p className="text-gray-400">
-            No audiobooks available in this category.
+            No audiobooks available in this collection.
           </p>
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">

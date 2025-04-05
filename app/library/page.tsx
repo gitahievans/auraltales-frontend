@@ -21,6 +21,7 @@ import {
 import LibraryCard from "@/components/Cards/LibraryCard";
 import apiClient from "@/lib/apiClient";
 import { AudiobookDetail } from "@/types/types";
+import { useValidSession } from "@/hooks/useValidSession";
 
 interface Author {
   id: number;
@@ -44,7 +45,7 @@ interface LibraryBook {
 }
 
 const MyLibraryPage = () => {
-  const { data: session } = useSession();
+  const { isAuthenticated, session, status } = useValidSession();
   const [sortBy, setSortBy] = useState<string | null>("recent");
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(true);

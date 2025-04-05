@@ -24,6 +24,7 @@ import {
 import { fetchFavorites } from "@/lib/store";
 import { Audiobook } from "@/types/types";
 import FavoriteCard from "@/components/Cards/FavoritesCard";
+import { useValidSession } from "@/hooks/useValidSession";
 
 export type FavoriteItem = {
   id: number;
@@ -32,7 +33,7 @@ export type FavoriteItem = {
 };
 
 const MyFavoritesPage = () => {
-  const { data: session } = useSession();
+  const { isAuthenticated, session, status } = useValidSession();
   const [favoriteItems, setFavoriteItems] = useState<FavoriteItem[] | null>(
     null
   );

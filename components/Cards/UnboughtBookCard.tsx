@@ -28,13 +28,14 @@ import {
 } from "@/lib/store";
 import { buyAudiobook, listenSample } from "@/lib/audiobookActions.ts";
 import PlayButton from "../PlayButton";
+import { useValidSession } from "@/hooks/useValidSession";
 
 type propsType = {
   book: Audiobook;
 };
 
 const UnboughtBookCard = ({ book }: propsType) => {
-  const { data: session } = useSession();
+  const { isAuthenticated, session, status } = useValidSession();
   const [isPlaying, setIsPlaying] = useState(false);
   const soundRef = useRef<Howl | null>(null);
   const [audioSampleLoading, setAudioSampleLoading] = useState(false);

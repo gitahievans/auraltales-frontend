@@ -18,6 +18,7 @@ import {
 } from "@/lib/store";
 import { useSession } from "next-auth/react";
 import { Loader } from "@mantine/core";
+import { useValidSession } from "@/hooks/useValidSession";
 
 const BoughtBookCard = ({ book, open }: { book: Audiobook; open: any }) => {
   const isMobile = useMediaQuery("(max-width: 767px)");
@@ -25,7 +26,7 @@ const BoughtBookCard = ({ book, open }: { book: Audiobook; open: any }) => {
   const isLarge = useMediaQuery("(min-width: 1024px)");
   const [isLoading, setIsLoading] = useState(false);
   const [inFavorites, setInFavorites] = useState(false);
-  const { data: session } = useSession();
+  const { isAuthenticated, session, status } = useValidSession();
   const access = session?.jwt;
 
   const handleAddToFavorites = async () => {

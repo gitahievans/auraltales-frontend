@@ -26,6 +26,7 @@ import {
 import { Audiobook } from "@/types/types";
 import WishlistCard from "@/components/Cards/WishListCard";
 import { fetchWishlist } from "@/lib/store";
+import { useValidSession } from "@/hooks/useValidSession";
 
 export type WishlistItem = {
   id: number;
@@ -34,7 +35,7 @@ export type WishlistItem = {
 };
 
 const WishListPage = () => {
-  const { data: session, status } = useSession();
+  const { isAuthenticated, session, status } = useValidSession();
   const [activeTab, setActiveTab] = useState<string | null>("all");
   const [sortBy, setSortBy] = useState<string | null>("latest");
   const [searchQuery, setSearchQuery] = useState("");

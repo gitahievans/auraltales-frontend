@@ -15,6 +15,15 @@ const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "AuralTales",
+  icons: [
+    {
+      rel: "icon",
+      url: "https://pub-1bc4ec60c9894c6899d3421ac4d29fe9.r2.dev/Aural.png",
+      type: "image/png",
+      sizes: "32x32",
+    },
+  ],
+
   description: "Feel the Voice in every Leaf",
 };
 

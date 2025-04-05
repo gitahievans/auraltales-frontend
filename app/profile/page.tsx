@@ -18,6 +18,7 @@ import EditProfileModal from "../../components/Modals/EditProfileModal";
 import { useDisclosure } from "@mantine/hooks";
 import { Loader } from "@mantine/core";
 import apiClient from "@/lib/apiClient";
+import { useValidSession } from "@/hooks/useValidSession";
 
 interface UserProfile {
   id: number;
@@ -32,7 +33,7 @@ interface UserProfile {
 }
 
 const ProfilePage: React.FC = () => {
-  const { data: session } = useSession();
+  const { isAuthenticated, session, status } = useValidSession();
   const [opened, { open, close }] = useDisclosure(false);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
 

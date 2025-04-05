@@ -1,5 +1,6 @@
 // components/AuthProvider.js
 "use client";
+import { useValidSession } from "@/hooks/useValidSession";
 import { useSession } from "next-auth/react";
 import { useEffect } from "react";
 
@@ -8,11 +9,12 @@ export default function AuthProvider({
 }: {
   children: React.ReactNode;
 }) {
-  const { data: session, status } = useSession();
+  const { isAuthenticated, session, status } = useValidSession();
 
   useEffect(() => {
-    // Only run on client side and when we have a session
-    if (typeof window !== "undefined" && session?.jwt) {
+    if (typeof window === "undefined") return;
+
+    if (session?.jwt) {
       // Store session in localStorage
       localStorage.setItem(
         "session",
@@ -31,8 +33,10 @@ export default function AuthProvider({
           date_joined: session.user.date_joined,
         })
       );
+    } else if (status === "unauthenticated") {
+      localStorage.removeItem("session");
     }
-  }, [session]);
+  }, [session, status]);
 
   return children;
 }

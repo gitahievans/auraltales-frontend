@@ -2,6 +2,7 @@
 "use client";
 
 import AudioPlayer from "@/components/AudioPlayer";
+import { useValidSession } from "@/hooks/useValidSession";
 import apiClient from "@/lib/apiClient";
 import { checkPurchaseStatus } from "@/lib/store";
 import { Chapter, PurchaseStatus } from "@/types/types";
@@ -19,7 +20,7 @@ const AudioPlayerClient = ({ bookSlug }: { bookSlug: string }) => {
   const [currentIndex, setCurrentIndex] = React.useState<number>(0);
   const [purchaseStatus, setPurchaseStatus] =
     React.useState<PurchaseStatus | null>(null);
-  const { data: session } = useSession();
+  const { isAuthenticated, session, status } = useValidSession();
 
   const parsedAudiobook = audiobook
     ? JSON.parse(decodeURIComponent(audiobook)) || null
