@@ -125,7 +125,7 @@ export default function Dashboard() {
   if (!libraryStats || !purchaseStats) {
     return (
       <div className="h-[80dvh] flex items-center justify-center gap-3">
-        <Loader type="dots" color="#3b82f6" height={40} width={40} />
+        <Loader type="bars" color="#3b82f6" height={40} width={40} />
         <p className="text-center text-gray-600">Loading dashboard data...</p>
       </div>
     );

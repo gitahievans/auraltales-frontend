@@ -144,7 +144,7 @@ const WishlistCard: React.FC<WishlistCardProps> = ({
                 className="p-4 rounded-full bg-[#1F8505] hover:bg-[#21440F] transition-all duration-300"
               >
                 {audioSampleLoading ? (
-                  <Loader size="sm" color="white" />
+                  <Loader type="bars" size="sm" color="white" />
                 ) : isPlaying ? (
                   <IconPlayerPause className="w-8 h-8 text-white" />
                 ) : (
@@ -215,7 +215,7 @@ const WishlistCard: React.FC<WishlistCardProps> = ({
                 transform hover:scale-105 active:scale-95"
             >
               {removeWishLoading ? (
-                <Loader size="sm" color="white" />
+                <Loader type="bars" size="sm" color="white" />
               ) : (
                 <>
                   <IconListDetails size={16} className="mr-2" />

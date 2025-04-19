@@ -74,7 +74,7 @@ const LibraryCard = ({ book }: { book: AudiobookDetail }) => {
                 className="p-4 rounded-full bg-[#1F8505] hover:bg-[#21440F] transition-all duration-300"
               >
                 {audioSampleLoading ? (
-                  <Loader size="sm" color="white" />
+                  <Loader type="bars" size="sm" color="white" />
                 ) : isPlaying ? (
                   <IconPlayerPause className="w-8 h-8 text-white" />
                 ) : (

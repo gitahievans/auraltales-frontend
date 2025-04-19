@@ -148,7 +148,7 @@ const Navbar = ({
             {/* Auth Buttons / User Menu */}
             <div className="flex items-center">
               {isLoading ? (
-                <Loader color="green" size="sm" />
+                <Loader type="bars" color="green" size="sm" />
               ) : !isAuthenticated ? (
                 <div className="flex items-center space-x-2">
                   <div

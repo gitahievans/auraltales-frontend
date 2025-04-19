@@ -155,23 +155,21 @@ const MyLibraryPage = () => {
       </Grid>
 
       {/* Library Display */}
+      {/* Library Display */}
       {session?.user ? (
-        <>
-          {loading ? (
-            <div className="flex justify-center items-center py-12">
-              <Loader size="lg" color="white" />
-            </div>
-          ) : sortedBooks.length > 0 ? (
+        status === "loading" ? (
+          <div className="flex justify-center items-center py-12">
+            <Loader size="lg" color="white" />
+          </div>
+        ) : isAuthenticated ? (
+          sortedBooks.length > 0 ? (
             <Grid>
               {sortedBooks.map((book) => (
                 <Grid.Col
                   key={book.audiobook.id}
                   span={{ base: 12, sm: 6, md: 4, lg: 3 }}
                 >
-                  <LibraryCard
-                    book={book.audiobook as AudiobookDetail}
-                    // purchaseDate={book.date_purchased}
-                  />
+                  <LibraryCard book={book.audiobook as AudiobookDetail} />
                 </Grid.Col>
               ))}
             </Grid>
@@ -191,8 +189,20 @@ const MyLibraryPage = () => {
                   : "Your library is empty"}
               </Text>
             </div>
-          )}
-        </>
+          )
+        ) : (
+          <div className="text-center py-12">
+            <IconBooks
+              size={48}
+              className="mx-auto mb-4"
+              style={{ color: "#A9A9AA" }}
+            />
+            <Title order={3} style={{ color: "white" }} className="mb-2">
+              Not Logged In
+            </Title>
+            <Text color="#A9A9AA">Please log in to view your library</Text>
+          </div>
+        )
       ) : (
         <div className="text-center py-12">
           <IconBooks
@@ -203,7 +213,7 @@ const MyLibraryPage = () => {
           <Title order={3} style={{ color: "white" }} className="mb-2">
             Not Logged In
           </Title>
-          <Text color="#A9A9AA">Please sign in to view your library</Text>
+          <Text color="#A9A9AA">Please log in to view your library</Text>
         </div>
       )}
     </Container>

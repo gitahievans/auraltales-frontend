@@ -229,14 +229,14 @@ const WishListPage = () => {
 
       {/* Books Grid */}
       {session?.user ? (
-        <>
-          {loading ? (
-            <div className="flex justify-center items-center py-12">
-              <Loader size="lg" color="white" />
-            </div>
-          ) : sortedItems?.length > 0 ? (
+        status === "loading" ? (
+          <div className="flex justify-center items-center py-12">
+            <Loader type="bars" size="lg" color="white" />
+          </div>
+        ) : isAuthenticated ? (
+          sortedItems?.length > 0 ? (
             <Grid>
-              {sortedItems?.map((item) => (
+              {sortedItems.map((item) => (
                 <Grid.Col
                   key={item.id}
                   span={{ base: 12, sm: 6, md: 4, lg: 3 }}
@@ -264,8 +264,20 @@ const WishListPage = () => {
                   : "Your wishlist is empty"}
               </Text>
             </div>
-          )}
-        </>
+          )
+        ) : (
+          <div className="text-center py-12">
+            <IconShoppingBagHeart
+              size={48}
+              className="mx-auto mb-4"
+              style={{ color: "#A9A9AA" }}
+            />
+            <Title order={3} style={{ color: "white" }} className="mb-2">
+              Not Logged In
+            </Title>
+            <Text color="#A9A9AA">Please log in to view your wishlist</Text>
+          </div>
+        )
       ) : (
         <div className="text-center py-12">
           <IconShoppingBagHeart
@@ -276,7 +288,7 @@ const WishListPage = () => {
           <Title order={3} style={{ color: "white" }} className="mb-2">
             Not Logged In
           </Title>
-          <Text color="#A9A9AA">Please sign in to view your wishlist</Text>
+          <Text color="#A9A9AA">Please log in to view your wishlist</Text>
         </div>
       )}
     </Container>

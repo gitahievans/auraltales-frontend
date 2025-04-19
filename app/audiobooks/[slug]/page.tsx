@@ -119,7 +119,7 @@ const Page = ({ params }: PagePropsType) => {
       <div className="container max-w-6xl mx-auto px-4 py-8 space-y-8">
         {!audioBook ? (
           <div className="flex justify-center items-center h-full">
-            <Loader color="white" size="xl" />
+            <Loader type="bars" color="white" size="xl" />
           </div>
         ) : (
           <>

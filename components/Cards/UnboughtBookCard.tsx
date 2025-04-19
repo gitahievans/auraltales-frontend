@@ -245,7 +245,7 @@ const UnboughtBookCard = ({ book }: propsType) => {
           transform hover:scale-105 active:scale-95"
             >
               {addWishLoading ? (
-                <Loader size="sm" color="white" />
+                <Loader type="bars" size="sm" color="white" />
               ) : (
                 <>
                   <IconListDetails size={20} />
@@ -263,7 +263,7 @@ const UnboughtBookCard = ({ book }: propsType) => {
           transform hover:scale-105 active:scale-95"
             >
               {removeWishLoading ? (
-                <Loader size="sm" color="white" />
+                <Loader type="bars" size="sm" color="white" />
               ) : (
                 <>
                   <IconListDetails size={20} />

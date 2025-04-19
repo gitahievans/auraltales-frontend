@@ -78,7 +78,7 @@ const BookCard: React.FC<BookCardProps> = ({ book }) => {
               }
             >
               {loading ? (
-                <Loader size="xs" />
+                <Loader type="bars" size="xs" />
               ) : (
                 <IconBookmarks
                   size={16}

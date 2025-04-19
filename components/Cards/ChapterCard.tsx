@@ -16,7 +16,8 @@ const ChapterCard: React.FC<{
   chapter: Chapter;
   audioBook: Audiobook;
   isPlaying: boolean;
-}> = ({ chapter, audioBook, isPlaying }) => {
+  onPlayClick: () => void;
+}> = ({ chapter, audioBook, isPlaying, onPlayClick }) => {
   const isMobile = useMediaQuery("(max-width: 768px)");
 
   return (
@@ -70,7 +71,7 @@ const ChapterCard: React.FC<{
         <div className="flex-shrink-0">
           {!isPlaying ? (
             <button
-              // onClick={handleListenNowClick}
+              onClick={onPlayClick}
               className="flex items-center justify-center 
             px-6 py-2 bg-primary text-white 
             font-bold rounded-xl 
@@ -82,11 +83,6 @@ const ChapterCard: React.FC<{
               <span className="flex items-center space-x-2 text-sm">
                 <IconPlayerPlayFilled size={20} />
                 <span>Play</span>
-                <IconChevronRight
-                  size={20}
-                  className="opacity-0 group-hover/button:opacity-100 
-                transition-opacity duration-300"
-                />
               </span>
             </button>
           ) : (

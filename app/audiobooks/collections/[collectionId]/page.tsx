@@ -55,7 +55,7 @@ const CollectionPage = ({ params }: CollectionPropsType) => {
         <h1 className="text-3xl font-bold mb-4 text-white">{title}</h1>
         {loading ? (
           <div className="flex justify-center items-center h-[80dvh]">
-            <Loader color="green" size="xl" />
+            <Loader type="bars" color="green" size="xl" />
           </div>
         ) : error ? (
           <p className="text-red-500">{error}</p>

@@ -80,7 +80,7 @@ const BoughtBookCard = ({ book, open }: { book: Audiobook; open: any }) => {
         className="flex items-center justify-center w-full px-6 py-3 text-white font-semibold rounded-xl border border-gray-400 hover:bg-white hover:text-black transition-all duration-300 ease-in-out focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed"
       >
         {isLoading ? (
-          <Loader size="sm" color="white" />
+          <Loader type="bars" size="sm" color="white" />
         ) : (
           <IconStars size={20} className="mr-2" />
         )}
@@ -170,7 +170,7 @@ const BoughtBookCard = ({ book, open }: { book: Audiobook; open: any }) => {
             transform hover:scale-105 active:scale-95"
             >
               {isLoading ? (
-                <Loader size="sm" color="white" />
+                <Loader type="bars" size="sm" color="white" />
               ) : (
                 <>
                   <IconStars size={20} />
@@ -188,7 +188,7 @@ const BoughtBookCard = ({ book, open }: { book: Audiobook; open: any }) => {
             transform hover:scale-105 active:scale-95"
             >
               {isLoading ? (
-                <Loader size="sm" color="white" />
+                <Loader type="bars" size="sm" color="white" />
               ) : (
                 <>
                   <IconStars size={20} />

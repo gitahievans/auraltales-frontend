@@ -18,7 +18,7 @@ export default function AudiobookDisplay() {
 
       {loading ? (
         <div className="flex justify-center items-center">
-          <Loader size="lg" color="white" />
+          <Loader type="bars" size="lg" color="white" />
         </div>
       ) : audiobooks.length === 0 ? (
         <div className="flex flex-col items-center justify-center">

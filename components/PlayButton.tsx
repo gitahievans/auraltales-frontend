@@ -23,7 +23,7 @@ const PlayButton: React.FC<PlayButtonProps> = ({
     >
       <span className="flex items-center space-x-2">
         {audioSampleLoading ? (
-          <Loader size="sm" color="white" />
+          <Loader type="bars" size="sm" color="white" />
         ) : (
           <>
             {isPlaying ? <IconPlayerStop /> : <IconPlayerPlayFilled />}

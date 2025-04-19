@@ -105,7 +105,7 @@ const ProfilePage: React.FC = () => {
   if (!session?.jwt) {
     return (
       <div className="flex justify-center items-center min-h-[60dvh] bg-primary">
-        <Loader />
+        <Loader type="bars" size="lg" color="green" />
         <p className="ml-2 text-white text-lg">Loading profile...</p>
       </div>
     );

@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 // app/[bookSlug]/AudioPlayerClient.jsx
 "use client";
 
@@ -6,9 +7,9 @@ import { useValidSession } from "@/hooks/useValidSession";
 import apiClient from "@/lib/apiClient";
 import { checkPurchaseStatus } from "@/lib/store";
 import { Chapter, PurchaseStatus } from "@/types/types";
-import { useSession } from "next-auth/react";
+import axios from "axios";
 import { useSearchParams } from "next/navigation";
-import React, { useEffect } from "react";
+import React, { useCallback, useEffect } from "react";
 
 const AudioPlayerClient = ({ bookSlug }: { bookSlug: string }) => {
   const searchParams = useSearchParams();
@@ -21,52 +22,56 @@ const AudioPlayerClient = ({ bookSlug }: { bookSlug: string }) => {
   const [purchaseStatus, setPurchaseStatus] =
     React.useState<PurchaseStatus | null>(null);
   const { isAuthenticated, session, status } = useValidSession();
+  const [error, setError] = React.useState<string | null>(null);
 
-  const parsedAudiobook = audiobook
-    ? JSON.parse(decodeURIComponent(audiobook)) || null
-    : null;
+  const parsedAudiobook = React.useMemo(() => {
+    if (!audiobook) return null;
+    try {
+      return JSON.parse(decodeURIComponent(audiobook));
+    } catch (error) {
+      console.error("Failed to parse audiobook:", error);
+      return null;
+    }
+  }, [audiobook]);
 
-  const fetchChapters = async () => {
+  const fetchChapters = useCallback(async () => {
+    if (!parsedAudiobook) return;
+    console.log("Fetching chapters for", parsedAudiobook.slug);
     try {
       const response = await apiClient.get(
         `/api/audiobooks/${parsedAudiobook.slug}/chapters`
       );
-
       if (response.status !== 200) {
         throw new Error("Failed to fetch Audiobook details");
       }
-
       const data = await response.data;
-      console.log("data", data);
-
       setChapters(data.chapters);
-      setCurrentChapter(data.chapters.find((ch: Chapter) => ch.order === 1));
+      setCurrentChapter(
+        data.chapters.sort((a: Chapter, b: Chapter) => a.order - b.order)[0] ||
+          null
+      );
     } catch (error) {
       console.error(error);
+      setError("Failed to load chapters. Please try again.");
     }
-  };
+  }, [parsedAudiobook]);
 
   useEffect(() => {
     const getPurchaseStatus = async () => {
-      if (!parsedAudiobook || !session?.jwt) {
-        return;
-      }
-
-      const status = await checkPurchaseStatus(
-        parsedAudiobook.id as number,
-        session.jwt
-      );
+      if (!parsedAudiobook || !session?.jwt) return;
+      const status = await checkPurchaseStatus(parsedAudiobook.id, session.jwt);
       setPurchaseStatus(status);
     };
-
     getPurchaseStatus();
-  }, [parsedAudiobook, session?.jwt]);
+  }, [parsedAudiobook, session]);
 
   useEffect(() => {
     if (parsedAudiobook) {
       fetchChapters();
     }
   }, [parsedAudiobook]);
+
+  if (error) return <div>{error}</div>;
 
   return (
     <div className="max-w-md mx-auto flex justify-center items-center">
