@@ -10,6 +10,7 @@ import { Chapter, PurchaseStatus } from "@/types/types";
 import axios from "axios";
 import { useSearchParams } from "next/navigation";
 import React, { useCallback, useEffect } from "react";
+import AudioPlayer2 from "./AudioPlayer2";
 
 const AudioPlayerClient = ({ bookSlug }: { bookSlug: string }) => {
   const searchParams = useSearchParams();
@@ -75,15 +76,14 @@ const AudioPlayerClient = ({ bookSlug }: { bookSlug: string }) => {
 
   return (
     <div className="max-w-md mx-auto flex justify-center items-center">
-      <AudioPlayer
-        currentChapter={currentChapter}
-        currentIndex={currentIndex}
-        setCurrentIndex={setCurrentIndex}
-        setCurrentChapter={setCurrentChapter}
-        audiobook={parsedAudiobook}
-        chapters={chapters}
-        purchaseStatus={purchaseStatus}
-      />
+      {currentChapter && (
+        <AudioPlayer2
+          chapter={currentChapter}
+          currentChapterIndex={currentIndex}
+          onChapterChange={setCurrentIndex}
+          Fchapters={chapters}
+        />
+      )}
     </div>
   );
 };

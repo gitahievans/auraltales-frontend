@@ -65,7 +65,11 @@ const AudioPlayer = ({
   purchaseStatus,
 }: AudioPlayerProps) => {
   const audioRef = useRef<HTMLAudioElement>(null);
+  const mediaSourceRef = useRef<MediaSource | null>(null);
+  const sourceBufferRef = useRef<SourceBuffer | null>(null);
   const streamingTokenRef = useRef<string | null>(null);
+  const queueRef = useRef<ArrayBuffer[]>([]); // Queue for chunks while SourceBuffer is updating
+  const [allChunksFetched, setAllChunksFetched] = useState<boolean>(false); // Track if all chunks are fetched
 
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [duration, setDuration] = useState<number>(0);
@@ -79,6 +83,7 @@ const AudioPlayer = ({
   const [bufferProgress, setBufferProgress] = useState<number>(0);
   const [isFirstChunk, setIsFirstChunk] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [bytesFetched, setBytesFetched] = useState<number>(0);
 
   const { session } = useValidSession();
 
@@ -95,8 +100,16 @@ const AudioPlayer = ({
       setIsLoading(true);
       setIsFirstChunk(true);
       setBufferProgress(0);
+      setBytesFetched(0);
+      setError(null);
+      setAudioMetadata(null); // Reset audioMetadata to ensure fresh state
+      setAllChunksFetched(false); // Reset chunk tracking
 
       try {
+        console.log(
+          "[DEBUG] Initializing audio for chapter:",
+          currentChapter.id
+        );
         // Initial request to get metadata and streaming token
         const response = await apiClient.get(
           `/streaming/stream/chapter/${currentChapter.id}/`,
@@ -107,169 +120,259 @@ const AudioPlayer = ({
           }
         );
 
+        console.log("[DEBUG] Metadata response:", response.data);
+        console.log("[DEBUG] Response headers:", response.headers);
         // Save metadata and streaming token
         setAudioMetadata(response.data);
-        streamingTokenRef.current = response.headers["x-streaming-token"];
+        const streamingToken = response.headers["x-streaming-token"];
+        streamingTokenRef.current = streamingToken;
+        console.log("[DEBUG] Streaming token:", streamingToken);
 
-        if (audioRef.current) {
-          // Set up Media Source Extensions for streaming
-          setupMediaSource();
+        if (!streamingToken) {
+          throw new Error("Streaming token not received from server.");
         }
       } catch (err) {
-        console.error("Error initializing audio stream:", err);
-        setError("Failed to initialize audio streaming. Please try again.");
+        console.error("[ERROR] Error initializing audio stream:", err);
+        setError(
+          "Failed to initialize audio streaming: " +
+            (err.message || "Unknown error")
+        );
         setIsLoading(false);
       }
     };
 
-    // Clean up existing audio
+    // Clean up existing audio and MediaSource
     if (audioRef.current) {
       audioRef.current.pause();
       setIsPlaying(false);
       setProgress(0);
       setDuration(0);
     }
+    if (mediaSourceRef.current) {
+      try {
+        mediaSourceRef.current.endOfStream();
+      } catch (e) {
+        console.error("[ERROR] Error ending previous MediaSource stream:", e);
+      }
+      mediaSourceRef.current = null;
+    }
 
     initializeAudio();
+
+    return () => {
+      if (mediaSourceRef.current) {
+        try {
+          mediaSourceRef.current.endOfStream();
+        } catch (e) {
+          console.error(
+            "[ERROR] Error ending MediaSource stream on cleanup:",
+            e
+          );
+        }
+      }
+    };
   }, [currentChapter, session]);
+
+  // Setup MediaSource when audioMetadata is available
+  useEffect(() => {
+    if (
+      !audioRef.current ||
+      !currentChapter?.id ||
+      !audioMetadata ||
+      !streamingTokenRef.current
+    ) {
+      console.log("[DEBUG] Skipping MediaSource setup, requirements not met:", {
+        audioRef: !!audioRef.current,
+        chapterId: currentChapter?.id,
+        audioMetadata: !!audioMetadata,
+        streamingToken: streamingTokenRef.current,
+      });
+      return;
+    }
+
+    console.log("[DEBUG] Setting up MediaSource...");
+    setupMediaSource();
+  }, [audioMetadata, currentChapter, session]); // Depend on audioMetadata to ensure it runs after state update
 
   // Setup Media Source Extensions for streaming
   const setupMediaSource = useCallback(() => {
-    if (!audioRef.current || !currentChapter?.id) return;
+    console.log("[DEBUG] Entering setupMediaSource with:", {
+      audioRef: !!audioRef.current,
+      chapterId: currentChapter?.id,
+      audioMetadata: !!audioMetadata,
+      streamingToken: streamingTokenRef.current,
+    });
 
-    // Create a URL for the audio stream
-    const audioUrl = `${process.env.NEXT_PUBLIC_API_URL}/streaming/stream/chapter/${currentChapter.id}/`;
-
-    // Set up the MSE (Media Source Extensions) or direct streaming based on browser support
-    if ("MediaSource" in window) {
-      // Advanced streaming with MSE could be implemented here
-      // For simplicity, we'll use range requests directly
-      streamAudioWithRangeRequests();
-    } else {
-      // Fallback for browsers without MSE support
-      streamAudioWithRangeRequests();
-    }
-  }, [currentChapter]);
-
-  // Stream audio using Range requests
-  const streamAudioWithRangeRequests = useCallback(async () => {
-    if (!audioRef.current || !currentChapter?.id) return;
-
-    try {
-      // Create a blob URL for the audio element
-      const audioBlob = await fetchInitialChunk();
-      const audioUrl = URL.createObjectURL(audioBlob);
-
-      audioRef.current.src = audioUrl;
-      audioRef.current.load();
-
-      // Update audio element settings
-      audioRef.current.volume = volume;
-      audioRef.current.playbackRate = playbackSpeed;
-
-      // Auto-play after loading
-      audioRef.current.onloadedmetadata = () => {
-        setDuration(audioRef.current?.duration || 0);
-        setIsLoading(false);
-
-        if (isPlaying) {
-          audioRef.current?.play().catch((error) => {
-            console.error("Autoplay prevented:", error);
-            setIsPlaying(false);
-          });
-        }
-      };
-
-      // Set up progress tracking
-      audioRef.current.ontimeupdate = () => {
-        setProgress(audioRef.current?.currentTime || 0);
-      };
-
-      // Set up buffering progress tracking
-      audioRef.current.onprogress = () => {
-        if (!audioRef.current) return;
-
-        const buffered = audioRef.current.buffered;
-        if (buffered.length > 0) {
-          const bufferedEnd = buffered.end(buffered.length - 1);
-          const bufferedPercent =
-            (bufferedEnd / audioRef.current.duration) * 100;
-          setBufferProgress(bufferedPercent);
-        }
-      };
-
-      // Handle when current chunk ends - fetch next chunk
-      audioRef.current.onended = () => {
-        // If we're at the end of the chapter, move to next chapter
-        if (bufferProgress >= 99) {
-          handleNext();
-        } else {
-          // Otherwise, it might be just the current chunk ending
-          fetchNextChunk();
-        }
-      };
-    } catch (err) {
-      console.error("Error setting up audio stream:", err);
-      setError("Failed to setup audio streaming. Please try again.");
+    if (
+      !audioRef.current ||
+      !currentChapter?.id ||
+      !audioMetadata ||
+      !streamingTokenRef.current
+    ) {
+      console.error("[ERROR] Missing requirements for MediaSource setup:", {
+        audioRef: !!audioRef.current,
+        chapterId: currentChapter?.id,
+        audioMetadata: !!audioMetadata,
+        streamingToken: streamingTokenRef.current,
+      });
+      setError("Failed to set up audio streaming. Missing requirements.");
       setIsLoading(false);
-    }
-  }, [currentChapter, volume, playbackSpeed, isPlaying]);
-
-  // Fetch the initial chunk of audio
-  const fetchInitialChunk = async (): Promise<Blob> => {
-    if (!currentChapter?.id) {
-      throw new Error("No chapter selected");
+      return;
     }
 
-    try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/streaming/stream/chapter/${currentChapter.id}/`,
-        {
-          headers: {
-            Range: "bytes=0-1048575", // Request first 1MB chunk
-            Authorization: `Bearer ${session?.jwt}`,
-          },
-        }
-      );
+    if (!("MediaSource" in window)) {
+      console.error("[ERROR] MediaSource API not supported");
+      setError("MediaSource API is not supported in this browser.");
+      setIsLoading(false);
+      return;
+    }
 
-      if (!response.ok) {
-        throw new Error("Failed to fetch initial audio chunk");
+    // Initialize MediaSource
+    mediaSourceRef.current = new MediaSource();
+    const mediaSourceUrl = URL.createObjectURL(mediaSourceRef.current);
+    console.log("[DEBUG] MediaSource URL created:", mediaSourceUrl);
+    audioRef.current.src = mediaSourceUrl;
+
+    mediaSourceRef.current.addEventListener("sourceopen", () => {
+      if (!mediaSourceRef.current || !audioMetadata) {
+        console.error("[ERROR] MediaSource or metadata missing on sourceopen");
+        setError("Failed to initialize MediaSource.");
+        setIsLoading(false);
+        return;
       }
 
-      // Save streaming token for subsequent requests
-      streamingTokenRef.current = response.headers.get("x-streaming-token");
-      setIsFirstChunk(false);
+      console.log("[DEBUG] MediaSource opened");
+      // Initialize SourceBuffer with the correct MIME type
+      const mimeType = audioMetadata.content_type || "audio/mpeg";
+      console.log("[DEBUG] Using MIME type:", mimeType);
+      try {
+        sourceBufferRef.current =
+          mediaSourceRef.current.addSourceBuffer(mimeType);
+        console.log("[DEBUG] SourceBuffer created");
+      } catch (e) {
+        console.error("[ERROR] Failed to create SourceBuffer:", e);
+        setError("Failed to create SourceBuffer. Incorrect audio format?");
+        setIsLoading(false);
+        return;
+      }
 
-      return await response.blob();
-    } catch (error) {
-      console.error("Error fetching initial chunk:", error);
-      throw error;
+      // Handle SourceBuffer updates
+      sourceBufferRef.current.addEventListener("updateend", () => {
+        console.log("[DEBUG] SourceBuffer updateend");
+        if (
+          queueRef.current.length > 0 &&
+          sourceBufferRef.current &&
+          !sourceBufferRef.current.updating
+        ) {
+          const nextChunk = queueRef.current.shift();
+          if (nextChunk) {
+            console.log("[DEBUG] Appending queued chunk");
+            sourceBufferRef.current.appendBuffer(nextChunk);
+          }
+        } else if (allChunksFetched && !sourceBufferRef.current.updating) {
+          // End the stream only after all chunks are appended and SourceBuffer is not updating
+          console.log("[DEBUG] All chunks appended, ending stream");
+          try {
+            mediaSourceRef.current?.endOfStream();
+          } catch (e) {
+            console.error("[ERROR] Error ending MediaSource stream:", e);
+            setError(
+              "Failed to end MediaSource stream: " +
+                (e.message || "Unknown error")
+            );
+            setIsLoading(false);
+          }
+        }
+
+        // Update buffer progress
+        updateBufferProgress();
+      });
+
+      // Handle SourceBuffer errors
+      sourceBufferRef.current.addEventListener("error", (e) => {
+        console.error("[ERROR] SourceBuffer error:", e);
+        setError("Error in audio streaming. Please try again.");
+        setIsLoading(false);
+      });
+
+      // Start fetching chunks
+      console.log("[DEBUG] Fetching first chunk...");
+      fetchNextChunk(0);
+    });
+
+    mediaSourceRef.current.addEventListener("error", (e) => {
+      console.error("[ERROR] MediaSource error:", e);
+      setError("MediaSource error occurred. Please try again.");
+      setIsLoading(false);
+    });
+
+    // Update audio element settings
+    audioRef.current.volume = volume;
+    audioRef.current.playbackRate = playbackSpeed;
+
+    // Auto-play after loading
+    audioRef.current.onloadedmetadata = () => {
+      console.log(
+        "[DEBUG] Audio metadata loaded, duration:",
+        audioRef.current?.duration
+      );
+      setDuration(audioRef.current?.duration || 0);
+      setIsLoading(false);
+
+      if (isPlaying) {
+        console.log("[DEBUG] Attempting to auto-play");
+        audioRef.current?.play().catch((error) => {
+          console.error("[ERROR] Autoplay prevented:", error);
+          setIsPlaying(false);
+        });
+      }
+    };
+
+    audioRef.current.onerror = (e) => {
+      console.error("[ERROR] Audio element error:", e);
+      setError("Error loading audio. Please try again.");
+      setIsLoading(false);
+    };
+
+    // Set up progress tracking
+    audioRef.current.ontimeupdate = () => {
+      setProgress(audioRef.current?.currentTime || 0);
+    };
+
+    // Handle when playback ends
+    audioRef.current.onended = () => {
+      if (bufferProgress >= 99) {
+        handleNext();
+      }
+    };
+  }, [currentChapter, audioMetadata, volume, playbackSpeed, isPlaying]);
+
+  // Fetch the next chunk of audio
+  const fetchNextChunk = async (startByte: number) => {
+    if (!currentChapter?.id || !streamingTokenRef.current || !audioMetadata) {
+      console.error("[ERROR] Missing requirements for fetchNextChunk:", {
+        chapterId: currentChapter?.id,
+        streamingToken: streamingTokenRef.current,
+        audioMetadata: !!audioMetadata,
+      });
+      setError("Failed to fetch audio chunk. Missing requirements.");
+      setIsLoading(false);
+      return;
     }
-  };
-
-  // Fetch the next chunk of audio when needed
-  const fetchNextChunk = async () => {
-    if (!currentChapter?.id || !streamingTokenRef.current) return;
 
     try {
-      // Calculate the next byte range
-      const currentTime = audioRef.current?.currentTime || 0;
-      const totalDuration = audioRef.current?.duration || 0;
-      const fileSize = audioMetadata?.file_size || 0;
-
-      // Calculate approximately where we are in the file
-      const estimatedBytePosition = Math.floor(
-        (currentTime / totalDuration) * fileSize
+      const chunkSize = 1024 * 1024; // 1MB chunks
+      const endByte = Math.min(
+        startByte + chunkSize - 1,
+        audioMetadata.file_size - 1
       );
-      const chunkSize = 1048576; // 1MB chunks
+      console.log("[DEBUG] Fetching chunk: bytes=", startByte, "-", endByte);
 
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/streaming/stream/chapter/${currentChapter.id}/`,
         {
           headers: {
-            Range: `bytes=${estimatedBytePosition}-${
-              estimatedBytePosition + chunkSize - 1
-            }`,
+            Range: `bytes=${startByte}-${endByte}`,
             Authorization: `Bearer ${session?.jwt}`,
             "X-Streaming-Token": streamingTokenRef.current,
           },
@@ -277,36 +380,74 @@ const AudioPlayer = ({
       );
 
       if (!response.ok) {
-        throw new Error("Failed to fetch next audio chunk");
+        console.error(
+          "[ERROR] Fetch response not ok:",
+          response.status,
+          response.statusText
+        );
+        throw new Error(`Failed to fetch audio chunk: ${response.statusText}`);
       }
 
       // Update streaming token
       const newToken = response.headers.get("x-streaming-token");
       if (newToken) {
         streamingTokenRef.current = newToken;
+        console.log("[DEBUG] Updated streaming token:", newToken);
       }
 
-      // Append the new chunk to our audio
-      const chunk = await response.blob();
-      // Advanced implementation would append this to MediaSource buffer
-      // For simplicity, we're tracking buffer progress but not actually appending
+      const arrayBuffer = await response.arrayBuffer();
+      console.log("[DEBUG] Chunk fetched, size:", arrayBuffer.byteLength);
+      setBytesFetched((prev) => prev + arrayBuffer.byteLength);
 
-      // Update buffer progress
-      const newBufferEnd = estimatedBytePosition + chunk.size;
-      const newBufferPercent = (newBufferEnd / fileSize) * 100;
-      setBufferProgress(Math.min(newBufferPercent, 100));
+      // Append the chunk to the SourceBuffer
+      if (sourceBufferRef.current) {
+        if (!sourceBufferRef.current.updating) {
+          console.log("[DEBUG] Appending chunk to SourceBuffer");
+          sourceBufferRef.current.appendBuffer(arrayBuffer);
+        } else {
+          console.log("[DEBUG] SourceBuffer updating, queuing chunk");
+          queueRef.current.push(arrayBuffer);
+        }
+      } else {
+        console.error("[ERROR] SourceBuffer not available");
+        setError("SourceBuffer not available for streaming.");
+        setIsLoading(false);
+        return;
+      }
+
+      // If there’s more to fetch, continue
+      if (endByte < audioMetadata.file_size - 1) {
+        fetchNextChunk(endByte + 1);
+      } else {
+        console.log("[DEBUG] All chunks fetched, setting flag");
+        setAllChunksFetched(true); // Set flag to end stream after append completes
+      }
     } catch (error) {
-      console.error("Error fetching next chunk:", error);
+      console.error("[ERROR] Error fetching chunk:", error);
+      setError(
+        "Failed to fetch audio chunk: " + (error.message || "Unknown error")
+      );
+      setIsLoading(false);
     }
   };
 
-  // Function to handle play/pause
+  // Update buffer progress based on fetched bytes
+  const updateBufferProgress = () => {
+    if (!audioMetadata || !audioRef.current) return;
+
+    const totalBytes = audioMetadata.file_size;
+    const bufferedPercent = (bytesFetched / totalBytes) * 100;
+    setBufferProgress(Math.min(bufferedPercent, 100));
+    console.log("[DEBUG] Buffer progress updated:", bufferedPercent);
+  };
+
+  // Handle play/pause
   useEffect(() => {
     if (!audioRef.current) return;
 
     if (isPlaying) {
       audioRef.current.play().catch((error) => {
-        console.error("Play error:", error);
+        console.error("[ERROR] Play error:", error);
         setIsPlaying(false);
       });
     } else {
@@ -314,7 +455,7 @@ const AudioPlayer = ({
     }
   }, [isPlaying]);
 
-  // Function to handle volume change
+  // Handle volume change
   const handleVolumeChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const newVolume = parseFloat(e.target.value);
@@ -327,7 +468,7 @@ const AudioPlayer = ({
     []
   );
 
-  // Function to handle seeking in the audio
+  // Handle seeking in the audio
   const handleSeek = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const newPosition = parseFloat(e.target.value);
     setProgress(newPosition);
@@ -337,7 +478,7 @@ const AudioPlayer = ({
     }
   }, []);
 
-  // Function to handle playback speed change
+  // Handle playback speed change
   const handleSpeedChange = useCallback((speed: number) => {
     setPlaybackSpeed(speed);
 
@@ -385,50 +526,22 @@ const AudioPlayer = ({
     }
   }, [currentIndex, chapters, setCurrentIndex, setCurrentChapter]);
 
-  // Buffer progress monitoring with debounce
-  const updateBufferProgressDebounced = useMemo(
-    () =>
-      debounce(() => {
-        if (!audioRef.current) return;
-
-        try {
-          const buffered = audioRef.current.buffered;
-          if (buffered.length > 0) {
-            const bufferedEnd = buffered.end(buffered.length - 1);
-            const duration = audioRef.current.duration;
-            const bufferedPercent = (bufferedEnd / duration) * 100;
-            setBufferProgress(Math.min(bufferedPercent, 100));
-
-            // Request next chunk if we're below 90% buffered
-            if (bufferedPercent < 90 && !isFirstChunk) {
-              fetchNextChunk();
-            }
-          }
-        } catch (error) {
-          console.error("Error updating buffer progress:", error);
-        }
-      }, 500),
-    [isFirstChunk]
-  );
-
-  // Set up periodic buffer checking
-  useEffect(() => {
-    const bufferInterval = setInterval(() => {
-      updateBufferProgressDebounced();
-    }, 2000);
-
-    return () => {
-      clearInterval(bufferInterval);
-      updateBufferProgressDebounced.cancel();
-    };
-  }, [updateBufferProgressDebounced]);
-
   // Clean up when component unmounts
   useEffect(() => {
     return () => {
       if (audioRef.current) {
         audioRef.current.pause();
         audioRef.current.src = "";
+      }
+      if (mediaSourceRef.current) {
+        try {
+          mediaSourceRef.current.endOfStream();
+        } catch (e) {
+          console.error(
+            "[ERROR] Error ending MediaSource stream on cleanup:",
+            e
+          );
+        }
       }
     };
   }, []);
@@ -437,6 +550,7 @@ const AudioPlayer = ({
     <div className="w-full flex flex-col items-center justify-center">
       <div className="w-full p-6 rounded-xl shadow-2xl">
         <audio ref={audioRef} />
+        {/* {error && <div className="text-red-500 text-center mb-4">{error}</div>} */}
         <div className="w-full flex justify-center items-center mb-4">
           <RingProgress
             size={192}
@@ -503,12 +617,12 @@ const AudioPlayer = ({
                 {formatTime(duration)}
               </span>
             </div>
-            <div className="w-full mt-2">
+            {/* <div className="w-full mt-2">
               <Progress value={bufferProgress} size="xs" color="blue" />
               <span className="text-gray-400 text-xs">
                 Buffering: {Math.round(bufferProgress)}%
               </span>
-            </div>
+            </div> */}
           </div>
 
           <div className="w-full flex gap-2 items-center">
