@@ -1,40 +1,80 @@
 "use client";
 
 import apiClient from "@/lib/apiClient";
-import { Chapter } from "@/types/types";
-import { Pause, Play } from "lucide-react";
-import React, { useEffect, useRef, useState } from "react";
+import { Audiobook, Chapter } from "@/types/types";
+import {
+  IconPlayerTrackPrev,
+  IconRewindBackward10,
+  IconRewindForward10,
+  IconVinyl,
+  IconVolume,
+} from "@tabler/icons-react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
+import ProgressBar from "./AudioPlayer/ProgressBar";
+import VolumeBar from "./AudioPlayer/VolumeBar";
+import PlayPauseBtn from "./AudioPlayer/PlayPauseBtn";
+import NarrationSpeedMenu from "./NarrationSpeedMenu";
+import { ActionIcon, Center, RingProgress } from "@mantine/core";
+import Image from "next/image";
 
 type Props = {
   chapter: Chapter | null;
+  audiobook: Audiobook;
 };
 
-const AudioPlayer2: React.FC<Props> = ({ chapter }) => {
+const parseDuration = (durationStr: string): number => {
+  const [time] = durationStr.split(".");
+  const [hours, minutes, seconds] = time.split(":").map(Number);
+  return hours * 3600 + minutes * 60 + seconds;
+};
+
+const formatTime = (seconds: number): string => {
+  if (isNaN(seconds)) return "0:00";
+  const mins = Math.floor(seconds / 60);
+  const secs = Math.floor(seconds % 60);
+  return `${mins}:${secs < 10 ? "0" : ""}${secs}`;
+};
+
+const AudioPlayer2: React.FC<Props> = ({ chapter, audiobook }) => {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const mediaSourceRef = useRef<MediaSource | null>(null);
   const sourceBufferRef = useRef<SourceBuffer | null>(null);
   const currentByteRef = useRef<number>(0);
   const isFetchingRef = useRef<boolean>(false); // Flag to prevent concurrent fetches
-
+  const [duration, setDuration] = useState<number>(0);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [currentTime, setCurrentTime] = useState<number>(0);
   const [progress, setProgress] = useState(0);
+  const [volume, setVolume] = useState(0.5);
   const [isReady, setIsReady] = useState(false);
   const [canPlay, setCanPlay] = useState(false);
   const [streamingToken, setStreamingToken] = useState<string | null>(null);
   const [fileSize, setFileSize] = useState<number | null>(null);
-  const chunkSize = 256 * 256;
+  const [playbackSpeed, setPlaybackSpeed] = useState<number>(1.0);
+
+  const chunkSize = 1024 * 1024;
 
   const fetchMetadata = async () => {
     try {
       const res = await apiClient.get(
         `/streaming/stream/chapter/${chapter?.id}/`
       );
-      const { file_size, content_type } = res.data;
+      const { file_size, content_type, duration } = res.data;
       const streamingToken = res.headers["x-streaming-token"];
 
-      console.log("[DEBUG] Metadata loaded:", { file_size, content_type });
+      console.log("[DEBUG] Metadata loaded:", {
+        file_size,
+        content_type,
+        duration,
+      });
 
-      return { file_size, content_type, streamingToken };
+      return { file_size, content_type, streamingToken, duration };
     } catch (error) {
       console.error("[ERROR] Failed to fetch metadata:", error);
       return null;
@@ -58,9 +98,15 @@ const AudioPlayer2: React.FC<Props> = ({ chapter }) => {
         return;
       }
 
-      const { content_type, streamingToken, file_size } = metadata;
+      const { content_type, streamingToken, file_size, duration } = metadata;
       setStreamingToken(streamingToken);
       setFileSize(file_size);
+
+      if (chapter?.duration) {
+        const totalSeconds = parseDuration(chapter.duration);
+        setDuration(totalSeconds);
+        console.log("[DEBUG] Duration set:", totalSeconds);
+      }
 
       try {
         const sourceBuffer = mediaSource.addSourceBuffer(content_type);
@@ -217,10 +263,10 @@ const AudioPlayer2: React.FC<Props> = ({ chapter }) => {
     if (!audio) return;
 
     const handleTimeUpdate = () => {
-      if (!isNaN(audio.duration) && audio.duration > 0) {
-        const percentage = (audio.currentTime / audio.duration) * 100;
-        setProgress(percentage);
-      }
+      if (!audio.duration || isNaN(audio.duration)) return;
+      setCurrentTime(audio.currentTime); // <- Add this line
+      const percentage = (audio.currentTime / audio.duration) * 100;
+      setProgress(percentage);
     };
 
     const handleEnded = () => {
@@ -285,28 +331,124 @@ const AudioPlayer2: React.FC<Props> = ({ chapter }) => {
     }
   };
 
-  return (
-    <div className="bg-white rounded-2xl shadow-lg p-4 w-full">
-      <audio ref={audioRef} preload="none" />
-      <div className="flex items-center justify-between mb-2">
-        <button
-          onClick={togglePlay}
-          className={`bg-blue-500 text-white rounded-full p-2 hover:bg-blue-600 ${
-            !canPlay ? "opacity-50 cursor-not-allowed" : ""
-          }`}
-          disabled={!canPlay}
-        >
-          {isPlaying ? <Pause size={20} /> : <Play size={20} />}
-        </button>
-        <div className="text-sm text-gray-600">{chapter?.title}</div>
-      </div>
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.volume = volume;
+    }
+  }, [volume]);
 
-      <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
-        <div
-          className="h-full bg-blue-500 transition-all duration-200"
-          style={{ width: `${progress}%` }}
-        ></div>
+  const handleSeek = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    const newTime = parseFloat(e.target.value);
+    audio.currentTime = newTime;
+    setCurrentTime(newTime);
+  };
+
+  const handleSkipBackward = () => {
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    const newTime = Math.max(audio.currentTime - 10, 0);
+    audio.currentTime = newTime;
+    setCurrentTime(newTime);
+  };
+
+  const handleSkipForward = () => {
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    const newTime = Math.min(audio.currentTime + 10, duration);
+    audio.currentTime = newTime;
+    setCurrentTime(newTime);
+  };
+
+  const handleSpeedChange = useCallback((speed: number) => {
+    setPlaybackSpeed(speed);
+
+    if (audioRef.current) {
+      audioRef.current.playbackRate = speed;
+    }
+  }, []);
+
+  const currentPercentage = useMemo(() => {
+    if (!duration || isNaN(duration)) return 0;
+    return (currentTime / duration) * 100;
+  }, [duration, currentTime]);
+
+  return (
+    <div className="rounded-2xl shadow-lg p-4 w-full">
+      <audio ref={audioRef} preload="none" />
+      <div className="w-full flex justify-center items-center mb-4">
+        <RingProgress
+          size={192}
+          thickness={7}
+          sections={[{ value: currentPercentage, color: "#22c55e" }]}
+          rootColor="#1a1a1a"
+          roundCaps
+          label={
+            <Center>
+              <ActionIcon
+                styles={{
+                  root: {
+                    backgroundColor: "transparent",
+                  },
+                }}
+                variant="light"
+                radius="xl"
+                size={155}
+              >
+                <Image
+                  src={audiobook?.poster}
+                  alt="Book cover"
+                  className="rounded-full object-cover border-2 border-gray-700"
+                  width={500}
+                  height={300}
+                />
+              </ActionIcon>
+            </Center>
+          }
+        />
       </div>
+      <PlayPauseBtn
+        isPlaying={isPlaying}
+        canPlay={canPlay}
+        togglePlay={togglePlay}
+        chapter={chapter}
+      />
+
+      <ProgressBar
+        duration={duration}
+        currentTime={currentTime}
+        handleSeek={handleSeek}
+        formatTime={formatTime}
+      />
+
+      <VolumeBar volume={volume} setVolume={setVolume} />
+
+      <button
+        onClick={handleSkipBackward}
+        className="text-gray-500 hover:text-gray-700 transition duration-200"
+        disabled={!canPlay}
+        aria-label="Skip backward 10 seconds"
+        role="button"
+      >
+        <IconRewindBackward10 size={24} />
+      </button>
+      <button
+        onClick={handleSkipForward}
+        className="text-gray-400"
+        aria-label="Skip forward 10 seconds"
+        role="button"
+      >
+        <IconRewindForward10 size={24} />
+      </button>
+
+      <NarrationSpeedMenu
+        currentSpeed={playbackSpeed}
+        onSpeedChange={handleSpeedChange}
+      />
 
       {!canPlay && (
         <div className="text-sm text-gray-500 mt-2 animate-pulse">

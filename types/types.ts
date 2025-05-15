@@ -30,6 +30,7 @@ export interface Chapter {
   audio_file: File | null;
   poster_file: File | null;
   order: number;
+  duration: string;
 }
 
 export interface Audiobook {

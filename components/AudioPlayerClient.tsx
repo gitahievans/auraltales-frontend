@@ -81,7 +81,8 @@ const AudioPlayerClient = ({ bookSlug }: { bookSlug: string }) => {
           chapter={currentChapter}
           currentChapterIndex={currentIndex}
           onChapterChange={setCurrentIndex}
-          Fchapters={chapters}
+          chapters={chapters}
+          audiobook={parsedAudiobook}
         />
       )}
     </div>
