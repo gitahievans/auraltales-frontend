@@ -10,7 +10,7 @@ import "@mantine/dropzone/styles.css";
 import "@mantine/dates/styles.css";
 import { Notifications } from "@mantine/notifications";
 import SessionWrapper from "@/components/SessionWrapper";
-import { LayoutWrapper } from "@/components/LayoutWrapper";
+import { LayoutWrapper } from "@/components/common/LayoutWrapper";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {

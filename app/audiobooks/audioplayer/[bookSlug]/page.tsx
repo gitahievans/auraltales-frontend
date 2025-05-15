@@ -1,6 +1,6 @@
 // app/[bookSlug]/page.jsx
 import { Suspense } from "react";
-import AudioPlayerClient from "@/components/AudioPlayerClient";
+import AudioPlayerClient from "@/components/AudioPlayer/AudioPlayerClient";
 
 export const runtime = "edge";
 

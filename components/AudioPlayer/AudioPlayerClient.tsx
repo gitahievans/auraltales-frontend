@@ -1,7 +1,4 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-// app/[bookSlug]/AudioPlayerClient.jsx
 "use client";
-
 import AudioPlayer from "@/components/AudioPlayer";
 import { useValidSession } from "@/hooks/useValidSession";
 import apiClient from "@/lib/apiClient";
@@ -46,16 +43,35 @@ const AudioPlayerClient = ({ bookSlug }: { bookSlug: string }) => {
         throw new Error("Failed to fetch Audiobook details");
       }
       const data = await response.data;
-      setChapters(data.chapters);
-      setCurrentChapter(
-        data.chapters.sort((a: Chapter, b: Chapter) => a.order - b.order)[0] ||
-          null
+
+      // Sort chapters by order
+      const sortedChapters = data.chapters.sort(
+        (a: Chapter, b: Chapter) => a.order - b.order
       );
+
+      setChapters(sortedChapters);
+
+      // Set the first chapter as the current chapter
+      setCurrentChapter(sortedChapters[0] || null);
     } catch (error) {
       console.error(error);
       setError("Failed to load chapters. Please try again.");
     }
   }, [parsedAudiobook]);
+
+  // Handle changing to a different chapter
+  const handleChapterChange = useCallback(
+    (index: number) => {
+      if (chapters.length === 0) return;
+
+      // Ensure index is within bounds
+      const validIndex = Math.max(0, Math.min(index, chapters.length - 1));
+
+      setCurrentIndex(validIndex);
+      setCurrentChapter(chapters[validIndex]);
+    },
+    [chapters]
+  );
 
   useEffect(() => {
     const getPurchaseStatus = async () => {
@@ -70,7 +86,7 @@ const AudioPlayerClient = ({ bookSlug }: { bookSlug: string }) => {
     if (parsedAudiobook) {
       fetchChapters();
     }
-  }, [parsedAudiobook]);
+  }, [parsedAudiobook, fetchChapters]);
 
   if (error) return <div>{error}</div>;
 
@@ -80,9 +96,10 @@ const AudioPlayerClient = ({ bookSlug }: { bookSlug: string }) => {
         <AudioPlayer2
           chapter={currentChapter}
           currentChapterIndex={currentIndex}
-          onChapterChange={setCurrentIndex}
+          onChapterChange={handleChapterChange}
           chapters={chapters}
           audiobook={parsedAudiobook}
+          purchaseStatus={purchaseStatus}
         />
       )}
     </div>
