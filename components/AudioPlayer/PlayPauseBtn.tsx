@@ -16,7 +16,7 @@ const PlayPauseBtn = ({
     <div className="flex items-center justify-between mb-2">
       <button
         onClick={togglePlay}
-        className={`bg-blue-500 text-white rounded-full p-2 hover:bg-blue-600 ${
+        className={`bg-green-600 text-white rounded-full p-2 hover:bg-green-900 ${
           !canPlay ? "opacity-50 cursor-not-allowed" : ""
         }`}
         disabled={!canPlay}

@@ -131,7 +131,7 @@ const AudioPlayer = ({
         if (!streamingToken) {
           throw new Error("Streaming token not received from server.");
         }
-      } catch (err) {
+      } catch (err: any) {
         console.error("[ERROR] Error initializing audio stream:", err);
         setError(
           "Failed to initialize audio streaming: " +
@@ -151,7 +151,7 @@ const AudioPlayer = ({
     if (mediaSourceRef.current) {
       try {
         mediaSourceRef.current.endOfStream();
-      } catch (e) {
+      } catch (e: any) {
         console.error("[ERROR] Error ending previous MediaSource stream:", e);
       }
       mediaSourceRef.current = null;
@@ -163,7 +163,7 @@ const AudioPlayer = ({
       if (mediaSourceRef.current) {
         try {
           mediaSourceRef.current.endOfStream();
-        } catch (e) {
+        } catch (e: any) {
           console.error(
             "[ERROR] Error ending MediaSource stream on cleanup:",
             e
@@ -269,12 +269,12 @@ const AudioPlayer = ({
             console.log("[DEBUG] Appending queued chunk");
             sourceBufferRef.current.appendBuffer(nextChunk);
           }
-        } else if (allChunksFetched && !sourceBufferRef.current.updating) {
+        } else if (allChunksFetched && sourceBufferRef.current && !sourceBufferRef.current.updating) {
           // End the stream only after all chunks are appended and SourceBuffer is not updating
           console.log("[DEBUG] All chunks appended, ending stream");
           try {
             mediaSourceRef.current?.endOfStream();
-          } catch (e) {
+          } catch (e: any) {
             console.error("[ERROR] Error ending MediaSource stream:", e);
             setError(
               "Failed to end MediaSource stream: " +
@@ -422,7 +422,7 @@ const AudioPlayer = ({
         console.log("[DEBUG] All chunks fetched, setting flag");
         setAllChunksFetched(true); // Set flag to end stream after append completes
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("[ERROR] Error fetching chunk:", error);
       setError(
         "Failed to fetch audio chunk: " + (error.message || "Unknown error")
@@ -536,7 +536,7 @@ const AudioPlayer = ({
       if (mediaSourceRef.current) {
         try {
           mediaSourceRef.current.endOfStream();
-        } catch (e) {
+        } catch (e: any) {
           console.error(
             "[ERROR] Error ending MediaSource stream on cleanup:",
             e

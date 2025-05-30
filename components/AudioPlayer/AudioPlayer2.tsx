@@ -22,6 +22,24 @@ import PrevBtn from "./PrevBtn";
 import RewindBtn from "./RewindBtn";
 import FwdBtn from "./FwdBtn";
 import ChapterCard from "../Cards/ChapterCard";
+import { motion, AnimatePresence } from "framer-motion";
+
+const containerVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.6,
+      staggerChildren: 0.1,
+    },
+  },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 10 },
+  visible: { opacity: 1, y: 0 },
+};
 
 type Props = {
   chapter: Chapter | null;
@@ -329,66 +347,160 @@ const AudioPlayer2: React.FC<Props> = ({
   };
 
   return (
-    <div className="rounded-2xl shadow-lg p-4 w-full">
-      <audio ref={audioRef} preload="none" />
-      <div className="text-sm text-gray-600">{chapter?.title}</div>
+    <motion.div
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+      className="relative w-full mx-auto px-4"
+    >
+      {/* Main Layout: Flex on large screens, stacked on small screens */}
+      <div className="flex flex-col lg:flex-row lg:gap-8 max-w-7xl mx-auto">
+        {/* Main Card (Player) */}
+        <motion.div
+          className="relative bg-transparent backdrop-blur-xl rounded-3xl border border-green-500 shadow-2xl overflow-hidden lg:w-1/2"
+          whileHover={{ scale: 1.01 }}
+          transition={{ type: "spring", stiffness: 300, damping: 30 }}
+        >
+          <div className="absolute inset-0 bg-transparent rounded-3xl opacity-0 hover:opacity-100 transition-opacity duration-500" />
 
-      <RingProgressComp
-        currentPercentage={currentPercentage}
-        audiobook={audiobook}
-      />
-      <div className="flex justify-between items-center mb-4">
-        <PrevBtn handlePrevious={handlePrevious} chapters={chapters} />
-        <RewindBtn handleSkipBackward={handleSkipBackward} canPlay={canPlay} />
-        <PlayPauseBtn
-          isPlaying={isPlaying}
-          canPlay={canPlay}
-          togglePlay={togglePlay}
-        />
-        <FwdBtn handleSkipForward={handleSkipForward} canPlay={canPlay} />
-        <NextBtn handleNext={handleNext} chapters={chapters} />
-      </div>
-      <ProgressBar
-        duration={duration}
-        currentTime={currentTime}
-        handleSeek={handleSeek}
-        formatTime={formatTime}
-      />
-      <VolumeBar volume={volume} setVolume={setVolume} />
-      <NarrationSpeedMenu
-        currentSpeed={playbackSpeed}
-        onSpeedChange={handleSpeedChange}
-      />
-      <div className="mt-4 text-sm text-gray-600">
-        {chapter && (
-          <div>
-            <p className="font-medium">
-              Chapter {currentChapterIndex + 1} of {chapters.length}
-            </p>
-            <p className="truncate">{chapter.title}</p>
-          </div>
-        )}
-      </div>
-      {purchaseStatus?.bought && (
-        <div className="w-full px-4 py-12">
-          <div className="flex items-center justify-between mb-8">
-            <h1 className="text-xl font-bold text-white">Chapters</h1>
-            <div className="text-gray-400">{chapters.length || 0} Chapters</div>
-          </div>
-          <div className="grid grid-cols-1 gap-6">
-            {chapters.map((chap: Chapter, index: number) => (
-              <ChapterCard
-                chapter={chap}
-                audioBook={audiobook}
-                key={chap.id || index}
-                isPlaying={chapter?.id === chap.id && isPlaying}
-                onPlayClick={() => handleChapterClick(index)}
+          <div className="relative p-6 md:p-8">
+            <audio ref={audioRef} preload="none" />
+
+            {/* Chapter Title */}
+            <motion.div variants={itemVariants} className="text-center mb-6">
+              <h2 className="text-sm md:text-base font-medium text-green-300/80 tracking-wide">
+                {chapter?.title}
+              </h2>
+            </motion.div>
+
+            {/* Ring Progress */}
+            <motion.div variants={itemVariants} className="mb-8">
+              <RingProgressComp
+                currentPercentage={currentPercentage}
+                audiobook={audiobook}
               />
-            ))}
+            </motion.div>
+
+            {/* Controls */}
+            <motion.div
+              variants={itemVariants}
+              className="flex justify-center items-center gap-3 md:gap-6 mb-6"
+            >
+              <PrevBtn handlePrevious={handlePrevious} chapters={chapters} />
+              <RewindBtn
+                handleSkipBackward={handleSkipBackward}
+                canPlay={canPlay}
+              />
+              <PlayPauseBtn
+                isPlaying={isPlaying}
+                canPlay={canPlay}
+                togglePlay={togglePlay}
+              />
+              <FwdBtn handleSkipForward={handleSkipForward} canPlay={canPlay} />
+              <NextBtn handleNext={handleNext} chapters={chapters} />
+            </motion.div>
+
+            {/* Progress */}
+            <motion.div variants={itemVariants} className="mb-6">
+              <ProgressBar
+                duration={duration}
+                currentTime={currentTime}
+                handleSeek={handleSeek}
+                formatTime={formatTime}
+              />
+            </motion.div>
+
+            {/* Volume & Speed */}
+            <motion.div
+              variants={itemVariants}
+              className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6"
+            >
+              <VolumeBar volume={volume} setVolume={setVolume} />
+              <NarrationSpeedMenu
+                currentSpeed={playbackSpeed}
+                onSpeedChange={handleSpeedChange}
+              />
+            </motion.div>
+
+            {/* Chapter Info */}
+            <motion.div variants={itemVariants} className="text-center">
+              {chapter && (
+                <div className="bg-gradient-to-r from-green-500/10 to-green-500/10 rounded-2xl p-4 border border-green-500">
+                  <p className="font-semibold text-green-300 text-sm md:text-base">
+                    Chapter {currentChapterIndex + 1} of {chapters.length}
+                  </p>
+                  <p className="text-green-300 text-xs md:text-sm mt-1 truncate">
+                    {chapter.title}
+                  </p>
+                </div>
+              )}
+            </motion.div>
           </div>
-        </div>
-      )}
-    </div>
+        </motion.div>
+
+        {/* Chapter List */}
+        <AnimatePresence>
+          {purchaseStatus?.bought && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.5 }}
+              className="mt-8 lg:mt-0 lg:w-1/2"
+            >
+              <div className="relative h-full">
+                {/* Glow */}
+                {/* <div className="absolute inset-0 bg-gradient-to-br from-green-900/10 via-green-800/5 to-teal-900/10 rounded-3xl blur-lg" /> */}
+
+                {/* Chapter Section */}
+                <div className="relative bg-transparent backdrop-blur-xl rounded-3xl border border-green-500 p-6 md:p-8 lg:overflow-y-auto">
+                  <div className="flex items-center justify-between mb-6">
+                    <motion.h1
+                      className="text-xl md:text-2xl font-bold bg-gradient-to-r from-green-300 to-green-300 bg-clip-text text-transparent"
+                      initial={{ x: -20, opacity: 0 }}
+                      animate={{ x: 0, opacity: 1 }}
+                      transition={{ delay: 0.3 }}
+                    >
+                      Chapters
+                    </motion.h1>
+                    <motion.div
+                      className="text-green-400 text-sm md:text-base"
+                      initial={{ x: 20, opacity: 0 }}
+                      animate={{ x: 0, opacity: 1 }}
+                      transition={{ delay: 0.4 }}
+                    >
+                      {chapters.length || 0} Chapters
+                    </motion.div>
+                  </div>
+
+                  <motion.div
+                    className="space-y-4"
+                    variants={containerVariants}
+                    initial="hidden"
+                    animate="visible"
+                  >
+                    {chapters.map((chap: Chapter, index: number) => (
+                      <motion.div
+                        key={chap.id || index}
+                        variants={itemVariants}
+                        transition={{ delay: index * 0.1 }}
+                      >
+                        <ChapterCard
+                          chapter={chap}
+                          audioBook={audiobook}
+                          isPlaying={chapter?.id === chap.id && isPlaying}
+                          onPlayClick={() => handleChapterClick(index)}
+                        />
+                      </motion.div>
+                    ))}
+                  </motion.div>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    </motion.div>
   );
 };
 
