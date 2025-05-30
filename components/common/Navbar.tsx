@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import Logo from "@/public/Images/Aural.png"
 import {
   IconBooks,
   IconLayoutGrid,
@@ -134,7 +135,7 @@ const Navbar = ({
                   AuralTales
                 </span> */}
                 <Image
-                  src="https://pub-1bc4ec60c9894c6899d3421ac4d29fe9.r2.dev/Aural.png"
+                  src={Logo}
                   alt="AuralTales"
                   width={1000}
                   height={1000}

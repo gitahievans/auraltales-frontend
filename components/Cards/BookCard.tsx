@@ -75,7 +75,7 @@ const BookCard: React.FC<BookCardProps> = ({ book }) => {
         message: (
           <span>
             Please{" "}
-            <a href="/login" className="underline text-blue-400">
+            <a href="/auth/login" className="underline text-blue-400">
               log in
             </a>{" "}
             to add to wishlist.
@@ -99,7 +99,7 @@ const BookCard: React.FC<BookCardProps> = ({ book }) => {
         message: (
           <span>
             Please{" "}
-            <a href="/login" className="underline text-blue-400">
+            <a href="/auth/login" className="underline text-blue-400">
               log in
             </a>{" "}
             to remove from wishlist.
