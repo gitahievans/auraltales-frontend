@@ -3,17 +3,8 @@
 import {
   setupMediaSource,
   fetchAndAppendChunk,
-  parseDuration,
-  fetchMetadata,
 } from "@/components/AudioPlayer/utils/audioStreaming";
 import { Audiobook, Chapter, PurchaseStatus } from "@/types/types";
-import {
-  IconPlayerTrackPrev,
-  IconRewindBackward10,
-  IconRewindForward10,
-  IconVinyl,
-  IconVolume,
-} from "@tabler/icons-react";
 import React, {
   useCallback,
   useEffect,
@@ -340,6 +331,8 @@ const AudioPlayer2: React.FC<Props> = ({
   return (
     <div className="rounded-2xl shadow-lg p-4 w-full">
       <audio ref={audioRef} preload="none" />
+      <div className="text-sm text-gray-600">{chapter?.title}</div>
+
       <RingProgressComp
         currentPercentage={currentPercentage}
         audiobook={audiobook}
@@ -351,7 +344,6 @@ const AudioPlayer2: React.FC<Props> = ({
           isPlaying={isPlaying}
           canPlay={canPlay}
           togglePlay={togglePlay}
-          chapter={chapter}
         />
         <FwdBtn handleSkipForward={handleSkipForward} canPlay={canPlay} />
         <NextBtn handleNext={handleNext} chapters={chapters} />

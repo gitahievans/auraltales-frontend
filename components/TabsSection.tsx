@@ -6,7 +6,7 @@ import { Audiobook } from "@/types/types";
 
 const TabsSection = ({ audioBook }: { audioBook: Audiobook }) => {
   return (
-    <div className="bg-[#062C2A] rounded-2xl p-6 shadow-xl">
+    <div className="bg-transparent rounded-2xl p-6 shadow-xl">
       <Tabs
         defaultValue="summary"
         variant="pills"

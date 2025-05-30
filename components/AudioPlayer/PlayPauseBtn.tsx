@@ -5,14 +5,12 @@ interface PlayPauseBtnProps {
   isPlaying: boolean;
   canPlay: boolean;
   togglePlay: () => void;
-  chapter: any;
 }
 
 const PlayPauseBtn = ({
   isPlaying,
   canPlay,
   togglePlay,
-  chapter,
 }: PlayPauseBtnProps) => {
   return (
     <div className="flex items-center justify-between mb-2">
@@ -25,7 +23,6 @@ const PlayPauseBtn = ({
       >
         {isPlaying ? <Pause size={20} /> : <Play size={20} />}
       </button>
-      <div className="text-sm text-gray-600">{chapter?.title}</div>
     </div>
   );
 };
