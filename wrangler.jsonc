@@ -1,8 +1,16 @@
 {
-    "name": "my-app",
-    "compatibility_date": "2024-09-23",
-    "compatibility_flags": [
-      "nodejs_compat"
-    ],
-    "pages_build_output_dir": ".vercel/output/static"
+  "name": "my-app",
+  "compatibility_date": "2024-09-23",
+  "compatibility_flags": [
+    "nodejs_compat"
+  ],
+  "pages_build_output_dir": ".vercel/output/static",
+  "vars": {
+    "AUTH_URL": "https://auraltales.com",
+    "NEXT_PUBLIC_URL": "https://auraltales.com",
+    "NEXT_PUBLIC_API_URL": "https://api.auraltales.com",
+    "AUTH_SECRET": "jfPqzU4wxsY4LHdv5zhew8IzQZou+r0Q3EeWXXxZnkQ=",
+    "AUTH_GOOGLE_ID": "650257691998-v9nobd86aen4j0mhloi86o1thuvpcd12.apps.googleusercontent.com",
+    "AUTH_GOOGLE_SECRET": "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"
   }
+}
