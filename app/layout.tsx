@@ -11,6 +11,7 @@ import "@mantine/dates/styles.css";
 import { Notifications } from "@mantine/notifications";
 import SessionWrapper from "@/components/SessionWrapper";
 import { LayoutWrapper } from "@/components/common/LayoutWrapper";
+import ReactQueryProvider from "@/components/ReactQueryProvider";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
@@ -35,11 +36,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${inter.className} bg-primary`}>
-        {" "}
         <MantineProvider>
           <SessionWrapper>
             <Notifications />
-            <LayoutWrapper>{children}</LayoutWrapper>
+            <ReactQueryProvider>
+              <LayoutWrapper>{children}</LayoutWrapper>
+            </ReactQueryProvider>
           </SessionWrapper>
         </MantineProvider>
       </body>
