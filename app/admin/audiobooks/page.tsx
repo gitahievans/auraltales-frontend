@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useMemo } from "react";
+import { useRouter } from "next/navigation";
 import {
   createColumnHelper,
   flexRender,
@@ -21,9 +22,36 @@ const fetchAudiobooks = async (): Promise<Audiobook[]> => {
   return response.data.audiobooks;
 };
 
+// Utility function to format duration
+const formatDuration = (duration: string): string => {
+  // Remove microseconds by taking the part before the decimal point
+  const [timePart] = duration.split(".");
+  // Split into hours, minutes, seconds
+  const [hours, minutes, seconds] = timePart.split(":").map(Number);
+
+  // Format as H:MM:SS if hours > 0, otherwise MM:SS
+  if (hours > 0) {
+    return `${hours}:${minutes.toString().padStart(2, "0")}:${seconds
+      .toString()
+      .padStart(2, "0")}`;
+  }
+  return `${minutes}:${seconds.toString().padStart(2, "0")}`;
+};
+
 const updateAudiobook = async (id: number, data: Partial<Audiobook>) => {
+  console.log(`Updating audiobook with ID ${id}`, data);
+
   try {
-    await apiClient.put(`/api/audiobooks/${id}`, data);
+    const response = await apiClient.put(`/api/audiobooks/${id}/update/`, data);
+    console.log("Update response:", response.data);
+
+    if (response.status !== 200) {
+      throw new Error("Failed to update audiobook");
+    }
+
+    if (window !== undefined) {
+      window.location.reload();
+    }
     notifications.show({
       title: "Success",
       message: "Audiobook updated successfully",
@@ -139,11 +167,11 @@ const columns = [
         </button>
       </div>
     ),
-    cell: ({ getValue }) => getValue(),
+    cell: ({ getValue }) => formatDuration(getValue()),
     enableSorting: true,
     sortingFn: (rowA, rowB, columnId) => {
-      const timeA = rowA.getValue(columnId) as string;
-      const timeB = rowB.getValue(columnId) as string;
+      const timeA = (rowA.getValue(columnId) as string).split(".")[0]; // Remove microseconds
+      const timeB = (rowB.getValue(columnId) as string).split(".")[0];
       const [hA, mA, sA] = timeA.split(":").map(Number);
       const [hB, mB, sB] = timeB.split(":").map(Number);
       const totalSecondsA = hA * 3600 + mA * 60 + sA;
