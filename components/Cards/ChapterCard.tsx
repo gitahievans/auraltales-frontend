@@ -15,13 +15,24 @@ const ChapterCard: React.FC<{
   isPlaying: boolean;
   onPlayClick: () => void;
 }> = ({ chapter, audioBook, isPlaying, onPlayClick }) => {
+  console.log("chapter card", chapter);
+
   const isMobile = useMediaQuery("(max-width: 768px)");
 
-  const formatDuration = (seconds: number | undefined): string => {
-    if (!seconds) return "00:00";
-    const mins = Math.floor(seconds / 60);
-    const secs = Math.floor(seconds % 60);
-    return `${mins}:${secs < 10 ? "0" : ""}${secs}`;
+  // Utility function to format duration
+  const formatDuration = (duration: string): string => {
+    // Remove microseconds by taking the part before the decimal point
+    const [timePart] = duration.split(".");
+    // Split into hours, minutes, seconds
+    const [hours, minutes, seconds] = timePart.split(":").map(Number);
+
+    // Format as H:MM:SS if hours > 0, otherwise MM:SS
+    if (hours > 0) {
+      return `${hours}:${minutes.toString().padStart(2, "0")}:${seconds
+        .toString()
+        .padStart(2, "0")}`;
+    }
+    return `${minutes}:${seconds.toString().padStart(2, "0")}`;
   };
 
   return (
@@ -91,7 +102,7 @@ const ChapterCard: React.FC<{
               transition={{ delay: 0.2 }}
             >
               <IconClockHour4 size={14} />
-              <span>{formatDuration(Number(chapter?.duration))}</span>
+              <span>{formatDuration(chapter?.duration || "00:00:00")}</span>
             </motion.div>
           </div>
 
