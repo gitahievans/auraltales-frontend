@@ -28,6 +28,7 @@ const Page = ({ params }: PagePropsType) => {
   const [purchaseStatus, setPurchaseStatus] = useState<PurchaseStatus | null>(
     null
   );
+  const [isCheckingPurchase, setIsCheckingPurchase] = useState<boolean>(false);
   const [relatedBooks, setRelatedBooks] = useState<Audiobook[]>([]);
   const [audiobooks, setAudiobooks] = useState<Audiobook[]>([]);
   const [opened, { open, close }] = useDisclosure();
@@ -72,13 +73,22 @@ const Page = ({ params }: PagePropsType) => {
   useEffect(() => {
     const getPurchaseStatus = async () => {
       if (!audioBook || !session?.jwt) {
+        setIsCheckingPurchase(false);
         return;
       }
 
-      const status = await checkPurchaseStatus(audioBook.id as number);
-      console.log("Purchase status for audiobook:", status?.bought);
+      setIsCheckingPurchase(true);
+      try {
+        const status = await checkPurchaseStatus(audioBook.id as number);
+        console.log("Purchase status for audiobook:", status?.bought);
 
-      setPurchaseStatus(status);
+        setPurchaseStatus(status);
+      } catch (error) {
+        console.error("Error checking purchase status:", error);
+        setPurchaseStatus(null);
+      } finally {
+        setIsCheckingPurchase(false);
+      }
     };
 
     getPurchaseStatus();
@@ -121,10 +131,14 @@ const Page = ({ params }: PagePropsType) => {
         ) : (
           <>
             <div className="animate-fade-in">
-              {!purchaseStatus?.bought ? (
-                <UnboughtBookCard book={audioBook} />
-              ) : (
+              {isCheckingPurchase ? (
+                <div className="flex justify-center items-center h-full">
+                  <Loader type="bars" color="white" size="xl" />
+                </div>
+              ) : purchaseStatus?.bought ? (
                 <BoughtBookCard book={audioBook} open={open} />
+              ) : (
+                <UnboughtBookCard book={audioBook} />
               )}
             </div>
 
