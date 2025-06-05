@@ -249,8 +249,7 @@ export const fetchWishlist = async () => {
 };
 
 export const checkPurchaseStatus = async (
-  audiobookId: number,
-  jwt: string
+  audiobookId?: number
 ): Promise<PurchaseStatus | null> => {
   console.log("Checking purchase status for audiobook:", audiobookId);
 

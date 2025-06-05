@@ -11,6 +11,7 @@ import {
   addToWishlist,
   removeFromWishlist,
   checkAudiobookInWishlist,
+  checkPurchaseStatus,
 } from "@/lib/store";
 
 interface BookCardProps {
@@ -51,6 +52,7 @@ const BookCard: React.FC<BookCardProps> = ({ book }) => {
   const [inWishlist, setInWishlist] = useState(false);
   const [loading, setLoading] = useState(false);
   const [isCardLoading, setIsCardLoading] = useState(true);
+  const [bought, setBought] = useState<boolean>(false);
   const { isAuthenticated, session } = useValidSession();
   const access = session?.jwt;
 
@@ -64,9 +66,18 @@ const BookCard: React.FC<BookCardProps> = ({ book }) => {
     }
   };
 
+  const getPurchaseStatus = async () => {
+    if (!book || !access) return;
+    const status = await checkPurchaseStatus(book?.id);
+    if (status) {
+      setBought(status?.bought);
+    }
+  };
+
   useEffect(() => {
     checkWishlistStatus();
-  }, [access, book.id]);
+    getPurchaseStatus();
+  }, [book?.id]);
 
   const handleAddToWishlist = async () => {
     if (!access) {
@@ -182,7 +193,7 @@ const BookCard: React.FC<BookCardProps> = ({ book }) => {
               </span>
             </div>
           </Tooltip>
-          {session && (
+          {session && !bought && (
             <Tooltip
               label={inWishlist ? "Remove from Wishlist" : "Add to Wishlist"}
               withArrow
