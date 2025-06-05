@@ -20,7 +20,6 @@ const PlayPauseBtn = ({
         className={`bg-green-600 text-white rounded-full p-2 flex items-center justify-center hover:bg-green-900 ${
           !canPlay ? "cursor-not-allowed" : ""
         }`}
-        // disabled={!canPlay}
       >
         {canPlay ? (
           isPlaying ? (
