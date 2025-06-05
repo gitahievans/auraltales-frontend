@@ -65,7 +65,7 @@ const WishlistCard: React.FC<WishlistCardProps> = ({
 
     const getPurchaseStatus = async () => {
       if (!audiobook || !access) return;
-      const status = await checkPurchaseStatus(audiobook.id, access);
+      const status = await checkPurchaseStatus(audiobook.id);
       if (status) {
         setPurchaseStatus(status?.bought);
       }

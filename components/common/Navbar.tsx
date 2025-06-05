@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import Logo from "@/public/Images/Aural.png"
+import Logo from "@/public/Images/Aural.png";
 import {
   IconBooks,
   IconLayoutGrid,
@@ -144,7 +144,10 @@ const Navbar = ({
               </Link>
             </div>
 
-            <Search />
+            {/* Search Bar on desktop */}
+            <div className="hidden md:flex flex-1 max-w-xl mx-4">
+              <Search />
+            </div>
 
             {/* Auth Buttons / User Menu */}
             <div className="flex items-center">
@@ -347,14 +350,7 @@ const Navbar = ({
         <div className="md:hidden h-screen">
           {/* Mobile Search */}
           <div className="p-4 border-b border-gray-800">
-            <div className="relative">
-              <input
-                type="text"
-                placeholder="Search audiobooks"
-                className="w-full bg-gray-800 text-white placeholder-gray-400 px-4 py-2 pr-10 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-              />
-              <IconSearch className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-            </div>
+            <Search toggle={toggle} />
           </div>
 
           {/* Mobile Navigation */}

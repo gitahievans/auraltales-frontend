@@ -59,7 +59,7 @@ const SignupPage = () => {
 
         if (result?.ok) {
           console.log("Signed in successfully after registration");
-          // window.location.assign("/");
+          window.location.assign("/");
         } else {
           throw new Error("Failed to sign in after registration");
         }

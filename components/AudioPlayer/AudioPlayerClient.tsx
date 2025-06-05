@@ -76,7 +76,7 @@ const AudioPlayerClient = ({ bookSlug }: { bookSlug: string }) => {
   useEffect(() => {
     const getPurchaseStatus = async () => {
       if (!parsedAudiobook || !session?.jwt) return;
-      const status = await checkPurchaseStatus(parsedAudiobook.id, session.jwt);
+      const status = await checkPurchaseStatus(parsedAudiobook.id);
       setPurchaseStatus(status);
     };
     getPurchaseStatus();

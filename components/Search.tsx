@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import React, { useEffect, useRef, useState } from "react";
 
-const Search = () => {
+const Search = ({ toggle }: { toggle?: () => void }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [showDropdown, setShowDropdown] = useState(false);
@@ -54,7 +54,7 @@ const Search = () => {
   }, []);
 
   return (
-    <div className="relative hidden md:flex flex-1 max-w-xl mx-12">
+    <div className="relative flex flex-1 max-w-xl mx-12">
       <div className="relative w-full">
         <input
           type="text"
@@ -85,6 +85,7 @@ const Search = () => {
                   onClick={() => {
                     setShowDropdown(false);
                     setSearchTerm("");
+                    toggle && toggle();
                   }}
                 >
                   <Image
