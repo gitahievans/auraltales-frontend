@@ -7,6 +7,7 @@ import React, { useState } from "react";
 import { signIn, useSession } from "next-auth/react";
 import PhoneInputComponent from "@/components/Auth/PhoneInput";
 import { useValidSession } from "@/hooks/useValidSession";
+import TurnstileWidget from "@/components/TurnstileWidget";
 
 const SignupPage = () => {
   const [firstName, setFirstName] = useState("");
@@ -225,6 +226,9 @@ const SignupPage = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                 />
+                <div className="w-full flex items-center justify-center mt-4">
+                  <TurnstileWidget />
+                </div>
                 <button
                   type="submit"
                   className="w-full text-white bg-secondary border border-transparent hover:bg-green-950 hover:border hover:border-secondary font-medium rounded-lg text-sm px-5 py-2.5 text-center transition-all duration-300"
