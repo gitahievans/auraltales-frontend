@@ -1,14 +1,12 @@
+// Updated LoginForm component
 "use client";
 
-import Image from "next/image";
-import React, { useState } from "react";
-import CustomInput from "../common/CustomInput";
-import { Divider, TextInput, Modal } from "@mantine/core";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { notifications } from "@mantine/notifications";
-import { userState } from "@/state/state";
+import { useState } from "react";
 import { signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import TurnstileWidget from "../TurnstileWidget";
+import { notifications } from "@mantine/notifications";
+import { Divider, Modal, TextInput } from "@mantine/core";
 
 const LoginForm = ({
   opened,
@@ -23,43 +21,86 @@ const LoginForm = ({
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+  const [turnstileToken, setTurnstileToken] = useState("");
+
+  console.log("Turnstile Token:", turnstileToken);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    setError("");
+    setIsLoading(true);
 
-    const signInResponse = await signIn("credentials", {
-      email,
-      password,
-      redirect: false,
-    });
+    // Validate turnstile token
+    if (!turnstileToken) {
+      setError("Please complete the security verification");
+      setIsLoading(false);
+      return;
+    }
 
-    if (signInResponse && !signInResponse.error) {
-      close();
-      window.location.assign("/");
-    } else {
-      console.log("Error:", signInResponse);
-
-      notifications.show({
-        title: "Error Loggin in",
-        message: "Login failed, please try again",
-        color: "red",
-        position: "top-right",
+    try {
+      const signInResponse = await signIn("credentials", {
+        email,
+        password,
+        turnstileToken,
+        redirect: false,
       });
-      setError("Login failed. Check your credentials and try again.");
+
+      console.log("Sign-in response:", signInResponse);
+
+      if (signInResponse?.ok && !signInResponse.error) {
+        setSuccess("Login successful!");
+        close();
+        // reload the page to update session state
+        window.location.reload();
+      } else {
+        // Handle different error types
+        let errorMessage =
+          "Login failed. Please check your credentials and try again.";
+
+        if (signInResponse?.error === "CredentialsSignin") {
+          errorMessage = "Invalid email or password. Please try again.";
+        } else if (signInResponse?.error === "Configuration") {
+          errorMessage =
+            "Authentication configuration error. Please try again later.";
+        }
+
+        setError(errorMessage);
+
+        notifications.show({
+          title: "Login Error",
+          message: errorMessage,
+          color: "red",
+          position: "top-right",
+        });
+
+        // Reset turnstile token so user can try again
+        setTurnstileToken("");
+        // You might want to reset the turnstile widget here
+        // if you have access to the widget's reset function
+      }
+    } catch (error) {
+      console.error("Login error:", error);
+      setError("An unexpected error occurred. Please try again.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const handleGoogleSignIn = async () => {
     try {
+      setIsLoading(true);
       const result = await signIn("google", {
         callbackUrl: window.location.origin,
         redirect: true,
       });
-
-      console.log("Sign-in result:", result);
+      console.log("Google sign-in result:", result);
     } catch (error) {
-      console.error("Error signing in:", error);
+      console.error("Error signing in with Google:", error);
+      setError("Google sign-in failed. Please try again.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -71,6 +112,11 @@ const LoginForm = ({
   const handleForgotPass = () => {
     close();
     router.push("/forgot-password");
+  };
+
+  const handleTurnstileVerify = (token: string) => {
+    setTurnstileToken(token);
+    setError(""); // Clear any previous errors when turnstile is verified
   };
 
   return (
@@ -178,22 +224,17 @@ const LoginForm = ({
                   </p>
                 </div>
 
-                {/* TODO: Remember me to be added here */}
+                <div className="w-full flex items-center justify-center mt-4">
+                  <TurnstileWidget onVerify={setTurnstileToken} />
+                </div>
+
                 <button
                   type="submit"
                   className="w-full text-white bg-secondary border border-transparent hover:bg-green-950 hover:border hover:border-secondary font-medium rounded-lg text-sm px-5 py-2.5 text-center transition-all duration-300"
                 >
                   Sign in
                 </button>
-                {/* <p className="text-sm font-light text-gray-500 dark:text-gray-400">
-                  Don’t have an account yet?{" "}
-                  <div
-                    onClick={handleNoAccount}
-                    className="font-medium text-primary-600 hover:underline dark:text-primary-500"
-                  >
-                    Sign up
-                  </div>
-                </p> */}
+
                 <div className="flex items-center justify-center">
                   <p className="text-sm font-light text-gray-500 dark:text-gray-400">
                     Don’t have an account yet?

@@ -10,6 +10,7 @@ import PhoneInputComponent from "./PhoneInput";
 import { userState } from "@/state/state";
 import { signIn, useSession } from "next-auth/react";
 import { useValidSession } from "@/hooks/useValidSession";
+import TurnstileWidget from "../TurnstileWidget";
 
 const SignupForm = ({
   opened,
@@ -27,12 +28,22 @@ const SignupForm = ({
   const [phoneNumber, setPhoneNumber] = useState("");
   const [isPhoneValid, setIsPhoneValid] = useState(true);
   const { isAuthenticated, session, status } = useValidSession();
+  const [turnstileToken, setTurnstileToken] = useState("");
 
   const router = useRouter();
 
-  // Update your handleSubmit function
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+
+    if (!turnstileToken) {
+      notifications.show({
+        title: "Verification Required",
+        message: "Please complete the CAPTCHA to continue.",
+        color: "red",
+        position: "top-right",
+      });
+      return;
+    }
 
     const userPayload = {
       first_name: firstName,
@@ -42,10 +53,11 @@ const SignupForm = ({
       profile: {
         phone_number: phoneNumber,
       },
+      turnstile_token: turnstileToken,
     };
 
     try {
-      // First register the user
+      // Register the user
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/accounts/register/`,
         {
@@ -57,25 +69,66 @@ const SignupForm = ({
         }
       );
 
-      if (response.ok) {
-        const data = await response.json();
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.detail || "Registration failed");
+      }
 
-        close();
-        const result = await signIn("credentials", {
-          email: email,
-          password: password,
+      // If registration is successful, sign in the user without Turnstile
+      try {
+        const signInResponse = await signIn("credentials", {
+          email,
+          password,
+          skipTurnstile: "true", // This tells both NextAuth and backend to skip Turnstile
           redirect: false,
         });
 
-        if (result?.ok) {
-          console.log("Signed in successfully after registration");
-          // window.location.reload();
+        console.log("Sign-in response:", signInResponse);
+
+        if (signInResponse?.ok && !signInResponse.error) {
+          notifications.show({
+            title: "Welcome!",
+            message: "Registration successful and you're now logged in.",
+            color: "green",
+            position: "top-right",
+          });
+
+          // Reload the page to update session state
+          window.location.reload();
         } else {
-          throw new Error("Failed to sign in after registration");
+          // Handle different error types
+          let errorMessage = "Auto-login failed after registration.";
+
+          if (signInResponse?.error === "CredentialsSignin") {
+            errorMessage =
+              "Registration successful, but auto-login failed. Please log in manually.";
+          } else if (signInResponse?.error === "Configuration") {
+            errorMessage = "Registration successful. Please log in manually.";
+          }
+
+          notifications.show({
+            title: "Registration Successful",
+            message: errorMessage,
+            color: "blue",
+            position: "top-right",
+          });
+
+          // Close signup and open login for manual login
+          close();
+          openLogin();
         }
-      } else {
-        const errorData = await response.json();
-        throw new Error(errorData.detail || "Registration failed");
+      } catch (error) {
+        console.error("Auto-login error:", error);
+
+        notifications.show({
+          title: "Registration Successful",
+          message: "Please log in manually to access your account.",
+          color: "blue",
+          position: "top-right",
+        });
+
+        close();
+        openLogin();
       }
     } catch (error: any) {
       console.error(error);
@@ -85,6 +138,9 @@ const SignupForm = ({
         color: "red",
         position: "top-right",
       });
+
+      // Reset turnstile token so user can try again
+      setTurnstileToken("");
     }
   };
 
@@ -229,21 +285,6 @@ const SignupForm = ({
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                 />
-                {/* <TextInput
-                                radius="md"
-                                size="md"
-                                placeholder="Phone Number"
-                                styles={{
-                                    input: {
-                                        backgroundColor: "transparent",
-                                        borderColor: "#6b7280",
-                                        color: "white",
-                                    },
-                                }}
-                                required
-                                value={phoneNumber}
-                                onChange={(e) => setPhoneNumber(e.target.value)}
-                            /> */}
                 <PhoneInputComponent
                   defaultCountry="ke"
                   value={phoneNumber}
@@ -270,6 +311,11 @@ const SignupForm = ({
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                 />
+
+                <div className="w-full flex items-center justify-center mt-4">
+                  <TurnstileWidget onVerify={setTurnstileToken} />
+                </div>
+
                 <button
                   type="submit"
                   className="w-full text-white bg-secondary border border-transparent hover:bg-green-950 hover:border hover:border-secondary font-medium rounded-lg text-sm px-5 py-2.5 text-center transition-all duration-300"

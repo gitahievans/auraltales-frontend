@@ -5,6 +5,7 @@ import { Divider, TextInput } from "@mantine/core";
 import { useRouter } from "next/navigation";
 import { notifications } from "@mantine/notifications";
 import { signIn } from "next-auth/react";
+import TurnstileWidget from "@/components/TurnstileWidget";
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
@@ -141,6 +142,10 @@ const LoginPage = () => {
                   <p className="text-white underline underline-offset-2 text-xs mt-2">
                     Forgot Password?
                   </p>
+                </div>
+
+                <div className="w-full flex items-center justify-center mt-4">
+                  <TurnstileWidget />
                 </div>
 
                 {/* TODO: Remember me to be added here */}

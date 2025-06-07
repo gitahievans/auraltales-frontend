@@ -1,4 +1,4 @@
-// auth.ts
+// auth.ts - Fixed for NextAuth v5
 import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
@@ -31,35 +31,76 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
           type: "password",
           placeholder: "Enter your password",
         },
+        turnstileToken: {
+          label: "Turnstile Token",
+          type: "text",
+        },
+        skipTurnstile: {
+          label: "Skip Turnstile",
+          type: "text",
+        },
       },
 
       async authorize(credentials) {
+        // In NextAuth v5, return null for failed auth instead of throwing
         if (!credentials || !credentials.email || !credentials.password) {
+          console.log("Missing credentials");
           return null;
         }
 
-        const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/accounts/login/`,
-          {
-            method: "POST",
-            body: JSON.stringify({
-              email: credentials?.email,
-              password: credentials?.password,
-            }),
-            headers: { "Content-Type": "application/json" },
-          }
-        );
+        // Prepare the payload
+        const payload: any = {
+          email: credentials.email,
+          password: credentials.password,
+        };
 
-        const user = await res.json();
+        // Check if we should skip Turnstile verification
+        const shouldSkipTurnstile = credentials.skipTurnstile === "true";
 
-        if (res.ok && user?.access) {
-          return {
-            id: credentials.email,
-            jwt: user.access,
-            refresh: user.refresh,
-            ...user.user,
-          };
+        if (shouldSkipTurnstile) {
+          payload.skip_turnstile = "true";
+          console.log("Skipping Turnstile verification for login");
         } else {
+          // Normal flow - require turnstile token
+          if (!credentials.turnstileToken) {
+            console.log("No Turnstile token provided and skip not requested");
+            return null;
+          }
+          payload.turnstile_token = credentials.turnstileToken;
+        }
+
+        try {
+          const res = await fetch(
+            `${process.env.NEXT_PUBLIC_API_URL}/accounts/login/`,
+            {
+              method: "POST",
+              body: JSON.stringify(payload),
+              headers: {
+                Accept: "application/json",
+                "Content-Type": "application/json",
+              },
+            }
+          );
+
+          const user = await res.json();
+
+          if (res.ok && user?.access) {
+            return {
+              id: credentials.email as string,
+              email: credentials.email as string,
+              jwt: user.access,
+              refresh: user.refresh,
+              ...user.user,
+            };
+          } else {
+            console.log(
+              "Login failed:",
+              user?.detail || user?.error || "Invalid credentials"
+            );
+            return null;
+          }
+        } catch (error) {
+          console.error("Authorization error:", error);
           return null;
         }
       },
@@ -75,29 +116,14 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
           response_type: "code",
         },
       },
-      profile(profile, tokens) {
-        console.log("Google profile", profile, tokens);
-        return {
-          id: profile.sub,
-          name: profile.given_name,
-          email: profile.email,
-          image: profile.picture,
-          first_name: profile.given_name,
-          last_name: profile.family_name || "",
-          phone_number: "",
-          jwt: tokens?.access_token || "",
-          refresh: tokens?.refresh_token || "",
-          is_staff: false,
-          is_active: true,
-          is_author: false,
-          date_joined: new Date().toISOString(),
-        };
-      },
     }),
   ],
+
   pages: {
     signIn: "/",
+    error: "/auth/error", // Add custom error page
   },
+
   callbacks: {
     async signIn({ user, account, profile }) {
       console.log("Signin Callback - Start", { user, account, profile });
