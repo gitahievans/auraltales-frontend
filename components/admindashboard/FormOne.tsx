@@ -126,20 +126,6 @@ const FormOne: React.FC<FormOneProps> = ({
           />
         </div>
 
-        <TextInput
-          label="Length"
-          placeholder="Enter Length"
-          required
-          value={formDataOne.length}
-          onChange={handleInputChange("length")}
-          // error={errorFormOne.isbn}
-          classNames={{
-            label: "text-sm font-medium text-gray-700 mb-1",
-            input:
-              "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500",
-          }}
-        />
-
         <Textarea
           label="Description"
           placeholder="Enter detailed description"

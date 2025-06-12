@@ -245,10 +245,10 @@ const BookUploader = ({
     <Modal
       opened={opened}
       onClose={close}
-      size="xl"
-      padding="lg"
+      fullScreen
+      padding="md"
       closeOnClickOutside={false}
-      title="Add New"
+      // title="Add New"
       styles={{
         content: {
           borderRadius: "16px",

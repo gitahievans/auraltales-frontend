@@ -1,5 +1,5 @@
-import { Button, Group, Stepper } from "@mantine/core";
-import { IconCheck, IconUpload } from "@tabler/icons-react";
+import { Button, Group, Stepper, Tooltip } from "@mantine/core";
+import { IconCheck, IconUpload, IconAlertCircle } from "@tabler/icons-react";
 import React, { useState } from "react";
 import FormOne from "./FormOne";
 import {
@@ -11,6 +11,7 @@ import {
   Narrator,
 } from "@/types/types";
 import FormTwo from "./FormTwo";
+import { modals } from "@mantine/modals";
 
 // Define StepStatus type here if not already defined elsewhere
 export type StepStatus = "idle" | "pending" | "uploading" | "success" | "error";
@@ -51,15 +52,59 @@ const StepperForm = ({
   step2Message: string;
 }) => {
   const [active, setActive] = useState(0);
+  const [isChapterFormDirty, setIsChapterFormDirty] = useState(false);
 
   const nextStep = () =>
     setActive((current) => (current < 2 ? current + 1 : current));
   const prevStep = () =>
     setActive((current) => (current > 0 ? current - 1 : current));
 
+  const handleChapterFormDirtyChange = (isDirty: boolean) => {
+    setIsChapterFormDirty(isDirty);
+  };
+
+  console.log("Form Data One:", formDataOne);
+
   const handleClick = (e: React.FormEvent) => {
     if (active === steps.length - 1) {
-      handleSubmit(e);
+      // Check if no chapters exist
+      if (formDataTwo.chapters.length === 0) {
+        modals.openConfirmModal({
+          title: "No Chapters Added",
+          children: (
+            <div className="font-sans flex flex-col space-y-2">
+              <p className="">
+                You have not added any chapters to this audiobook yet.
+              </p>
+              <p>
+                Are you sure you want to submit without chapters? Currently it
+                is not possible to add more chapters after submission.
+              </p>
+            </div>
+          ),
+          labels: { confirm: "Submit Without Chapters", cancel: "Cancel" },
+          confirmProps: { color: "orange" },
+          onConfirm: () => handleSubmit(e),
+        });
+      } else {
+        modals.openConfirmModal({
+          title: "Confirm Submission",
+          children: (
+            <div className="font-sans flex flex-col space-y-2">
+              <p>Are you ready to submit this audiobook?</p>
+              <p>
+                <strong>Title:</strong> {formDataOne.title}
+              </p>
+              <p>
+                <strong>Chapters:</strong> {formDataTwo.chapters.length}
+              </p>
+            </div>
+          ),
+          labels: { confirm: "Submit Audiobook", cancel: "Cancel" },
+          confirmProps: { color: "blue" },
+          onConfirm: () => handleSubmit(e),
+        });
+      }
     } else {
       nextStep();
     }
@@ -96,10 +141,15 @@ const StepperForm = ({
           step2Status={step2Status}
           step2Message={step2Message}
           showProgress={step1Status !== "idle"}
+          onChapterFormDirtyChange={handleChapterFormDirtyChange}
         />
       ),
     },
   ];
+
+  // Check if submit should be disabled
+  const isSubmitDisabled =
+    isUploading || (active === steps.length - 1 && isChapterFormDirty);
 
   return (
     <div className="max-w-3xl mx-auto p-6">
@@ -135,15 +185,50 @@ const StepperForm = ({
             Back
           </Button>
         )}
-        <Button
-          variant="filled"
-          onClick={(e) => handleClick(e)}
-          className="bg-blue-600 hover:bg-blue-700 transition-colors"
-          disabled={isUploading}
-          loading={isUploading}
-        >
-          {active === steps.length - 1 ? "Submit" : "Next"}
-        </Button>
+
+        {active === steps.length - 1 && isChapterFormDirty ? (
+          <Tooltip
+            label="Please save or clear the chapter form before submitting"
+            color="orange"
+            withArrow
+            position="top"
+          >
+            <div>
+              <Button
+                variant="filled"
+                onClick={(e) => handleClick(e)}
+                className="bg-blue-600 hover:bg-blue-700 transition-colors"
+                disabled={isSubmitDisabled}
+                loading={isUploading}
+                leftSection={
+                  isChapterFormDirty && !isUploading ? (
+                    <IconAlertCircle size={16} />
+                  ) : null
+                }
+              >
+                {active === steps.length - 1 ? "Submit" : "Next"}
+              </Button>
+            </div>
+          </Tooltip>
+        ) : (
+          <Button
+            variant="filled"
+            onClick={(e) => handleClick(e)}
+            className={`transition-colors ${
+              active === steps.length - 1 && formDataTwo.chapters.length === 0
+                ? "bg-orange-500 hover:bg-orange-600"
+                : "bg-blue-600 hover:bg-blue-700"
+            }`}
+            disabled={isSubmitDisabled}
+            loading={isUploading}
+          >
+            {active === steps.length - 1
+              ? formDataTwo.chapters.length === 0
+                ? "Submit Without Chapters"
+                : "Submit Audiobook"
+              : "Next"}
+          </Button>
+        )}
       </Group>
     </div>
   );

@@ -13,6 +13,7 @@ import SessionWrapper from "@/components/SessionWrapper";
 import { LayoutWrapper } from "@/components/common/LayoutWrapper";
 import ReactQueryProvider from "@/components/ReactQueryProvider";
 const inter = Inter({ subsets: ["latin"] });
+import { ModalsProvider } from "@mantine/modals";
 
 export const metadata: Metadata = {
   title: "AuralTales",
@@ -40,7 +41,9 @@ export default function RootLayout({
           <SessionWrapper>
             <Notifications />
             <ReactQueryProvider>
-              <LayoutWrapper>{children}</LayoutWrapper>
+              <ModalsProvider>
+                <LayoutWrapper>{children}</LayoutWrapper>
+              </ModalsProvider>
             </ReactQueryProvider>
           </SessionWrapper>
         </MantineProvider>

@@ -21,7 +21,7 @@
     "@mantine/dropzone": "^7.12.0",
     "@mantine/form": "^7.12.0",
     "@mantine/hooks": "^7.12.2",
-    "@mantine/modals": "^7.12.0",
+    "@mantine/modals": "^8.1.0",
     "@mantine/next": "^6.0.22",
     "@mantine/notifications": "^7.12.2",
     "@mantine/spotlight": "^7.16.2",
