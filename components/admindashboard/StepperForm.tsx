@@ -25,6 +25,7 @@ const StepperForm = ({
   collections,
   narrators,
   authors,
+  isUploading,
 }: {
   handleSubmit: (e: React.FormEvent) => void;
   formDataOne: FormDataOne;
@@ -37,6 +38,7 @@ const StepperForm = ({
   collections: Collection[] | null;
   authors: Author[] | null;
   narrators: Narrator[] | null;
+  isUploading: boolean;
 }) => {
   const [active, setActive] = useState(0);
 
@@ -121,6 +123,8 @@ const StepperForm = ({
           variant="filled"
           onClick={(e) => handleClick(e)}
           className="bg-blue-600 hover:bg-blue-700 transition-colors"
+          disabled={isUploading}
+          loading={isUploading} // Mantine Button supports loading prop
         >
           {active === steps.length - 1 ? "Submit" : "Next"}
         </Button>
