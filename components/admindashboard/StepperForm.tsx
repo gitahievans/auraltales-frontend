@@ -1,4 +1,3 @@
-// StepperForm.tsx
 import { Button, Group, Stepper } from "@mantine/core";
 import { IconCheck, IconUpload } from "@tabler/icons-react";
 import React, { useState } from "react";
@@ -13,6 +12,9 @@ import {
 } from "@/types/types";
 import FormTwo from "./FormTwo";
 
+// Define StepStatus type here if not already defined elsewhere
+export type StepStatus = "idle" | "pending" | "uploading" | "success" | "error";
+
 const StepperForm = ({
   handleSubmit,
   formDataOne,
@@ -26,6 +28,10 @@ const StepperForm = ({
   narrators,
   authors,
   isUploading,
+  step1Status,
+  step1Message,
+  step2Status,
+  step2Message,
 }: {
   handleSubmit: (e: React.FormEvent) => void;
   formDataOne: FormDataOne;
@@ -39,6 +45,10 @@ const StepperForm = ({
   authors: Author[] | null;
   narrators: Narrator[] | null;
   isUploading: boolean;
+  step1Status: StepStatus;
+  step1Message: string;
+  step2Status: StepStatus;
+  step2Message: string;
 }) => {
   const [active, setActive] = useState(0);
 
@@ -81,6 +91,11 @@ const StepperForm = ({
           formDataTwo={formDataTwo}
           errorFormTwo={errorFormTwo}
           setFormDataTwo={setFormDataTwo}
+          step1Status={step1Status}
+          step1Message={step1Message}
+          step2Status={step2Status}
+          step2Message={step2Message}
+          showProgress={step1Status !== "idle"}
         />
       ),
     },
@@ -115,6 +130,7 @@ const StepperForm = ({
             variant="outline"
             onClick={prevStep}
             className="hover:bg-gray-50 transition-colors"
+            disabled={isUploading}
           >
             Back
           </Button>
@@ -124,7 +140,7 @@ const StepperForm = ({
           onClick={(e) => handleClick(e)}
           className="bg-blue-600 hover:bg-blue-700 transition-colors"
           disabled={isUploading}
-          loading={isUploading} // Mantine Button supports loading prop
+          loading={isUploading}
         >
           {active === steps.length - 1 ? "Submit" : "Next"}
         </Button>

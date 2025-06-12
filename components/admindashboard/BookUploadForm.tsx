@@ -2,10 +2,7 @@
 
 import { useState, useEffect, ChangeEvent, DragEvent, FormEvent } from "react";
 import { useRouter } from "next/navigation";
-import { IconUpload, IconPlus, IconX, IconBook, IconInfoCircle, IconCheck, IconAlertCircle } from "@tabler/icons-react";
-import { Modal, Stepper, TextInput, Alert } from "@mantine/core";
-import Image from "next/image";
-import { useSession } from "next-auth/react";
+import { Modal } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import axios from "axios";
 import StepperForm from "./StepperForm";
@@ -26,6 +23,7 @@ const BookUploader = ({
   opened: boolean;
   close: () => void;
 }) => {
+  const router = useRouter();
   const [categories, setCategories] = useState<Category[] | null>(null);
   const [collections, setCollections] = useState<Collection[] | null>(null);
   const [authors, setAuthors] = useState<Author[] | null>(null);
@@ -33,11 +31,12 @@ const BookUploader = ({
   const [errorFormOne, setErrorFormOne] = useState<string | null>(null);
   const [errorFormTwo, setErrorFormTwo] = useState<string | null>(null);
 
-  // New state variables for progress tracking
-  type UploadStatus = 'idle' | 'uploading' | 'success' | 'error';
-  const [metadataUploadStatus, setMetadataUploadStatus] = useState<UploadStatus>('idle');
-  const [chaptersUploadStatus, setChaptersUploadStatus] = useState<UploadStatus>('idle');
-  const [progressMessage, setProgressMessage] = useState<string>('');
+  // Step-based progress tracking states
+  type StepStatus = "idle" | "pending" | "uploading" | "success" | "error";
+  const [step1Status, setStep1Status] = useState<StepStatus>("idle");
+  const [step2Status, setStep2Status] = useState<StepStatus>("idle");
+  const [step1Message, setStep1Message] = useState<string>("");
+  const [step2Message, setStep2Message] = useState<string>("");
 
   const [formDataOne, setFormDataOne] = useState<FormDataOne>({
     poster: [],
@@ -89,16 +88,17 @@ const BookUploader = ({
     e.preventDefault();
 
     // Reset statuses at the beginning
-    setMetadataUploadStatus('idle');
-    setChaptersUploadStatus('idle');
-    setProgressMessage('');
+    setStep1Status("pending");
+    setStep1Message("Preparing to upload metadata...");
+    setStep2Status("idle");
+    setStep2Message("");
     setErrorFormOne(null);
-    setErrorFormTwo(null); // Assuming you might use errorFormTwo for chapter-specific form errors
+    setErrorFormTwo(null);
 
     try {
       // Metadata Upload Phase
-      setMetadataUploadStatus('uploading');
-      setProgressMessage('Uploading audiobook metadata...');
+      setStep1Status("uploading");
+      setStep1Message("Uploading audiobook metadata...");
 
       const formData = new FormData();
 
@@ -135,8 +135,8 @@ const BookUploader = ({
       );
 
       if (response.status === 201) {
-        setMetadataUploadStatus('success');
-        setProgressMessage('Audiobook metadata uploaded successfully.');
+        setStep1Status("success");
+        setStep1Message("Audiobook metadata uploaded successfully.");
         notifications.show({
           message: "Audiobook metadata uploaded successfully!",
           color: "green",
@@ -144,9 +144,11 @@ const BookUploader = ({
 
         const audiobookId = response.data.id;
         if (formDataTwo.chapters.length > 0) {
+          setStep2Status("pending");
+          setStep2Message("Preparing to upload chapters...");
           // Chapters Upload Phase
-          setChaptersUploadStatus('uploading');
-          setProgressMessage('Uploading audiobook chapters...');
+          setStep2Status("uploading");
+          setStep2Message("Uploading audiobook chapters...");
 
           const chaptersFormData = new FormData();
           chaptersFormData.append("audiobook_id", audiobookId.toString());
@@ -174,19 +176,25 @@ const BookUploader = ({
             );
 
             if (chaptersResponse.status === 201) {
-              setChaptersUploadStatus('success');
-              setProgressMessage('Audiobook and chapters uploaded successfully!');
+              setStep2Status("success");
+              setStep2Message("Audiobook chapters uploaded successfully!");
               notifications.show({
                 message: "Audiobook and chapters uploaded successfully!",
                 color: "green",
               });
 
               close();
-              // router.push(`/audiobooks/${audiobookId}`);
+              router.refresh();
             }
           } catch (error: any) {
-            setChaptersUploadStatus('error');
-            setProgressMessage(`Error uploading chapters: ${error.response?.data?.detail || error.message || 'Please try again.'}`);
+            setStep2Status("error");
+            setStep2Message(
+              `Error: ${
+                error.response?.data?.detail ||
+                error.message ||
+                "Chapter upload failed."
+              }`
+            );
             console.error("Error uploading chapters:", error);
             notifications.show({
               message: "Error uploading chapters. Please try again.",
@@ -194,8 +202,8 @@ const BookUploader = ({
             });
           }
         } else {
-          setChaptersUploadStatus('success'); // No chapters to upload, so chapter phase is 'successful'
-          setProgressMessage("Audiobook metadata uploaded. No chapters were provided for upload.");
+          setStep2Status("success"); // Mark step 2 as success as there's nothing to upload
+          setStep2Message("No chapters to upload.");
           notifications.show({
             message: "Audiobook created without chapters.",
             color: "yellow",
@@ -204,8 +212,16 @@ const BookUploader = ({
         }
       }
     } catch (error: any) {
-      setMetadataUploadStatus('error');
-      setProgressMessage(`Error uploading audiobook metadata: ${error.response?.data?.detail || error.message || 'Please check your data and try again.'}`);
+      setStep1Status("error");
+      setStep1Message(
+        `Error: ${
+          error.response?.data?.detail ||
+          error.message ||
+          "Metadata upload failed."
+        }`
+      );
+      setStep2Status("idle"); // Or 'error' to indicate process stopped if preferred
+      setStep2Message("");
       console.error("Error uploading audiobook:", error);
       notifications.show({
         message:
@@ -222,7 +238,8 @@ const BookUploader = ({
     }
   };
 
-  const isUploading = metadataUploadStatus === 'uploading' || chaptersUploadStatus === 'uploading';
+  const isUploading =
+    step1Status === "uploading" || step2Status === "uploading";
 
   return (
     <Modal
@@ -242,51 +259,6 @@ const BookUploader = ({
         },
       }}
     >
-      {/* Progress Section */}
-      <div className="progress-section mb-4">
-        {metadataUploadStatus === 'uploading' && (
-          <Alert title="Uploading Metadata" color="blue" icon={<IconInfoCircle />}>
-            Uploading audiobook metadata...
-          </Alert>
-        )}
-        {metadataUploadStatus === 'success' && (
-          <Alert title="Metadata Uploaded" color="green" icon={<IconCheck />}>
-            Audiobook metadata uploaded successfully.
-          </Alert>
-        )}
-        {metadataUploadStatus === 'error' && (
-          <Alert title="Metadata Error" color="red" icon={<IconAlertCircle />}>
-            Error uploading audiobook metadata. {progressMessage}
-          </Alert>
-        )}
-
-        {chaptersUploadStatus === 'uploading' && (
-          <Alert title="Uploading Chapters" color="blue" icon={<IconInfoCircle />} className="mt-2">
-            Uploading audiobook chapters...
-          </Alert>
-        )}
-        {chaptersUploadStatus === 'success' && (
-          <Alert title="Chapters Uploaded" color="green" icon={<IconCheck />} className="mt-2">
-            Audiobook chapters uploaded successfully. {progressMessage}
-          </Alert>
-        )}
-        {chaptersUploadStatus === 'error' && (
-          <Alert title="Chapters Error" color="red" icon={<IconAlertCircle />} className="mt-2">
-            Error uploading audiobook chapters. {progressMessage}
-          </Alert>
-        )}
-
-        {/* Fallback for general progressMessage if specific statuses are not error but message exists */}
-        {progressMessage &&
-         metadataUploadStatus !== 'error' &&
-         chaptersUploadStatus !== 'error' &&
-         (metadataUploadStatus === 'idle' || chaptersUploadStatus === 'idle' || metadataUploadStatus === 'success' || chaptersUploadStatus === 'success') && (
-          <Alert title="Update" color="cyan" icon={<IconInfoCircle />} className="mt-2">
-            {progressMessage}
-          </Alert>
-        )}
-      </div>
-
       <form onSubmit={handleSubmit}>
         <div className="mb-8">
           <h1 className="text-2xl font-bold text-blue-600 mb-2">
@@ -310,6 +282,10 @@ const BookUploader = ({
           authors={authors}
           narrators={narrators}
           isUploading={isUploading}
+          step1Status={step1Status}
+          step1Message={step1Message}
+          step2Status={step2Status}
+          step2Message={step2Message}
         />
       </form>
     </Modal>
