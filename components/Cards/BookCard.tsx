@@ -129,7 +129,7 @@ const BookCard: React.FC<BookCardProps> = ({ book }) => {
 
   if (isCardLoading) {
     return (
-      <div className="bg-gray-800 rounded-lg p-4">
+      <div className="backdrop-blur-md bg-white/5 border border-white/10 rounded-xl p-4 shadow-lg">
         <Skeleton height={192} width="100%" radius="md" />
         <Skeleton height={20} mt={12} width="80%" />
         <Skeleton height={16} mt={8} width="60%" />
@@ -139,27 +139,37 @@ const BookCard: React.FC<BookCardProps> = ({ book }) => {
 
   return (
     <div
-      className="bg-transparent rounded-lg overflow-hidden shadow-lg transition-all duration-300 hover:shadow-xl border border-gray-700 hover:border-emerald-500"
+      className="group relative backdrop-blur-md bg-white/5 border border-white/10 rounded-xl overflow-hidden shadow-lg transition-all duration-500 hover:shadow-2xl hover:shadow-emerald-500/20 hover:bg-white/10 hover:border-emerald-400/30 hover:scale-[1.02] hover:-translate-y-1 flex flex-col h-full"
       role="article"
       aria-labelledby={`book-title-${book.id}`}
     >
+      {/* Glass reflection effect */}
+      <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+
+      {/* Subtle glow effect */}
+      <div className="absolute -inset-0.5 bg-gradient-to-r from-emerald-400/20 to-teal-400/20 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-sm -z-10" />
+
       <Link
         href={`/audiobooks/${book.slug}`}
         aria-label={`View details for ${book.title}`}
       >
-        <div className="relative h-48 w-full group">
+        <div className="relative h-48 w-full overflow-hidden">
           <Image
             src={book.poster || "/placeholder-book-cover.jpg"}
             alt={book.title}
             fill
-            className="object-cover rounded-t-lg transition-transform duration-300 group-hover:scale-105"
+            className="object-cover transition-transform duration-500 group-hover:scale-110"
             loading="lazy"
             placeholder="blur"
             blurDataURL="/placeholder-book-cover.jpg"
           />
+          {/* Image overlay for better text readability */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
         </div>
       </Link>
-      <div className="p-3">
+
+      <div className="relative p-4 backdrop-blur-sm flex-1 flex flex-col">
+        {" "}
         <Tooltip
           label={book.title}
           withArrow
@@ -167,7 +177,7 @@ const BookCard: React.FC<BookCardProps> = ({ book }) => {
         >
           <h3
             id={`book-title-${book.id}`}
-            className="font-bold text-sm md:text-base text-white line-clamp-1 mb-1"
+            className="font-bold text-sm md:text-base text-white/90 line-clamp-1 mb-2 group-hover:text-white transition-colors duration-300"
           >
             {book.title}
           </h3>
@@ -179,16 +189,17 @@ const BookCard: React.FC<BookCardProps> = ({ book }) => {
             book.authors.map((author) => author.name).join(", ").length <= 30
           }
         >
-          <p className="text-xs md:text-sm text-gray-200 line-clamp-1">
+          <p className="text-xs md:text-sm text-white/70 line-clamp-1 mb-3 group-hover:text-white/80 transition-colors duration-300">
             {book.authors.map((author) => author.name).join(", ") ||
               "Unknown Author"}
           </p>
         </Tooltip>
-        <div className="flex items-center justify-between text-white mt-3">
+        <div className="flex items-center justify-between text-white/80 group-hover:text-white/90 transition-colors duration-300 mt-auto min-h-[2rem]">
+          {" "}
           <Tooltip label="Duration" withArrow>
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-2 backdrop-blur-sm bg-white/5 px-2 py-1 rounded-full border border-white/10">
               <IconClock size={14} className="text-emerald-400" />
-              <span className="text-xs">
+              <span className="text-xs font-medium">
                 {formatLength(book.length || "00:00:00")}
               </span>
             </div>
@@ -199,7 +210,7 @@ const BookCard: React.FC<BookCardProps> = ({ book }) => {
               withArrow
             >
               <button
-                className="p-1 rounded-full hover:bg-emerald-900/20 transition-colors duration-300"
+                className="p-2 rounded-full backdrop-blur-sm bg-white/5 border border-white/10 hover:bg-white/10 hover:border-emerald-400/40 transition-all duration-300 hover:scale-110"
                 onClick={
                   inWishlist ? handleRemoveFromWishlist : handleAddToWishlist
                 }
@@ -213,7 +224,11 @@ const BookCard: React.FC<BookCardProps> = ({ book }) => {
                 ) : (
                   <IconBookmarks
                     size={14}
-                    className={inWishlist ? "text-red-400" : "text-gray-400"}
+                    className={`transition-colors duration-300 ${
+                      inWishlist
+                        ? "text-red-400"
+                        : "text-emerald-400/70 hover:text-emerald-400"
+                    }`}
                   />
                 )}
               </button>

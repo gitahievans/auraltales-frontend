@@ -1,4 +1,4 @@
-import React, { useState, useCallback, ChangeEvent } from "react";
+import React, { useState, useCallback, ChangeEvent, useEffect } from "react";
 import {
   Button,
   TextInput,
@@ -6,8 +6,9 @@ import {
   Text,
   Group,
   ActionIcon,
+  Alert,
 } from "@mantine/core";
-import { IconPlus, IconTrash, IconFileMusic } from "@tabler/icons-react";
+import { IconPlus, IconTrash, IconFileMusic, IconAlertCircle } from "@tabler/icons-react";
 import { Chapter, FormDataTwo } from "@/types/types";
 import ChapterPosterUploader from "./ChapterPosterUploader";
 import Image from "next/image";
@@ -16,7 +17,9 @@ import Image from "next/image";
 interface AudiobookChapterUploaderProps {
   formDataTwo: FormDataTwo;
   setFormDataTwo: React.Dispatch<React.SetStateAction<FormDataTwo>>;
+  onDirtyStateChange?: (isDirty: boolean) => void; // New prop to track dirty state
 }
+
 // Enhanced Chapter type with poster and proper audio_file as File
 interface EnhancedChapter extends Omit<Chapter, "id"> {
   id?: number; // Optional ID, assigned by backend after save
@@ -28,6 +31,7 @@ interface EnhancedChapter extends Omit<Chapter, "id"> {
 const AudiobookChapterUploader: React.FC<AudiobookChapterUploaderProps> = ({
   formDataTwo,
   setFormDataTwo,
+  onDirtyStateChange,
 }) => {
   const [currentChapter, setCurrentChapter] = useState<
     Omit<EnhancedChapter, "id" | "order">
@@ -38,6 +42,32 @@ const AudiobookChapterUploader: React.FC<AudiobookChapterUploaderProps> = ({
   });
   const [audioFileName, setAudioFileName] = useState<string>("");
   const [posterError, setPosterError] = useState<boolean>(false);
+
+  // Check if the current chapter form has any data (is "dirty")
+  const isFormDirty = useCallback(() => {
+    return (
+      currentChapter.title.trim() !== "" ||
+      currentChapter.audio_file !== null ||
+      currentChapter.poster_file !== null
+    );
+  }, [currentChapter]);
+
+  // Notify parent component whenever dirty state changes
+  useEffect(() => {
+    if (onDirtyStateChange) {
+      onDirtyStateChange(isFormDirty());
+    }
+  }, [isFormDirty, onDirtyStateChange]);
+
+  const clearForm = useCallback(() => {
+    setCurrentChapter({
+      title: "",
+      audio_file: null,
+      poster_file: null,
+    });
+    setAudioFileName("");
+    setPosterError(false);
+  }, []);
 
   const handleAddChapter = useCallback(() => {
     if (
@@ -58,18 +88,12 @@ const AudiobookChapterUploader: React.FC<AudiobookChapterUploaderProps> = ({
       }));
 
       // Clear the form
-      setCurrentChapter({
-        title: "",
-        audio_file: null,
-        poster_file: null,
-      });
-      setAudioFileName("");
-      setPosterError(false);
+      clearForm();
     } else {
       if (!currentChapter.poster_file) setPosterError(true);
       if (!currentChapter.audio_file) console.warn("Audio file is required");
     }
-  }, [currentChapter, formDataTwo.chapters, setFormDataTwo]);
+  }, [currentChapter, formDataTwo.chapters, setFormDataTwo, clearForm]);
 
   const handleRemoveChapter = useCallback(
     (index: number) => {
@@ -124,6 +148,11 @@ const AudiobookChapterUploader: React.FC<AudiobookChapterUploaderProps> = ({
     }));
   };
 
+  const isAddButtonDisabled = 
+    !currentChapter.title.trim() ||
+    !currentChapter.audio_file ||
+    !currentChapter.poster_file;
+
   return (
     <div className="space-y-6">
       <div>
@@ -135,6 +164,28 @@ const AudiobookChapterUploader: React.FC<AudiobookChapterUploaderProps> = ({
           based on the sequence of addition.
         </Text>
       </div>
+
+      {/* Warning when form is dirty */}
+      {isFormDirty() && (
+        <Alert
+          color="orange"
+          icon={<IconAlertCircle size={16} />}
+          title="Unsaved Chapter Data"
+          className="mb-4"
+        >
+          You have unsaved chapter data. Please click &quot;Add Chapter&quot; to save it, or clear the form before submitting the book.
+          <div className="mt-2">
+            <Button
+              size="xs"
+              variant="outline"
+              color="orange"
+              onClick={clearForm}
+            >
+              Clear Form
+            </Button>
+          </div>
+        </Alert>
+      )}
 
       {/* New Chapter Form */}
       <Paper shadow="xs" p="md" withBorder className="mb-6">
@@ -182,11 +233,7 @@ const AudiobookChapterUploader: React.FC<AudiobookChapterUploaderProps> = ({
 
           <button
             type="button"
-            disabled={
-              !currentChapter.title.trim() ||
-              !currentChapter.audio_file ||
-              !currentChapter.poster_file
-            }
+            disabled={isAddButtonDisabled}
             onClick={handleAddChapter}
             className={`mx-auto border px-4 py-2 border-green-600 rounded-md flex items-center gap-2 hover:bg-green-600 hover:text-white transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-green-200 disabled:text-green-600`}
           >

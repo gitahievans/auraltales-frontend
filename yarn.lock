@@ -1132,15 +1132,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mantine/modals@npm:^7.12.0":
-  version: 7.17.4
-  resolution: "@mantine/modals@npm:7.17.4"
+"@mantine/modals@npm:^8.1.0":
+  version: 8.1.0
+  resolution: "@mantine/modals@npm:8.1.0"
   peerDependencies:
-    "@mantine/core": 7.17.4
-    "@mantine/hooks": 7.17.4
+    "@mantine/core": 8.1.0
+    "@mantine/hooks": 8.1.0
     react: ^18.x || ^19.x
     react-dom: ^18.x || ^19.x
-  checksum: 87eec26f1ceb2eb704c905a7d41821f7da3db52f03ff928e1372c14933489a6affba3c56ef4d0d542671bd19c9d45b11df80b723d2be0b4706870662a55b3900
+  checksum: cf1bbe5756d7b2d9faa1e6c3e937c8b4d51e24215e90effc137a9ead4e9362fcfcc02bfd186936c6a0bceecce01d6df386e5026cf77fb5b1084eaf087eccdb9a
   languageName: node
   linkType: hard
 
@@ -7832,7 +7832,7 @@ next-auth@beta:
     "@mantine/dropzone": ^7.12.0
     "@mantine/form": ^7.12.0
     "@mantine/hooks": ^7.12.2
-    "@mantine/modals": ^7.12.0
+    "@mantine/modals": ^8.1.0
     "@mantine/next": ^6.0.22
     "@mantine/notifications": ^7.12.2
     "@mantine/spotlight": ^7.16.2
