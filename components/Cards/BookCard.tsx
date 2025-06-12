@@ -37,15 +37,11 @@ const formatLength = (lengthStr: string): string => {
     );
 
   if (hours > 0) {
-    return `${hours} ${hours === 1 ? "hr" : "hrs"} ${minutes} ${
-      minutes === 1 ? "min" : "mins"
-    }`;
+    return `${hours} ${"h"} ${minutes} ${"m"}`;
   } else if (minutes > 0) {
-    return `${minutes} ${minutes === 1 ? "min" : "mins"} ${seconds} ${
-      seconds === 1 ? "sec" : "secs"
-    }`;
+    return `${minutes} ${"m"} ${seconds} ${"s"}`;
   }
-  return `${seconds} ${seconds === 1 ? "sec" : "secs"}`;
+  return `${seconds} ${"s"}`;
 };
 
 const BookCard: React.FC<BookCardProps> = ({ book }) => {
