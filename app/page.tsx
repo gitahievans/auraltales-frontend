@@ -2,6 +2,7 @@
 "use client";
 
 import BookCarousel from "@/components/BookCarousel";
+import CustomLoader from "@/components/Cards/HomePgLoader";
 import UnauthorizedNotification from "@/components/UnauthorizedNotification";
 import { useAudiobooks } from "@/hooks/useAudiobooks";
 import { Loader, Text } from "@mantine/core";
@@ -19,7 +20,7 @@ export default function Home() {
 
       {loading ? (
         <div className="flex justify-center items-center">
-          <Loader type="bars" size="lg" color="white" />
+          <CustomLoader />
         </div>
       ) : audiobooks.length === 0 ? (
         <div className="flex flex-col items-center justify-center">
