@@ -164,7 +164,7 @@ const BookCard: React.FC<BookCardProps> = ({ book }) => {
         </div>
       </Link>
 
-      <div className="relative p-4 backdrop-blur-sm flex-1 flex flex-col">
+      <div className="relative p-2 backdrop-blur-sm flex-1 flex flex-col">
         {" "}
         <Tooltip
           label={book.title}
@@ -173,7 +173,7 @@ const BookCard: React.FC<BookCardProps> = ({ book }) => {
         >
           <h3
             id={`book-title-${book.id}`}
-            className="font-bold text-sm md:text-base text-white/90 line-clamp-1 mb-2 group-hover:text-white transition-colors duration-300"
+            className="font-bold text-sm md:text-base text-white/90 line-clamp-1 group-hover:text-white transition-colors duration-300"
           >
             {book.title}
           </h3>
