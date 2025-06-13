@@ -148,12 +148,14 @@ const CustomLoader: React.FC<CustomLoaderProps> = ({
             size={classes.mainText.replace("text-", "")}
             fw={600}
             className="text-white text-center"
+            style={{ color: "#ffffff" }}
           >
             {message}
           </Text>
           <Text
             size={classes.subText.replace("text-", "")}
-            className="text-white text-center mt-1"
+            className="text-white/80 text-center mt-1"
+            style={{ color: "rgba(255, 255, 255, 0.8)" }}
           >
             {subtitle}
           </Text>
