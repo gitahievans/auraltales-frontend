@@ -111,7 +111,6 @@ const AudiobookCategoryAdd: React.FC<AudiobookCategoryAddProps> = ({
           {categories && categories?.length > 0 && (
             <div className="flex flex-col gap-2 text-sm text-gray-600">
               <p>Choose from existing categories:</p>
-              <p className="ml-2 font-semibold">OR</p>
             </div>
           )}
           <div className="flex flex-wrap gap-2">
@@ -127,7 +126,7 @@ const AudiobookCategoryAdd: React.FC<AudiobookCategoryAddProps> = ({
           </div>
         </div>
       </div>
-
+      <p className="ml-2 font-sans">OR</p>
       {showNewCategoryInput ? (
         <div className="flex gap-2">
           <TextInput
@@ -154,7 +153,7 @@ const AudiobookCategoryAdd: React.FC<AudiobookCategoryAddProps> = ({
         <button
           type="button"
           onClick={() => setShowNewCategoryInput(true)}
-          className="flex items-center gap-2 text-cyan-600 hover:text-cyan-700 transition-colors duration-200"
+          className="flex items-center gap-2 text-cyan-600 hover:text-cyan-700 transition-colors duration-200 mt-4 border border-cyan-600 py-1 px-2 rounded-full"
         >
           <IconPlus size={16} strokeWidth={2} />
           <span className="text-sm font-medium">Add New Category</span>

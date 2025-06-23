@@ -26,7 +26,7 @@ const PaymentSuccessClient = () => {
       const verifyPayment = async () => {
         try {
           const response = await apiClient.get(
-            `/purchases/verify-payment/buy/${reference}?audiobook_id=${audiobook?.id}`
+            `/purchases/verify-payment/${reference}?audiobook_id=${audiobook?.id}`
           );
 
           if (response.data.status === "success") {

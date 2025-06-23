@@ -111,7 +111,6 @@ const AudiobkCollectionAdd: React.FC<AudiobookCollectionAddProps> = ({
           {collections && collections?.length > 0 && (
             <div className="flex flex-col gap-2 text-sm text-gray-600">
               <p>Choose from existing collections:</p>
-              <p className="ml-2 font-semibold">OR</p>
             </div>
           )}
           <div className="flex flex-wrap gap-2">
@@ -127,6 +126,7 @@ const AudiobkCollectionAdd: React.FC<AudiobookCollectionAddProps> = ({
           </div>
         </div>
       </div>
+      <p className="ml-2 font-sans">OR</p>
       {showNewCollectionInput ? (
         <div className="flex gap-2">
           <TextInput
@@ -153,7 +153,7 @@ const AudiobkCollectionAdd: React.FC<AudiobookCollectionAddProps> = ({
         <button
           type="button"
           onClick={() => setShowNewCollectionInput(true)}
-          className="flex items-center gap-2 text-green-600 hover:text-green-700 transition-colors duration-200"
+          className="flex items-center gap-2 text-green-600 hover:text-green-700 transition-colors duration-200 mt-4 border border-green-600 py-1 px-2 rounded-full"
         >
           <IconPlus size={16} strokeWidth={2} />
           <span className="text-sm font-medium">Add New Collection</span>

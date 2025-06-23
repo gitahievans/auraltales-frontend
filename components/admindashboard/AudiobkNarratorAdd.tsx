@@ -1,6 +1,6 @@
 import { Narrator, FormDataOne } from "@/types/types";
 import { Button, Textarea, TextInput } from "@mantine/core";
-import { IconPlus, IconX } from "@tabler/icons-react";
+import { IconEdit, IconPlus, IconX } from "@tabler/icons-react";
 import React, { useCallback, useState } from "react";
 
 export interface AudiobookNarratorAddProps {
@@ -51,6 +51,7 @@ const AudiobkNarratorAdd: React.FC<AudiobookNarratorAddProps> = ({
 }) => {
   const [showNewNarratorForm, setShowNewNarratorForm] =
     useState<boolean>(false);
+  const [editingNarrator, setEditingNarrator] = useState<Narrator | null>(null);
   const [newNarrator, setNewNarrator] = useState<Omit<Narrator, "id">>({
     name: "",
     email: "",
@@ -62,17 +63,38 @@ const AudiobkNarratorAdd: React.FC<AudiobookNarratorAddProps> = ({
     const trimmedNarratorName = newNarrator.name.trim();
 
     if (trimmedNarratorName) {
-      const newNarratorObj: Narrator = {
-        name: trimmedNarratorName,
-        email: newNarrator.email.trim(),
-        phone_number: newNarrator.phone_number.trim(),
-        bio: newNarrator.bio.trim(),
-      };
-
-      setFormDataOne((prev) => ({
-        ...prev,
-        narrators: [...prev.narrators, newNarratorObj],
-      }));
+      if (editingNarrator) {
+        // Update existing narrator
+        setFormDataOne((prev) => ({
+          ...prev,
+          narrators: prev.narrators.map((narr) => {
+            const match =
+              editingNarrator.id !== undefined
+                ? narr.id === editingNarrator.id
+                : narr === editingNarrator;
+            return match
+              ? {
+                  ...narr, // Preserve existing fields like ID
+                  name: trimmedNarratorName,
+                  email: newNarrator.email.trim(),
+                  phone_number: newNarrator.phone_number.trim(),
+                  bio: newNarrator.bio.trim(),
+                }
+              : narr;
+          }),
+        }));
+      } else {
+        const newNarratorObj: Narrator = {
+          name: trimmedNarratorName,
+          email: newNarrator.email.trim(),
+          phone_number: newNarrator.phone_number.trim(),
+          bio: newNarrator.bio.trim(),
+        };
+        setFormDataOne((prev) => ({
+          ...prev,
+          narrators: [...prev.narrators, newNarratorObj],
+        }));
+      }
 
       setNewNarrator({
         name: "",
@@ -81,8 +103,23 @@ const AudiobkNarratorAdd: React.FC<AudiobookNarratorAddProps> = ({
         bio: "",
       });
       setShowNewNarratorForm(false);
+      setEditingNarrator(null); // Reset editing narrator on submit
     }
-  }, [newNarrator, setFormDataOne]);
+  }, [newNarrator, setFormDataOne, editingNarrator]);
+
+  const handleEditNarrator = useCallback(
+    (narratorToEdit: Narrator) => {
+      setEditingNarrator(narratorToEdit);
+      setNewNarrator({
+        name: narratorToEdit.name,
+        email: narratorToEdit.email || "",
+        phone_number: narratorToEdit.phone_number || "",
+        bio: narratorToEdit.bio || "",
+      });
+      setShowNewNarratorForm(true);
+    },
+    [setNewNarrator, setShowNewNarratorForm, setEditingNarrator]
+  );
 
   const handleNarratorChange = useCallback(
     (narratorToToggle: Narrator) => {
@@ -120,8 +157,7 @@ const AudiobkNarratorAdd: React.FC<AudiobookNarratorAddProps> = ({
         <div className="space-y-2">
           {narrators && narrators?.length > 0 && (
             <div className="flex flex-col gap-2 text-sm text-gray-600">
-              <p>Choose from existing narrators:</p>
-              <p className="ml-2 font-semibold">OR</p>
+              <p>Choose from existing narrators here:</p>
             </div>
           )}
           <div className="flex flex-wrap gap-2">
@@ -137,6 +173,8 @@ const AudiobkNarratorAdd: React.FC<AudiobookNarratorAddProps> = ({
           </div>
         </div>
       </div>
+      <p className="ml-2 font-sans">OR</p>
+
       {showNewNarratorForm ? (
         <div className="mt-4 space-y-4">
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -216,6 +254,7 @@ const AudiobkNarratorAdd: React.FC<AudiobookNarratorAddProps> = ({
                   phone_number: "",
                   bio: "",
                 });
+                setEditingNarrator(null); // Reset editing narrator on cancel
               }}
               variant="outline"
               color="gray"
@@ -227,7 +266,7 @@ const AudiobkNarratorAdd: React.FC<AudiobookNarratorAddProps> = ({
               className="bg-blue-600 hover:bg-blue-700 text-white"
               disabled={!newNarrator.name.trim()}
             >
-              Add Narrator
+              {editingNarrator ? "Update Narrator" : "Add Narrator"}
             </Button>
           </div>
         </div>
@@ -235,7 +274,7 @@ const AudiobkNarratorAdd: React.FC<AudiobookNarratorAddProps> = ({
         <button
           type="button"
           onClick={() => setShowNewNarratorForm(true)}
-          className="flex items-center gap-2 text-blue-600 hover:text-blue-700 transition-colors duration-200 mt-4"
+          className="flex items-center gap-2 text-blue-600 hover:text-blue-700 transition-colors duration-200 mt-4 border border-blue-600 py-1 px-2 rounded-full"
         >
           <IconPlus size={16} strokeWidth={2} />
           <span className="text-sm font-medium">Add New Narrator</span>
@@ -253,8 +292,16 @@ const AudiobkNarratorAdd: React.FC<AudiobookNarratorAddProps> = ({
                 {narrator.name}
                 <button
                   type="button"
+                  onClick={() => handleEditNarrator(narrator)}
+                  className="text-orange-600 hover:text-orange-800 transition-colors ml-2"
+                  aria-label={`Edit ${narrator.name} narrator`}
+                >
+                  <IconEdit size={14} strokeWidth={2.5} />
+                </button>
+                <button
+                  type="button"
                   onClick={() => handleNarratorChange(narrator)}
-                  className="text-blue-600 hover:text-blue-800 transition-colors"
+                  className="text-blue-600 hover:text-blue-800 transition-colors ml-1"
                   aria-label={`Remove ${narrator.name} narrator`}
                 >
                   <IconX size={14} strokeWidth={2.5} />

@@ -5,7 +5,7 @@ export default function Footer() {
   return (
     <footer className="bg-gradient-to-b from-[#041714] to-[#0a2520] text-white py-16 px-6 mt-6 relative overflow-hidden">
       {/* Subtle background glow */}
-      <div className="absolute inset-0 bg-gradient-to-r from-green-500/5 via-transparent to-green-400/5 pointer-events-none" />
+      <div className="absolute inset-0 bg-gradient-to-r from-green-900/10 via-transparent to-green-900/10 pointer-events-none" />
 
       <div className="max-w-6xl mx-auto relative">
         {/* Main Content */}
@@ -33,7 +33,7 @@ export default function Footer() {
 
           {/* Legal Links Section */}
           <div className="flex flex-col items-center lg:items-end">
-            <div className="flex flex-col sm:flex-row gap-6">
+            <div className="flex flex-col  gap-6">
               <Link
                 href="/terms"
                 className="group flex items-center space-x-3 text-gray-300 hover:text-green-400 transition-all duration-300 hover:drop-shadow-[0_0_8px_rgba(34,197,94,0.4)]"

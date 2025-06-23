@@ -1,6 +1,6 @@
 import { Author, FormDataOne } from "@/types/types";
 import { Button, Textarea, TextInput } from "@mantine/core";
-import { IconPlus, IconX } from "@tabler/icons-react";
+import { IconEdit, IconPlus, IconX } from "@tabler/icons-react";
 import React, { useCallback, useState } from "react";
 
 export interface AudiobookAuthorAddProps {
@@ -52,6 +52,7 @@ const AudiobkAuthorAdd: React.FC<AudiobookAuthorAddProps> = ({
   setFormDataOne,
 }) => {
   const [showNewAuthorForm, setShowNewAuthorForm] = useState<boolean>(false);
+  const [editingAuthor, setEditingAuthor] = useState<Author | null>(null);
   const [newAuthor, setNewAuthor] = useState<Omit<Author, "id">>({
     name: "",
     email: "",
@@ -63,17 +64,42 @@ const AudiobkAuthorAdd: React.FC<AudiobookAuthorAddProps> = ({
     const trimmedAuthorName = newAuthor.name.trim();
 
     if (trimmedAuthorName) {
-      const newAuthorObj: Author = {
-        name: trimmedAuthorName,
-        email: newAuthor.email.trim(),
-        phone_number: newAuthor.phone_number.trim(),
-        bio: newAuthor.bio.trim(),
-      };
-
-      setFormDataOne({
-        ...formDataOne,
-        authors: [...formDataOne.authors, newAuthorObj as Author],
-      });
+      if (editingAuthor) {
+        // Update existing author
+        setFormDataOne((prev) => ({
+          ...prev,
+          authors: prev.authors.map((auth) => {
+            // If editingAuthor has an ID, match by ID.
+            // Otherwise, match by object reference (for newly added authors without an ID).
+            const match =
+              editingAuthor.id !== undefined
+                ? auth.id === editingAuthor.id
+                : auth === editingAuthor;
+            return match
+              ? {
+                  ...auth, // Preserve existing fields like ID (if it exists)
+                  name: trimmedAuthorName,
+                  email: newAuthor.email.trim(),
+                  phone_number: newAuthor.phone_number.trim(),
+                  bio: newAuthor.bio.trim(),
+                }
+              : auth;
+          }),
+        }));
+      } else {
+        // Add new author (ensure no ID is set here, or handle temporary ID if needed)
+        const newAuthorObj: Author = {
+          // id: Date.now(), // Example of a temporary ID, if needed for immediate re-edit
+          name: trimmedAuthorName,
+          email: newAuthor.email.trim(),
+          phone_number: newAuthor.phone_number.trim(),
+          bio: newAuthor.bio.trim(),
+        };
+        setFormDataOne((prev) => ({
+          ...prev,
+          authors: [...prev.authors, newAuthorObj],
+        }));
+      }
 
       setNewAuthor({
         name: "",
@@ -82,8 +108,23 @@ const AudiobkAuthorAdd: React.FC<AudiobookAuthorAddProps> = ({
         bio: "",
       });
       setShowNewAuthorForm(false);
+      setEditingAuthor(null); // Reset editing author on submit
     }
-  }, [newAuthor, setFormDataOne, formDataOne]);
+  }, [newAuthor, setFormDataOne, formDataOne, editingAuthor]);
+
+  const handleEditAuthor = useCallback(
+    (authorToEdit: Author) => {
+      setEditingAuthor(authorToEdit);
+      setNewAuthor({
+        name: authorToEdit.name,
+        email: authorToEdit.email || "",
+        phone_number: authorToEdit.phone_number || "",
+        bio: authorToEdit.bio || "",
+      });
+      setShowNewAuthorForm(true);
+    },
+    [setNewAuthor, setShowNewAuthorForm, setEditingAuthor]
+  );
 
   const handleAuthorChange = useCallback(
     (authorToToggle: Author) => {
@@ -119,8 +160,7 @@ const AudiobkAuthorAdd: React.FC<AudiobookAuthorAddProps> = ({
         <div className="space-y-2">
           {authors && authors?.length > 0 && (
             <div className="flex flex-col gap-2 text-sm text-gray-600">
-              <p>Choose from existing authors:</p>
-              <p className="ml-2 font-semibold">OR</p>
+              <p>Choose from existing authors here:</p>
             </div>
           )}
           <div className="flex flex-wrap gap-2">
@@ -136,6 +176,7 @@ const AudiobkAuthorAdd: React.FC<AudiobookAuthorAddProps> = ({
           </div>
         </div>
       </div>
+      <p className="ml-2 font-sans">OR</p>
       {showNewAuthorForm ? (
         <div className="mt-4 space-y-4">
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -215,6 +256,7 @@ const AudiobkAuthorAdd: React.FC<AudiobookAuthorAddProps> = ({
                   phone_number: "",
                   bio: "",
                 });
+                setEditingAuthor(null); // Reset editing author on cancel
               }}
               variant="outline"
               color="gray"
@@ -226,7 +268,7 @@ const AudiobkAuthorAdd: React.FC<AudiobookAuthorAddProps> = ({
               className="bg-orange-600 hover:bg-orange-700 text-white"
               disabled={!newAuthor.name.trim()}
             >
-              Add Author
+              {editingAuthor ? "Update Author" : "Add Author"}
             </Button>
           </div>
         </div>
@@ -234,7 +276,7 @@ const AudiobkAuthorAdd: React.FC<AudiobookAuthorAddProps> = ({
         <button
           type="button"
           onClick={() => setShowNewAuthorForm(true)}
-          className="flex items-center gap-2 text-orange-600 hover:text-orange-700 transition-colors duration-200 mt-4"
+          className="flex items-center gap-2 text-orange-600 hover:text-orange-700 transition-colors duration-200 mt-4 border border-orange-200 py-1 px-2 rounded-full"
         >
           <IconPlus size={16} strokeWidth={2} />
           <span className="text-sm font-medium">Add New Author</span>
@@ -252,8 +294,16 @@ const AudiobkAuthorAdd: React.FC<AudiobookAuthorAddProps> = ({
                 {author.name}
                 <button
                   type="button"
+                  onClick={() => handleEditAuthor(author)}
+                  className="text-blue-600 hover:text-blue-800 transition-colors ml-2"
+                  aria-label={`Edit ${author.name} author`}
+                >
+                  <IconEdit size={14} strokeWidth={2.5} />
+                </button>
+                <button
+                  type="button"
                   onClick={() => handleAuthorChange(author)}
-                  className="text-orange-600 hover:text-orange-800 transition-colors"
+                  className="text-orange-600 hover:text-orange-800 transition-colors ml-1"
                   aria-label={`Remove ${author.name} author`}
                 >
                   <IconX size={14} strokeWidth={2.5} />

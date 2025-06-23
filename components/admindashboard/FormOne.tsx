@@ -176,19 +176,19 @@ const FormOne: React.FC<FormOneProps> = ({
           formDataOne={formDataOne}
           setFormDataOne={setFormDataOne}
         />
-        <Divider />
+        <Divider size="sm" color="black" />
         <AudiobkCollectionAdd
           collections={collections}
           formDataOne={formDataOne}
           setFormDataOne={setFormDataOne}
         />
-        <Divider />
+        <Divider size="sm" color="black" />
         <AudiobkAuthorAdd
           authors={authors}
           formDataOne={formDataOne}
           setFormDataOne={setFormDataOne}
         />
-        <Divider />
+        <Divider size="sm" color="black" />
         <AudiobkNarratorAdd
           narrators={narrators}
           formDataOne={formDataOne}
