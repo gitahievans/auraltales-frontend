@@ -145,8 +145,8 @@ const Page = ({ params }: PagePropsType) => {
             <TabsSection audioBook={audioBook} />
 
             {/* Related Books Section */}
-            <div className="space-y-6">
-              <h1 className="text-2xl font-bold text-[white]">
+            <div className="space-y-6 mt-6">
+              <h1 className="text-xl font-bold text-[white]">
                 More Like This One
               </h1>
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">

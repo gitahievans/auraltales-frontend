@@ -1,7 +1,19 @@
+"use client";
+
 import { Disc3, Shield, FileText } from "lucide-react";
 import Link from "next/link";
+import { useState } from "react";
 
 export default function Footer() {
+  const [copied, setCopied] = useState(false);
+
+  function handleCopyEmail() {
+    navigator.clipboard.writeText("info@auraltales.com").then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    });
+  }
+
   return (
     <footer className="bg-gradient-to-b from-[#041714] to-[#0a2520] text-white py-16 px-6 mt-6 relative overflow-hidden">
       {/* Subtle background glow */}
@@ -9,7 +21,7 @@ export default function Footer() {
 
       <div className="max-w-6xl mx-auto relative">
         {/* Main Content */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-3 items-center">
           {/* Brand Section */}
           <div className="flex flex-col items-center lg:items-start text-center lg:text-left">
             <div className="flex items-center space-x-4 mb-6 group">
@@ -31,27 +43,54 @@ export default function Footer() {
             </p>
           </div>
 
+          {/* contacts - email and phone */}
+          <div className="flex flex-col items-center lg:items-start space-y-4">
+            <h3 className="text-xl font-semibold text-white">Contact Us</h3>
+            <p className="text-gray-300 text-sm">
+              Email:{" "}
+              <button
+                type="button"
+                className="relative underline text-green-400 hover:text-green-300 transition-all duration-300 hover:drop-shadow-[0_0_8px_rgba(34,197,94,0.4)] focus:outline-none"
+                onClick={handleCopyEmail}
+                title="Click to copy"
+              >
+                info@auraltales.com
+                {copied && (
+                  <span className="absolute left-1/2 -translate-x-1/2 top-full mt-1 text-xs bg-green-700 text-white px-2 py-1 rounded shadow-lg z-10">
+                    Copied!
+                  </span>
+                )}
+              </button>
+            </p>
+            <p className="text-gray-300 text-sm">
+              Phone:{" "}
+              <span className="text-green-400 hover:text-green-300 transition-all duration-300 hover:drop-shadow-[0_0_8px_rgba(34,197,94,0.4)]">
+                +254720699444
+              </span>
+            </p>
+          </div>
+
           {/* Legal Links Section */}
           <div className="flex flex-col items-center lg:items-end">
-            <div className="flex flex-col  gap-6">
+            <div className="flex flex-col  gap-3">
               <Link
                 href="/terms"
                 className="group flex items-center space-x-3 text-gray-300 hover:text-green-400 transition-all duration-300 hover:drop-shadow-[0_0_8px_rgba(34,197,94,0.4)]"
               >
                 <div className="p-2 rounded-lg bg-green-500/10 group-hover:bg-green-500/20 transition-colors duration-300">
-                  <FileText size={20} className="text-green-400" />
+                  <FileText size={14} className="text-green-400" />
                 </div>
-                <span className="font-medium">Terms & Conditions</span>
+                <span className="text-sm">Terms & Conditions</span>
               </Link>
 
               <Link
                 href="/privacy"
                 className="group flex items-center space-x-3 text-gray-300 hover:text-green-400 transition-all duration-300 hover:drop-shadow-[0_0_8px_rgba(34,197,94,0.4)]"
               >
-                <div className="p-2 rounded-lg bg-green-500/10 group-hover:bg-green-500/20 transition-colors duration-300">
-                  <Shield size={20} className="text-green-400" />
+                <div className="p-2 rounded-lg bg-green-500/10 group-hover:bg-green-500/14 transition-colors duration-300">
+                  <Shield size={14} className="text-green-400" />
                 </div>
-                <span className="font-medium">Privacy Policy</span>
+                <span className="text-sm">Privacy Policy</span>
               </Link>
             </div>
           </div>

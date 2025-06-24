@@ -15,10 +15,10 @@ const PlayButton: React.FC<PlayButtonProps> = ({
   return (
     <button
       onClick={onClick}
-      className="w-full py-3 border-2 border-[white] text-[white] 
-      font-bold rounded-xl hover:bg-[white]/10 
+      className="w-full text-[white] 
+      font-semibold rounded-xl hover:bg-[white]/5 
       transition-all duration-300 
-      flex items-center justify-center space-x-2
+      flex items-center justify-center
       transform hover:scale-105 active:scale-95"
     >
       <span className="flex items-center space-x-2">
@@ -27,7 +27,9 @@ const PlayButton: React.FC<PlayButtonProps> = ({
         ) : (
           <>
             {isPlaying ? <IconPlayerStop /> : <IconPlayerPlayFilled />}
-            <span>{isPlaying ? "Stop Sample" : "Listen Sample"}</span>
+            <span className={`hidden md:inline`}>
+              {isPlaying ? "Stop Sample" : "Listen Sample"}
+            </span>
           </>
         )}
       </span>

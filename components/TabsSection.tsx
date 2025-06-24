@@ -1,5 +1,10 @@
 import { Tabs } from "@mantine/core";
-import { IconHeadphones, IconPlayerPlay, IconUser } from "@tabler/icons-react";
+import {
+  IconHeadphones,
+  IconPlayerPlay,
+  IconStack,
+  IconUser,
+} from "@tabler/icons-react";
 import React from "react";
 import { ExpandableText } from "./ExpandableText";
 import { Audiobook } from "@/types/types";
@@ -20,7 +25,7 @@ const TabsSection = ({ audioBook }: { audioBook: Audiobook }) => {
         <Tabs.List className="justify-center mb-4">
           <Tabs.Tab
             value="summary"
-            leftSection={<IconPlayerPlay className="text-inherit" />}
+            leftSection={<IconStack className="text-inherit" />}
           >
             Summary
           </Tabs.Tab>

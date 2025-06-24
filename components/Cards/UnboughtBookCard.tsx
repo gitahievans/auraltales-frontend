@@ -244,8 +244,10 @@ const UnboughtBookCard = ({ book }: PropsType) => {
               placeholder="blur"
               blurDataURL="/placeholder-book-cover.jpg"
             />
+            {/* Always visible play button overlay */}
             <div
-              className={`absolute inset-0 rounded-xl bg-black bg-opacity-40 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity duration-300`}
+              className="absolute bottom-2 border border-[white]/30 right-2 bg-black bg-opacity-45 rounded-full p-2 hover:bg-opacity-90 transition-all duration-300 cursor-pointer shadow-lg"
+              onClick={handleListenSample}
               role="button"
               aria-label="Play sample"
             >
