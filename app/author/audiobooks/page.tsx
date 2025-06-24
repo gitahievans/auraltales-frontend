@@ -165,7 +165,7 @@ const AudiobooksPage = () => {
       <div className="flex flex-col items-center justify-center h-96">
         <div className="w-16 h-16 border-4 border-secondary border-t-transparent rounded-full animate-spin"></div>
         <p className="mt-4 text-lg font-medium text-gray-600">
-          Loading your audiobooks...
+          Loading Audiobooks...
         </p>
       </div>
     );

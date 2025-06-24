@@ -9,7 +9,7 @@ interface CustomLoaderProps {
 }
 
 const CustomLoader: React.FC<CustomLoaderProps> = ({
-  message = "Loading your audiobooks...",
+  message = "Loading Audiobooks...",
   subtitle = "Discovering amazing stories for you",
   size = "md",
   className = "",

@@ -91,7 +91,7 @@ const AudioPlayerClient = ({ bookSlug }: { bookSlug: string }) => {
   if (error) return <div>{error}</div>;
 
   return (
-    <div className="w-full mx-auto flex justify-center items-start mb-20">
+    <div className="w-full min-h-[80dvh] mx-auto flex justify-center items-start mb-20">
       {currentChapter && (
         <AudioPlayer2
           chapter={currentChapter}
