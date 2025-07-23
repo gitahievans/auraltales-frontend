@@ -1,9 +1,25 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import Image from "next/image";
+import { signOut, useSession } from "next-auth/react";
+import { Loader, Menu } from "@mantine/core";
+import { useDisclosure } from "@mantine/hooks";
+
 import Logo from "@/public/Images/Aural.png";
+import adminIcon from "@/public/icons8-admin-24.png";
+import apiClient from "@/lib/apiClient";
+import { useValidSession } from "@/hooks/useValidSession";
+
+// Components
+import SignupForm from "../Auth/SignupModal";
+import LoginForm from "../Auth/LoginModal";
+import DynamicGreeting from "../DynamicGreeting";
+import Search from "../Search";
+
+// Icons
 import {
   IconBooks,
   IconLayoutGrid,
@@ -18,87 +34,330 @@ import {
   IconStars,
   IconLogout2,
 } from "@tabler/icons-react";
-import { signOut, useSession } from "next-auth/react";
-import Image from "next/image";
-import { Loader, Menu } from "@mantine/core";
-import apiClient from "@/lib/apiClient";
-import SignupForm from "../Auth/SignupModal";
-import { useDisclosure } from "@mantine/hooks";
-import LoginForm from "../Auth/LoginModal";
-import DynamicGreeting from "../DynamicGreeting";
-import adminIcon from "../../public/icons8-admin-24.png";
-import Search from "../Search";
-import { useValidSession } from "@/hooks/useValidSession";
 
-type Category = {
+// Types
+interface AudiobookItem {
+  id: number;
+  // Add other audiobook properties as needed
+}
+
+interface Category {
   id: number;
   name: string;
-  audiobooks: [];
-};
+  audiobooks: AudiobookItem[];
+}
 
-type Collection = {
+interface Collection {
   id: number;
   name: string;
-  audiobooks: [];
-};
+  audiobooks: AudiobookItem[];
+}
 
-const Navbar = ({
-  opened,
-  toggle,
-}: {
+interface NavbarProps {
   opened: boolean;
   toggle: () => void;
-}) => {
-  const pathname = usePathname();
+}
+
+// Constants
+const NAV_ITEMS = [
+  { href: "/", label: "Home", icon: IconHome },
+  { href: "/discover", label: "Discover", icon: IconHome },
+  { href: "/library", label: "My Library", icon: IconLibrary },
+  { href: "/wishlist", label: "Wish List", icon: IconHeart },
+  { href: "/favorites", label: "Favorites", icon: IconStars },
+] as const;
+
+// Custom hooks
+const useNavbarData = () => {
   const [categories, setCategories] = useState<Category[]>([]);
   const [collections, setCollections] = useState<Collection[]>([]);
-  const [openedSignup, { open: openSignup, close: closeSignup }] =
-    useDisclosure();
-  const [openedLogin, { open: openLogin, close: closeLogin }] = useDisclosure();
-
-  const { isAuthenticated, session, status } = useValidSession();
-  const isLoading = status === "loading";
-
-  console.log("session in navbar", session, "isAuthenticated", isAuthenticated);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
+        setIsLoading(true);
+        setError(null);
+
         const [categoriesRes, collectionsRes] = await Promise.all([
           apiClient.get("/api/categories/"),
           apiClient.get("/api/collections/"),
         ]);
 
-        if (categoriesRes.status === 200) {
-          const filteredCategories = categoriesRes.data.categories.filter(
-            (category: Category) =>
-              category.audiobooks && category.audiobooks.length > 0
-          );
-          setCategories(filteredCategories);
-        }
+        const filteredCategories =
+          categoriesRes.data.categories?.filter(
+            (category: Category) => category.audiobooks?.length > 0
+          ) || [];
 
-        if (collectionsRes.status === 200) {
-          const filteredCollections = collectionsRes.data.collections.filter(
-            (collection: Collection) =>
-              collection.audiobooks && collection.audiobooks.length > 0
-          );
-          setCollections(filteredCollections);
-        }
+        const filteredCollections =
+          collectionsRes.data.collections?.filter(
+            (collection: Collection) => collection.audiobooks?.length > 0
+          ) || [];
+
+        setCategories(filteredCategories);
+        setCollections(filteredCollections);
       } catch (error) {
-        console.error("Error fetching data:", error);
+        console.error("Error fetching navbar data:", error);
+        setError("Failed to load navigation data");
+      } finally {
+        setIsLoading(false);
       }
     };
 
     fetchData();
   }, []);
 
-  const handleLogout = async () => {
-    await signOut({
-      callbackUrl: "/?logout=true",
-      redirect: true,
-    });
-    localStorage.removeItem("session");
-  };
+  return { categories, collections, isLoading, error };
+};
+
+// Components
+const DropdownMenu: React.FC<{
+  icon: React.ComponentType<{ className?: string }>;
+  label: string;
+  items: Array<{ id: number; name: string }>;
+  basePath: string;
+}> = ({ icon: Icon, label, items, basePath }) => (
+  <div className="relative group">
+    <button className="flex items-center space-x-1 text-sm font-medium text-gray-300 hover:text-white h-12">
+      <Icon className="w-5 h-5" />
+      <span>{label}</span>
+      <IconChevronDown className="w-4 h-4" />
+    </button>
+    <div className="absolute left-0 mt-0 w-48 rounded-b-md shadow-lg bg-gray-900 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+      <div className="py-1">
+        {items.map((item) => (
+          <Link
+            key={item.id}
+            href={`${basePath}/${item.id}`}
+            className="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-800 hover:text-white"
+          >
+            {item.name}
+          </Link>
+        ))}
+      </div>
+    </div>
+  </div>
+);
+
+const NavLink: React.FC<{
+  href: string;
+  label: string;
+  icon: React.ComponentType<{ className?: string }>;
+  pathname: string;
+  onClick?: () => void;
+  mobile?: boolean;
+}> = ({ href, label, icon: Icon, pathname, onClick, mobile = false }) => {
+  const isActive = pathname === href;
+
+  if (mobile) {
+    return (
+      <Link
+        href={href}
+        className="block px-2 py-2 text-gray-300 hover:bg-gray-800 rounded-lg"
+        onClick={onClick}
+      >
+        <div className="flex items-center space-x-2">
+          <Icon className="w-5 h-5" />
+          <span>{label}</span>
+        </div>
+      </Link>
+    );
+  }
+
+  return (
+    <Link
+      href={href}
+      className={`flex items-center space-x-1 text-sm font-medium h-12 border-b-2 ${
+        isActive
+          ? "text-green-400 border-green-400"
+          : "text-gray-300 hover:text-white border-transparent"
+      }`}
+    >
+      <Icon className="w-5 h-5" />
+      <span>{label}</span>
+    </Link>
+  );
+};
+
+const UserMenu: React.FC<{ session: any; onLogout: () => void }> = ({
+  session,
+  onLogout,
+}) => (
+  <Menu
+    position="bottom-end"
+    shadow="xl"
+    width={300}
+    styles={{
+      dropdown: {
+        backgroundColor: "#041714",
+      },
+    }}
+  >
+    <Menu.Target>
+      <button className="flex items-center space-x-2 text-gray-300 hover:text-white">
+        <div className="w-8 h-8 border border-gray-700 rounded-full flex items-center justify-center">
+          {session?.user?.image ? (
+            <Image
+              src={session.user.image}
+              alt="Profile"
+              width={32}
+              height={32}
+              className="rounded-full"
+            />
+          ) : (
+            <IconUserCircle className="w-6 h-6" />
+          )}
+        </div>
+      </button>
+    </Menu.Target>
+    <Menu.Dropdown>
+      <DynamicGreeting />
+      {session?.user?.is_staff && (
+        <Menu.Item>
+          <Link href="/admin" className="text-white flex items-center gap-2">
+            <Image src={adminIcon} alt="admin" />
+            <p className="font-bold">Admin Account</p>
+          </Link>
+        </Menu.Item>
+      )}
+      {session?.user?.is_author && (
+        <Menu.Item>
+          <Link href="/author" className="text-white flex items-center gap-2">
+            <Image src={adminIcon} alt="admin" />
+            <p className="font-bold">Author Account</p>
+          </Link>
+        </Menu.Item>
+      )}
+      <Menu.Item>
+        <Link href="/profile" className="text-white flex items-center gap-2">
+          <IconUserCircle className="w-6 h-6" color="green" />
+          <p>Profile</p>
+        </Link>
+      </Menu.Item>
+      <Menu.Item onClick={onLogout}>
+        <div className="flex items-center gap-2">
+          <IconLogout2 className="w-6 h-6" color="green" />
+          <p className="text-white">Sign out</p>
+        </div>
+      </Menu.Item>
+    </Menu.Dropdown>
+  </Menu>
+);
+
+const AuthButtons: React.FC<{
+  onOpenSignup: () => void;
+  onOpenLogin: () => void;
+}> = ({ onOpenSignup, onOpenLogin }) => (
+  <div className="flex items-center space-x-2">
+    <button
+      onClick={onOpenSignup}
+      className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-medium hidden md:block"
+    >
+      Signup
+    </button>
+    <button
+      onClick={onOpenLogin}
+      className="bg-gray-800 hover:bg-gray-700 text-white px-4 py-2 rounded-lg text-sm font-medium"
+    >
+      Login
+    </button>
+  </div>
+);
+
+const MobileMenu: React.FC<{
+  categories: Category[];
+  collections: Collection[];
+  pathname: string;
+  onToggle: () => void;
+}> = ({ categories, collections, pathname, onToggle }) => (
+  <div className="md:hidden h-screen">
+    {/* Mobile Search */}
+    <div className="p-4 border-b border-gray-800">
+      <Search toggle={onToggle} />
+    </div>
+
+    {/* Mobile Navigation */}
+    <div className="px-4 py-2">
+      {/* Browse Section */}
+      <div className="py-2">
+        <div className="text-sm font-semibold text-gray-400 px-2 pb-2">
+          Browse
+        </div>
+        {categories.map((category) => (
+          <Link
+            key={category.id}
+            href={`/audiobooks/categories/${category.id}`}
+            className="block px-2 py-2 text-gray-300 hover:bg-gray-800 rounded-lg"
+            onClick={onToggle}
+          >
+            {category.name}
+          </Link>
+        ))}
+      </div>
+
+      {/* Collections Section */}
+      <div className="py-2 border-t border-gray-800">
+        <div className="text-sm font-semibold text-gray-400 px-2 pb-2">
+          Collections
+        </div>
+        {collections.map((collection) => (
+          <Link
+            key={collection.id}
+            href={`/audiobooks/collections/${collection.id}`}
+            className="block px-2 py-2 text-gray-300 hover:bg-gray-800 rounded-lg"
+            onClick={onToggle}
+          >
+            {collection.name}
+          </Link>
+        ))}
+      </div>
+
+      {/* Main Navigation */}
+      <div className="py-2 border-t border-gray-800">
+        {NAV_ITEMS.map((item) => (
+          <NavLink
+            key={item.href}
+            {...item}
+            pathname={pathname}
+            onClick={onToggle}
+            mobile
+          />
+        ))}
+      </div>
+    </div>
+  </div>
+);
+
+// Main Component
+const Navbar: React.FC<NavbarProps> = ({ opened, toggle }) => {
+  const pathname = usePathname();
+  const { categories, collections, isLoading: dataLoading } = useNavbarData();
+  const { isAuthenticated, session, status } = useValidSession();
+
+  const [openedSignup, { open: openSignup, close: closeSignup }] =
+    useDisclosure();
+  const [openedLogin, { open: openLogin, close: closeLogin }] = useDisclosure();
+
+  const isAuthLoading = status === "loading";
+
+  const handleLogout = useCallback(async () => {
+    try {
+      await signOut({
+        callbackUrl: "/?logout=true",
+        redirect: true,
+      });
+      localStorage.removeItem("session");
+    } catch (error) {
+      console.error("Logout error:", error);
+    }
+  }, []);
+
+  // Memoize navigation items to prevent unnecessary re-renders
+  const navigationItems = useMemo(
+    () => NAV_ITEMS.map((item) => ({ ...item, pathname })),
+    [pathname]
+  );
 
   return (
     <header className="bg-primary">
@@ -119,7 +378,11 @@ const Navbar = ({
           <div className="flex items-center justify-between h-full">
             {/* Mobile Menu Button */}
             <div className="md:hidden">
-              <button onClick={toggle} className="text-white p-2">
+              <button
+                onClick={toggle}
+                className="text-white p-2"
+                aria-label="Toggle menu"
+              >
                 {opened ? (
                   <IconX className="w-6 h-6" />
                 ) : (
@@ -131,15 +394,13 @@ const Navbar = ({
             {/* Logo */}
             <div className="flex items-center">
               <Link href="/" className="flex items-center flex-shrink-0">
-                {/* <span className="text-2xl md:text-3xl font-bold text-white">
-                  AuralTales
-                </span> */}
                 <Image
                   src={Logo}
                   alt="AuralTales"
-                  width={1000}
-                  height={1000}
+                  width={96}
+                  height={96}
                   className="h-auto w-24"
+                  priority
                 />
               </Link>
             </div>
@@ -151,92 +412,15 @@ const Navbar = ({
 
             {/* Auth Buttons / User Menu */}
             <div className="flex items-center">
-              {isLoading ? (
+              {isAuthLoading ? (
                 <Loader type="bars" color="green" size="sm" />
-              ) : !isAuthenticated ? (
-                <div className="flex items-center space-x-2">
-                  <div
-                    onClick={openSignup}
-                    className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-medium hidden md:block cursor-pointer"
-                  >
-                    Signup
-                  </div>
-                  <div
-                    onClick={openLogin}
-                    className="bg-gray-800 hover:bg-gray-700 text-white px-4 py-2 rounded-lg text-sm font-medium cursor-pointer"
-                  >
-                    Login
-                  </div>
-                </div>
+              ) : isAuthenticated ? (
+                <UserMenu session={session} onLogout={handleLogout} />
               ) : (
-                <Menu
-                  position="bottom-end"
-                  shadow="xl"
-                  width={300}
-                  styles={{
-                    dropdown: {
-                      backgroundColor: "#041714",
-                    },
-                  }}
-                >
-                  <Menu.Target>
-                    <button className="flex items-center space-x-2 text-gray-300 hover:text-white">
-                      <div className="w-8 h-8 border border-gray-700 rounded-full flex items-center justify-center">
-                        {session && session.user?.image ? (
-                          <Image
-                            src={session.user.image}
-                            alt="Profile"
-                            width={32}
-                            height={32}
-                            className="rounded-full"
-                          />
-                        ) : (
-                          <IconUserCircle className="w-6 h-6" />
-                        )}
-                      </div>
-                    </button>
-                  </Menu.Target>
-                  <Menu.Dropdown>
-                    <DynamicGreeting />
-                    {session && session?.user?.is_staff && (
-                      <Menu.Item>
-                        <Link
-                          href="/admin"
-                          className="text-white flex items-center gap-2"
-                        >
-                          <Image src={adminIcon} alt="admin" />
-                          <p className="font-bold">Admin Account</p>
-                        </Link>
-                      </Menu.Item>
-                    )}
-                    {session && session?.user?.is_author && (
-                      <Menu.Item>
-                        <Link
-                          href="/author"
-                          className="text-white flex items-center gap-2"
-                        >
-                          <Image src={adminIcon} alt="admin" />
-                          <p className="font-bold">Author Account</p>
-                        </Link>
-                      </Menu.Item>
-                    )}
-                    <Menu.Item>
-                      <Link
-                        href="/profile"
-                        className="text-white flex items-center gap-2"
-                      >
-                        <IconUserCircle className="w-6 h-6" color="green" />
-                        <p>Profile</p>
-                      </Link>
-                    </Menu.Item>
-                    <Menu.Item onClick={handleLogout}>
-                      <div className="flex items-center gap-2">
-                        <IconLogout2 className="w-6 h-6" color="green" />
-                        <p className="text-white">Sign out</p>
-                      </div>
-                    </Menu.Item>
-                  </Menu.Dropdown>
-                </Menu>
+                <AuthButtons
+                  onOpenSignup={openSignup}
+                  onOpenLogin={openLogin}
+                />
               )}
             </div>
           </div>
@@ -249,97 +433,25 @@ const Navbar = ({
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-8">
               {/* Browse Dropdown */}
-              <div className="relative group">
-                <button className="flex items-center space-x-1 text-sm font-medium text-gray-300 hover:text-white h-12">
-                  <IconBooks className="w-5 h-5" />
-                  <span>Browse</span>
-                  <IconChevronDown className="w-4 h-4" />
-                </button>
-                <div className="absolute left-0 mt-0 w-48 rounded-b-md shadow-lg bg-gray-900 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
-                  <div className="py-1">
-                    {categories.map((category) => (
-                      <Link
-                        key={category.id}
-                        href={`/audiobooks/categories/${category.id}`}
-                        className="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-800 hover:text-white"
-                      >
-                        {category.name}
-                      </Link>
-                    ))}
-                  </div>
-                </div>
-              </div>
+              <DropdownMenu
+                icon={IconBooks}
+                label="Browse"
+                items={categories}
+                basePath="/audiobooks/categories"
+              />
 
               {/* Collections Dropdown */}
-              <div className="relative group">
-                <button className="flex items-center space-x-1 text-sm font-medium text-gray-300 hover:text-white h-12">
-                  <IconLayoutGrid className="w-5 h-5" />
-                  <span>Collections</span>
-                  <IconChevronDown className="w-4 h-4" />
-                </button>
-                <div className="absolute left-0 mt-0 w-48 rounded-b-md shadow-lg bg-gray-900 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
-                  <div className="py-1">
-                    {collections.map((collection) => (
-                      <Link
-                        key={collection.id}
-                        href={`/audiobooks/collections/${collection.id}`}
-                        className="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-800 hover:text-white"
-                      >
-                        {collection.name}
-                      </Link>
-                    ))}
-                  </div>
-                </div>
-              </div>
+              <DropdownMenu
+                icon={IconLayoutGrid}
+                label="Collections"
+                items={collections}
+                basePath="/audiobooks/collections"
+              />
 
               {/* Regular Nav Items */}
-              <Link
-                href="/"
-                className={`flex items-center space-x-1 text-sm font-medium h-12 border-b-2 ${
-                  pathname === "/"
-                    ? "text-green-400 border-green-400"
-                    : "text-gray-300 hover:text-white border-transparent"
-                }`}
-              >
-                <IconHome className="w-5 h-5" />
-                <span>Home</span>
-              </Link>
-
-              <Link
-                href="/library"
-                className={`flex items-center space-x-1 text-sm font-medium h-12 border-b-2 ${
-                  pathname === "/library"
-                    ? "text-green-400 border-green-400"
-                    : "text-gray-300 hover:text-white border-transparent"
-                }`}
-              >
-                <IconLibrary className="w-5 h-5" />
-                <span>My Library</span>
-              </Link>
-
-              <Link
-                href="/wishlist"
-                className={`flex items-center space-x-1 text-sm font-medium h-12 border-b-2 ${
-                  pathname === "/wishlist"
-                    ? "text-green-400 border-green-400"
-                    : "text-gray-300 hover:text-white border-transparent"
-                }`}
-              >
-                <IconHeart className="w-5 h-5" />
-                <span>Wish List</span>
-              </Link>
-
-              <Link
-                href="/favorites"
-                className={`flex items-center space-x-1 text-sm font-medium h-12 border-b-2 ${
-                  pathname === "/favorites"
-                    ? "text-green-400 border-green-400"
-                    : "text-gray-300 hover:text-white border-transparent"
-                }`}
-              >
-                <IconStars className="w-5 h-5" />
-                <span>Favorites</span>
-              </Link>
+              {navigationItems.map((item) => (
+                <NavLink key={item.href} {...item} />
+              ))}
             </div>
           </div>
         </div>
@@ -347,93 +459,12 @@ const Navbar = ({
 
       {/* Mobile Menu */}
       {opened && (
-        <div className="md:hidden h-screen">
-          {/* Mobile Search */}
-          <div className="p-4 border-b border-gray-800">
-            <Search toggle={toggle} />
-          </div>
-
-          {/* Mobile Navigation */}
-          <div className="px-4 py-2">
-            {/* Browse Section */}
-            <div className="py-2">
-              <div className="text-sm font-semibold text-gray-400 px-2 pb-2">
-                Browse
-              </div>
-              {categories.map((category) => (
-                <Link
-                  key={category.id}
-                  href={`/audiobooks/categories/${category.id}`}
-                  className="block px-2 py-2 text-gray-300 hover:bg-gray-800 rounded-lg"
-                  onClick={toggle}
-                >
-                  {category.name}
-                </Link>
-              ))}
-            </div>
-
-            {/* Collections Section */}
-            <div className="py-2 border-t border-gray-800">
-              <div className="text-sm font-semibold text-gray-400 px-2 pb-2">
-                Collections
-              </div>
-              {collections.map((collection) => (
-                <Link
-                  key={collection.id}
-                  href={`/audiobooks/collections/${collection.id}`}
-                  className="block px-2 py-2 text-gray-300 hover:bg-gray-800 rounded-lg"
-                  onClick={toggle}
-                >
-                  {collection.name}
-                </Link>
-              ))}
-            </div>
-
-            {/* Main Navigation */}
-            <div className="py-2 border-t border-gray-800">
-              <Link
-                href="/"
-                className="block px-2 py-2 text-gray-300 hover:bg-gray-800 rounded-lg"
-                onClick={toggle}
-              >
-                <div className="flex items-center space-x-2">
-                  <IconHome className="w-5 h-5" />
-                  <span>Home</span>
-                </div>
-              </Link>
-              <Link
-                href="/library"
-                className="block px-2 py-2 text-gray-300 hover:bg-gray-800 rounded-lg"
-                onClick={toggle}
-              >
-                <div className="flex items-center space-x-2">
-                  <IconLibrary className="w-5 h-5" />
-                  <span>My Library</span>
-                </div>
-              </Link>
-              <Link
-                href="/wishlist"
-                className="block px-2 py-2 text-gray-300 hover:bg-gray-800 rounded-lg"
-                onClick={toggle}
-              >
-                <div className="flex items-center space-x-2">
-                  <IconHeart className="w-5 h-5" />
-                  <span>Wish List</span>
-                </div>
-              </Link>
-              <Link
-                href="/favorites"
-                className="block px-2 py-2 text-gray-300 hover:bg-gray-800 rounded-lg"
-                onClick={toggle}
-              >
-                <div className="flex items-center space-x-2">
-                  <IconStars className="w-5 h-5" />
-                  <span>Favorites</span>
-                </div>
-              </Link>
-            </div>
-          </div>
-        </div>
+        <MobileMenu
+          categories={categories}
+          collections={collections}
+          pathname={pathname}
+          onToggle={toggle}
+        />
       )}
     </header>
   );

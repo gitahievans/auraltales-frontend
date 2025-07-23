@@ -13,7 +13,7 @@ export default function Home() {
     useAudiobooks();
 
   return (
-    <div className="flex flex-col gap-6 min-h-[60dvh]">
+    <div className="flex flex-col gap-6 min-h-screen">
       <Suspense fallback={null}>
         <UnauthorizedNotification />
       </Suspense>

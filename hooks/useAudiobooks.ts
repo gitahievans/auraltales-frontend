@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
 // hooks/useAudiobooks.ts
 import { useState, useEffect } from "react";
 import apiClient from "@/lib/apiClient";
-import { Audiobook, Category } from "@/types/types";
+import { Audiobook, Category, Collection } from "@/types/types";
 
 export function useAudiobooks() {
   const [audiobooks, setAudiobooks] = useState<Audiobook[]>([]);
@@ -11,6 +11,8 @@ export function useAudiobooks() {
   const [error, setError] = useState<string | null>(null);
   const [categoryNames, setCategoryNames] = useState<string[]>([]);
   const [categoryObjects, setCategoryObjects] = useState<Category[]>([]);
+  const [collectionObjects, setCollectionObjects] = useState<Category[]>([]);
+  const [collectionNames, setCollectionNames] = useState<string[]>([]);
 
   const fetchAudiobooks = async () => {
     try {
@@ -41,6 +43,23 @@ export function useAudiobooks() {
           new Set(categoryNames)
         );
         setCategoryNames(uniqueCategoryNames);
+
+        const collectionObjects = data.audiobooks.flatMap((book: Audiobook) =>
+          book.collections.map((collection) => collection)
+        );
+        const uniqueCollectionObjects: Collection[] = Array.from(
+          new Set(collectionObjects)
+        );
+        setCollectionObjects(uniqueCollectionObjects);
+
+        const collectionNames = data.audiobooks.flatMap((book: Audiobook) =>
+          book.collections.map((collection) => collection.name)
+        );
+
+        const uniqueCollectionNames: string[] = Array.from(
+          new Set(collectionNames)
+        );
+        setCollectionNames(uniqueCollectionNames);
       } else {
         setError("Data format is incorrect");
       }
@@ -60,7 +79,9 @@ export function useAudiobooks() {
     loading,
     error,
     categoryNames,
+    collectionNames,
     categoryObjects,
+    collectionObjects,
     refetch: fetchAudiobooks,
   };
 }

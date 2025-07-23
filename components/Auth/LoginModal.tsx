@@ -25,7 +25,7 @@ const LoginForm = ({
   const router = useRouter();
   const [turnstileToken, setTurnstileToken] = useState("");
 
-  console.log("Turnstile Token:", turnstileToken);
+  // console.log("Turnstile Token:", turnstileToken);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
